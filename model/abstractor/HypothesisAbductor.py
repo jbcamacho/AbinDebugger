@@ -5,9 +5,9 @@ import re
 import copy
 import itertools
 import typing
-from abstractor.Bugfix import BugfixMetadata
-from abstractor.NodeAbstractor import IDMapping, NodeAbstractor, NodeMapping
-from abstractor.RecursiveVisitor import ASTIdentifiers, ASTNode, IDTokens
+from model.abstractor.Bugfix import BugfixMetadata
+from model.abstractor.NodeAbstractor import IDMapping, NodeAbstractor, NodeMapping
+from model.abstractor.RecursiveVisitor import ASTIdentifiers, ASTNode, IDTokens
 
 
 class HypothesisAbductor(ast.NodeVisitor):

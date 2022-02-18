@@ -3,9 +3,9 @@ import ast
 import json
 import copy
 from typing_extensions import TypedDict
-from abstractor.RecursiveVisitor import RecursiveVisitor, ASTNode, IDTokens
-from abstractor.PythonLLOC import PythonLLOC, LogicalLOC
-from abstractor.NodeAbstractor import NodeAbstractor, NodeMetadata
+from model.abstractor.RecursiveVisitor import RecursiveVisitor, ASTNode, IDTokens
+from model.abstractor.PythonLLOC import PythonLLOC, LogicalLOC
+from model.abstractor.NodeAbstractor import NodeAbstractor, NodeMetadata
 
 class BugfixMetadata(TypedDict):
     commit_sha: str

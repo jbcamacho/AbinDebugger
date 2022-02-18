@@ -3,7 +3,7 @@ from io import BytesIO
 import re
 import ast
 from typing import Tuple, Union
-from abstractor.RecursiveVisitor import RecursiveVisitor, ASTIdentifiers, IDTokens, ASTNode
+from model.abstractor.RecursiveVisitor import RecursiveVisitor, ASTIdentifiers, IDTokens, ASTNode
 
 LogicalLOC = Union[Tuple[str, int, int], Tuple[None, int, int]]
 

@@ -4,11 +4,11 @@ import pymongo
 from typing import List, Iterator, Tuple, Union, Type, Optional
 from types import TracebackType
 import re
-from abstractor.NodeAbstractor import NodeAbstractor
-from abstractor.PythonLLOC import PythonLLOC, LogicalLOC
-from abstractor.HypothesisAbductor import HypothesisAbductor
-from abstractor.Bugfix import BugfixMetadata
-from abstractor.RecursiveVisitor import ASTNode
+from model.abstractor.NodeAbstractor import NodeAbstractor
+from model.abstractor.PythonLLOC import PythonLLOC, LogicalLOC
+from model.abstractor.HypothesisAbductor import HypothesisAbductor
+from model.abstractor.Bugfix import BugfixMetadata
+from model.abstractor.RecursiveVisitor import ASTNode
 
 import logging
 from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER
