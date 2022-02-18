@@ -1,0 +1,21 @@
+test_cases,expected_output,num: int
+test1,1,1
+test2,1,7
+test3,0,11
+test4,0,12
+test5,1,19
+test6,1,23
+test7,1,28
+test8,1,31
+test9,1,32
+test10,1,44
+test11,1,49
+test12,0,65
+test13,0,69
+test14,1,79
+test15,0,81
+test16,1,82
+test17,1,91
+test18,1,94
+test19,1,97
+test20,1,100

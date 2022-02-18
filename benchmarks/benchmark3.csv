@@ -1,0 +1,21 @@
+test_cases,expected_output,password: str
+test1,"(2, 2, 0, 1, 0, 0)",4da
+test2,"(4, 6, 3, 3, 0, 4)",\hXWw}&d?e4Zn7w6
+test3,"(0, 0, 0, 0, 0, 0)",
+test4,"(1, 0, 0, 0, 1, 0)", 
+test5,"(4, 1, 2, 1, 0, 2)",DU^8d-
+test6,"(4, 6, 1, 1, 0, 2)",un$gz*a2Cy
+test7,"(1, 8, 0, 0, 0, 0)",password
+test8,"(1, 0, 0, 4, 0, 0)",1234
+test9,"(4, 5, 4, 1, 0, 2)",R7zU*tPgwW&t
+test10,"(3, 2, 4, 0, 0, 1)",eeXO^ME
+test11,"(4, 4, 4, 3, 0, 3)",!Kb85^edRIh#C3
+test12,"(4, 10, 13, 2, 0, 4)",8pJUSKn!$ESrRNyi@DVQ7jeb#DgAf
+test13,"(4, 20, 20, 5, 0, 5)",LaX4YNg4AW$Z^C%ba#TnMKbkp7NBdyv1flkQFjQV%wzK1IfOce
+test14,"(5, 15, 19, 8, 2, 8)",kUJ z$Bi^c^F$qJ9 B4IKVYhz4gaRWC3zB%6#J8%&GoMoHma9Rv3
+test15,"(4, 4, 8, 2, 0, 6)",-#!3%YUjQpQ-D-hH2MPz
+test16,"(5, 4, 8, 2, 1, 6)",-#!3%YUjQpQ-D-hH 2MPz
+test17,"(4, 4, 4, 1, 0, 2)",A5^zzvSD+gG
+test18,"(4, 1, 2, 1, 0, 2)",$4!FsA
+test19,"(4, 7, 3, 1, 0, 5)",-=a8k@wnQv*xNk*X
+test20,"(4, 10, 7, 3, 0, 3)",e7%pLvm5qNaeQ7-mKESFgy*

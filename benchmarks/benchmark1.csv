@@ -1,0 +1,7 @@
+test_cases,expected_output,s: str
+test1,abc,abc
+test2,abc,<b>abc</b>
+test3,"""abc""","""abc"""
+test4,HOLA,"<i class=""gfg-icon gfg-icon_dark-mode"">HOLA</i></button>"
+test5,# Example 2:,<p><strong># Example 2:</strong>
+test6,Medium,<button data-gfg-action=article-difficulty data-rating=3 class=btn>Medium</button>

@@ -1,0 +1,13 @@
+test_cases,expected_output,num: int
+test1,False,0
+test2,False,1
+test3,True,2
+test4,True,3
+test5,True,5
+test6,True,89
+test7,True,83
+test8,False,10
+test9,False,80
+test10,False,98
+test11,False,-1
+test12,False,-5

@@ -1,0 +1,16 @@
+TK_LIBRARY=/usr/lib/python3.7/lib-tk:/usr/lib/python3.7/site-packages/PIL:/usr/lib
+TKPATH=/usr/lib/python3.7/lib-tk:/usr/lib/python3.7/site-packages/PIL:/usr/lib 
+TCL_LIBRARY=/usr/lib 
+export TCL_LIBRARY TK_LIBRARY TKPATH
+
+
+
+
+export PYTHONPATH=/usr/lib/python3.7/lib-tk:/usr/lib/python3.7/lib-stdwin:/usr/lib/python3.7/lib-dynload:/usr/lib:.
+
+
+
+
+
+https://stackoverflow.com/questions/15884075/tkinter-in-a-virtualenv
+https://askubuntu.com/questions/229416/making-python-3-3-default-python-3-interpreter-instead-of-3-2

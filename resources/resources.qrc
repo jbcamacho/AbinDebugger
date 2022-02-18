@@ -1,0 +1,23 @@
+<RCC>
+  <qresource>
+  <file alias="menu.svg">ui/menu.svg</file>
+    <file alias="load-test.svg">ui/file-plus.svg</file>
+    <file alias="load-model.svg">ui/plus-circle.svg</file>
+    <file alias="save-model.svg">ui/save.svg</file>
+    <file alias="file-exit.svg">ui/file-minus.svg</file>
+    <file>cinves-logo.png</file>
+    <file alias="edit-copy.svg">ui/copy.svg</file>
+    <file alias="edit-cut.svg">ui/scissors.svg</file>
+    <file alias="edit-paste.svg">ui/clipboard.svg</file>
+    <file alias="help-content.svg">ui/help-circle.svg</file>
+    <file alias="info.svg">ui/info.svg</file>
+    <file alias="home.svg">ui/home.svg</file>
+    <file alias="command.svg">ui/command.svg</file>
+    <file alias="compass.svg">ui/compass.svg</file>
+    <file alias="bar-chart.svg">ui/bar-chart-2.svg</file>
+    <file alias="layers.svg">ui/layers.svg</file>
+    <file alias="database.svg">ui/database.svg</file>
+    <file alias="settings.svg">ui/settings.svg</file>
+    <file alias="log-out.svg">ui/log-out.svg</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,6 @@
+test_cases,expected_output,sales_today: dict,sales_yesterday: dict
+test1,968,"{""fd3"":222, ""grrt5"":445, ""ffdf4"": 32}","{""swd8"":12, ""sw34"":23, ""shirt8"": 234}"
+test2,174,"{""fd3"":87}","{""fd3"":87}"
+test3,0,{},{}
+test4,734,"{""fd3"":222, ""grrt5"":445, ""ffdf4"": 32}","{""swd8"":12, ""sw34"":23}"
+test5,35,{},"{""swd8"":12, ""sw34"":23}"

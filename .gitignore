@@ -1,0 +1,7 @@
+/temp
+**/__pycache__
+/.VSCodeCounter
+/abin.log
+/repaired_program.py
+/test_*.py
+/resources/ui/additionals
