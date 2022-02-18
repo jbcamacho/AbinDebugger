@@ -1,5 +1,5 @@
 from decimal import DivisionByZero
-from debugger.StatisticalDebugger import Debugger, AbductiveDebugger
+from model.debugger.StatisticalDebugger import Debugger, AbductiveDebugger
 from typing import Type, List
 from model.FaultLocalizator import FaultLocalizator
 from model.FaultLocalizator import Observation, TestCase, PassedTest, FailedTest

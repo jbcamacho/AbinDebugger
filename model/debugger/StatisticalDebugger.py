@@ -1,5 +1,5 @@
 
-from debugger.Collector import Collector, CoverageCollector
+from model.debugger.Collector import Collector, CoverageCollector
 import inspect
 from types import TracebackType
 from typing import Any, Set, Dict, Callable, Optional, Tuple, Type, List, Union

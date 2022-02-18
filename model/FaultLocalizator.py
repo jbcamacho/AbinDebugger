@@ -1,4 +1,4 @@
-from debugger.StatisticalDebugger import Debugger, AbductiveDebugger, InfluencePath
+from model.debugger.StatisticalDebugger import Debugger, AbductiveDebugger, InfluencePath
 from typing import Tuple, Type, List, Any, Union, Optional, TypeVar
 from types import TracebackType
 from typing_extensions import Literal
@@ -6,7 +6,7 @@ import ast, astunparse
 from importlib import import_module, reload
 from pathlib import Path
 from shutil import rmtree as remove_dir
-import timeout_decorator
+#import timeout_decorator
 
 
 import logging

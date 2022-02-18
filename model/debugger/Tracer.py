@@ -2,7 +2,7 @@ import sys
 from types import FrameType, TracebackType
 from typing import Any, Callable, Optional, Type, TextIO
 
-from debugger.StackInspector import StackInspector
+from model.debugger.StackInspector import StackInspector
 
 class Tracer(StackInspector):
     """A class for tracing a piece of code. Use as `with Tracer(): block()`"""

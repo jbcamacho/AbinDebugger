@@ -1,5 +1,5 @@
-from debugger.Tracer import Tracer
-from debugger.StackInspector import StackInspector
+from model.debugger.Tracer import Tracer
+from model.debugger.StackInspector import StackInspector
 from types import FrameType, TracebackType
 from typing import Any, Set, Dict, Tuple, Callable, Optional, Type, List, Union
 
