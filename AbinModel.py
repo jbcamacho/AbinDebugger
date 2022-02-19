@@ -51,7 +51,7 @@ class AbinModel():
         logger.info(f"Influence Path by Suspiciousness Ranking:\n{influence_path}")
 
         #print(f"Observations:\n{prev_observation}")
-        print(f"Influence Path by Suspiciousness Ranking:\n{influence_path}")
+        #print(f"Influence Path by Suspiciousness Ranking:\n{influence_path}")
 
         if behavior == Behavior.Correct:
             logger.debug(f"\n\nSUCCESSFUL REPAIR!")

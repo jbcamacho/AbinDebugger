@@ -6,8 +6,6 @@ import ast, astunparse
 from importlib import import_module, reload
 from pathlib import Path
 from shutil import rmtree as remove_dir
-#import timeout_decorator
-
 
 import logging
 from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER
@@ -72,13 +70,14 @@ class FaultLocalizator():
             logger.warning(f"Unable to continue the test of hypothesis model: {self.model_name}")
         return True  # Ignore exception, if any
 
-    #@timeout_decorator.timeout(time_out, use_signals=False)
+    #@timeout_decorator.timeout(5, use_signals=False, timeout_exception=AssertionError)
     def automatic_test(self) -> Tuple[Observation, InfluencePath]:
         new_observation: Observation = [('', FailedTest) for i in range(len(self.test_cases))]
         test_result: ExpectedOutput
         debugger: Debugger = self.debugger()
         for i, test_case, expected_output, *input_args in self.test_cases.itertuples():
             with debugger:
+                #signal.alarm(5)
                 if self.func is None:
                     raise ImportError(f"Failed to import the given function {self.func_name} from the model {self.model_name}.\
                     \nPlease check that the given parameter 'func_name' correspond to a function in the module.")
@@ -93,6 +92,7 @@ class FaultLocalizator():
                         Result: {test_result}\n \
                         Expected: {expected_output}\n"
                     )
+        #signal.alarm(0)
         self.observation = new_observation
         if not self.are_all_test_pass():
             self.influence_path = debugger.get_influence_path()
