@@ -1,11 +1,19 @@
 from model.debugger.StatisticalDebugger import Debugger, AbductiveDebugger, InfluencePath
 from typing import Tuple, Type, List, Any, Union, Optional, TypeVar
 from types import TracebackType
-from typing_extensions import Literal
 import ast, astunparse
 from importlib import import_module, reload
 from pathlib import Path
 from shutil import rmtree as remove_dir
+
+
+SIGNAL_ALARM_TIMEOUT = 3.0
+import signal
+def handler (signum, frame):
+    print('timeout')
+    raise KeyboardInterrupt(f'Signal handler called with signal {signum}')
+signal.signal(signal.SIGALRM, handler)
+
 
 import logging
 from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER
@@ -70,19 +78,18 @@ class FaultLocalizator():
             logger.warning(f"Unable to continue the test of hypothesis model: {self.model_name}")
         return True  # Ignore exception, if any
 
-    #@timeout_decorator.timeout(5, use_signals=False, timeout_exception=AssertionError)
     def automatic_test(self) -> Tuple[Observation, InfluencePath]:
         new_observation: Observation = [('', FailedTest) for i in range(len(self.test_cases))]
         test_result: ExpectedOutput
         debugger: Debugger = self.debugger()
         for i, test_case, expected_output, *input_args in self.test_cases.itertuples():
             with debugger:
-                #signal.alarm(5)
                 if self.func is None:
                     raise ImportError(f"Failed to import the given function {self.func_name} from the model {self.model_name}.\
                     \nPlease check that the given parameter 'func_name' correspond to a function in the module.")
-                
+                signal.alarm(3)
                 test_result = self.func(*input_args)
+                signal.alarm(0)
                 logger.debug(f"test_result == expected_output\n{str(test_result)} == {str(expected_output)} ?")
                 if str(test_result) == str(expected_output):
                     new_observation[i] = (test_case, PassedTest)
@@ -91,14 +98,14 @@ class FaultLocalizator():
                     raise AssertionError(f"The result and the expected output are not equal.\
                         Result: {test_result}\n \
                         Expected: {expected_output}\n"
-                    )
-        #signal.alarm(0)
+                    )  
+            
+        logger.info(new_observation)
         self.observation = new_observation
         if not self.are_all_test_pass():
-            self.influence_path = debugger.get_influence_path()
+            self.influence_path = debugger.get_influence_path(self.model)
         return (self.observation, self.influence_path)
 
-    #@timeout_decorator.timeout(5, timeout_exception=TimeoutError)
     def run_test(self, input_args) -> ExpectedOutput:
         return self.func(*input_args)
     

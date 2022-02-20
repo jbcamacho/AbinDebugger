@@ -61,9 +61,9 @@ class AbinDriver(AbinView):
         self.testSuitePage.findChild(QPushButton, 'btnLoadTestSuite').clicked.connect(self.loadTestSuite)
 
         # Connect Logger to txtLogging and AutoDebug to a thread
-        self.AutoDebug = Worker(self.AutoDebugTask, ())
-        self.AutoDebug.finished.connect(self.finishedAutoDebug)
-        self.AutoDebug.terminate()
+        #self.AutoDebug = Worker(self.AutoDebugTask, ())
+        #self.AutoDebug.finished.connect(self.finishedAutoDebug)
+        #self.AutoDebug.terminate()
         self.txtLogging = self.AbductionPage.findChild(QPlainTextEdit, 'txtLogging')
         CONSOLE_HANDLER.sigLog.connect(self.txtLogging.appendPlainText)
 
@@ -193,7 +193,9 @@ class AbinDriver(AbinView):
             return QMessageBox.warning(self, "Warning!", "<p>Please provide a function name!.</p>")
         self.max_complexity = self.AbductionPage.findChild(QSpinBox, 'snbComplexity').value()
         self.btnRunAutoDebug.setEnabled(False)
-        self.AutoDebug.start()
+        #self.AutoDebug.start()
+        self.AutoDebugTask()
+        self.finishedAutoDebug()
     
     def finishedAutoDebug(self):
         self.btnRunAutoDebug.setEnabled(True)

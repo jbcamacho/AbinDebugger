@@ -52,15 +52,17 @@ class AbinModel():
 
         #print(f"Observations:\n{prev_observation}")
         #print(f"Influence Path by Suspiciousness Ranking:\n{influence_path}")
-
+        new_observation = []
         if behavior == Behavior.Correct:
             logger.debug(f"\n\nSUCCESSFUL REPAIR!")
             return (model_name, behavior, prev_observation, [])
         hypotheses_generator = self.hypotheses_generation(influence_path)
         with hypotheses_generator:
             for i, (model_name, hypothesis) in enumerate(hypotheses_generator):
+                print(f"\nTesting Hypothesis {i}.\nModel {model_name}.\nHypothesis: {hypothesis}")
                 logger.info(f"\nTesting Hypothesis {i}.\nModel {model_name}.\nHypothesis: {hypothesis}")
                 (behavior, new_observation) = self.hyphotesis_testing(prev_observation, model_name)
+                print(f"Behavior Type: {behavior}")
                 logger.info(f"Behavior Type: {behavior}")
                 if behavior == Behavior.Correct:# or behavior == Behavior.Improvement:
                     logger.debug(f"\nPrevious Observations:\n{prev_observation}\n")
@@ -74,13 +76,14 @@ class AbinModel():
         
 
     def fault_localization(self):
+        model_name = ''
+        behavior = Behavior.Undefined
         prev_observation = []
         influence_path = []
         with self.fault_localizator(self.function_name,
             self.bugged_file_path, self.test_suite) as localizator:
             (prev_observation, influence_path) = localizator.automatic_test()
             model_name = localizator.model_name
-            behavior = Behavior.Undefined
             if localizator.are_all_test_pass():
                 behavior = Behavior.Correct
         return (model_name, behavior, prev_observation, influence_path)
