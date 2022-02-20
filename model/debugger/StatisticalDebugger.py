@@ -440,13 +440,29 @@ class AbductiveDebugger(OchiaiDebugger):
         super().__init__(collector_class, log)
         self.influence_path: List = []
 
-    def get_influence_path(self) -> InfluencePath:
+    def get_influence_path(self, model) -> InfluencePath:
         """Return a list of events, sorted by suspiciousness, highest first."""
-        self.influence_path = list(filter(lambda x: x[0] not in ['debug', 'isEnabledFor'], self.rank()))
+        if model is None: return []
+        func_names = self.get_all_func_names(model)
+        #print(func_names)
+        
+        self.influence_path = list(filter(lambda x: x[0] in func_names, self.rank()))
+        #print(self.influence_path)
+        #self.influence_path = list(filter(lambda x: x[0] not in ['debug', 'isEnabledFor', 'run_test'], self.rank()))
         #top_candidate = self.bug_candidates.pop(0)
 
         return self.influence_path
     
+    @staticmethod
+    def get_all_func_names(module) -> list:
+        from importlib.util import spec_from_file_location, module_from_spec
+        from inspect import getmembers, isfunction, ismethod
+        """file = module_path.split('/')[-1]
+        spec = spec_from_file_location(file, module_path)
+        module = module_from_spec(spec)
+        spec.loader.exec_module(module)"""
+        return [func_name for func_name, _ in getmembers(module, isfunction or ismethod)]
+
     def __str__(self) -> str:
         return self.__repr__()
 
