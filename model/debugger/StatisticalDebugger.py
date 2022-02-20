@@ -2,7 +2,7 @@
 from model.debugger.Collector import Collector, CoverageCollector
 import inspect
 from types import TracebackType
-from typing import Any, Set, Dict, Callable, Optional, Tuple, Type, List, Union
+from typing import Any, Set, Dict, Callable, Optional, Type, List, Union
 import math
 from cgitb import html
 
@@ -389,90 +389,5 @@ class OchiaiDebugger(ContinuousSpectrumDebugger, RankingDebugger):
         return 1 - suspiciousness
 
 
-class StatisticalRankingDebugger(RankingDebugger):
-    pass
-
-
-from enum import Enum
-ranking_lst = ['Assign', 'Expr', 'If', 'Return', 'FunctionDef',
-'ImportFrom', 'Raise', 'Assert', 'ExceptHandler', 'For', 'AugAssign',
-'With', 'ClassDef', 'Import', 'Call', 'AnnAssign', 'While', 'AsyncFunctionDef',
-'Pass', 'Delete', 'arg', 'Subscript', 'Name', 'Break', 'Attribute', 'Global',
-'Try', 'NameConstant', 'AsyncFor']
-
-#StatisticalRanking = Enum('StatisticalRanking', ranking_lst)
-InfluencePath = List[Tuple[str, int]]
-
-class AbductiveDebugger(OchiaiDebugger):
-    StatisticalRanking: Dict[str, int] = {
-        'Assign':1,
-        'Expr':2,
-        'If':3,
-        'Return':4,
-        'FunctionDef':5,
-        'ImportFrom':6,
-        'Raise':7,
-        'Assert':8,
-        'ExceptHandler':9,
-        'For':10,
-        'AugAssign':11,
-        'With':12,
-        'ClassDef':13,
-        'Import':14,
-        'Call':15,
-        'AnnAssign':16,
-        'While':17,
-        'AsyncFunctionDef':18,
-        'Pass':19,
-        'Delete':20,
-        'arg':21,
-        'Subscript':22,
-        'Name':23,
-        'Break':24,
-        'Attribute':25,
-        'Global':26,
-        'Try':27,
-        'NameConstant':28,
-        'AsyncFor':29
-    }
-    
-    def __init__(self, collector_class: Type = CoverageCollector, log: bool = False):
-        super().__init__(collector_class, log)
-        self.influence_path: List = []
-
-    def get_influence_path(self, model) -> InfluencePath:
-        """Return a list of events, sorted by suspiciousness, highest first."""
-        if model is None: return []
-        func_names = self.get_all_func_names(model)
-        #print(func_names)
-        
-        self.influence_path = list(filter(lambda x: x[0] in func_names, self.rank()))
-        #print(self.influence_path)
-        #self.influence_path = list(filter(lambda x: x[0] not in ['debug', 'isEnabledFor', 'run_test'], self.rank()))
-        #top_candidate = self.bug_candidates.pop(0)
-
-        return self.influence_path
-    
-    @staticmethod
-    def get_all_func_names(module) -> list:
-        from importlib.util import spec_from_file_location, module_from_spec
-        from inspect import getmembers, isfunction, ismethod
-        """file = module_path.split('/')[-1]
-        spec = spec_from_file_location(file, module_path)
-        module = module_from_spec(spec)
-        spec.loader.exec_module(module)"""
-        return [func_name for func_name, _ in getmembers(module, isfunction or ismethod)]
-
-    def __str__(self) -> str:
-        return self.__repr__()
-
-    def __repr__(self) -> str:
-        try:
-            return super().__repr__()
-        except Exception as e:
-            return f"GOOD: {e}"
-
-
-Debugger = Union[AbductiveDebugger, OchiaiDebugger, TarantulaDebugger, RankingDebugger, ContinuousSpectrumDebugger, DiscreteSpectrumDebugger, SpectrumDebugger, DifferenceDebugger, StatisticalDebugger]
-
+Debugger = Union[OchiaiDebugger, TarantulaDebugger, RankingDebugger, ContinuousSpectrumDebugger, DiscreteSpectrumDebugger, SpectrumDebugger, DifferenceDebugger, StatisticalDebugger]
 

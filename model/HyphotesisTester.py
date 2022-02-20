@@ -1,5 +1,5 @@
 from decimal import DivisionByZero
-from model.debugger.StatisticalDebugger import Debugger, AbductiveDebugger
+from model.debugger.AbinDebugger import Debugger, AbinDebugger
 from typing import Type, List
 from model.FaultLocalizator import FaultLocalizator
 from model.FaultLocalizator import Observation, TestCase, PassedTest, FailedTest
@@ -26,7 +26,7 @@ class HyphotesisTester(FaultLocalizator):
                 func_name: str,
                 model_name: str,
                 test_cases: List[TestCase], 
-                debugger: Debugger = AbductiveDebugger) -> None:
+                debugger: Debugger = AbinDebugger) -> None:
         logger.debug('Init HyphotesisTester')
         self.prev_observation = prev_observation
         # [:-3] to remove the '.py' extension from the model_name

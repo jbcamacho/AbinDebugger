@@ -1,4 +1,4 @@
-from model.debugger.StatisticalDebugger import Debugger, AbductiveDebugger, InfluencePath
+from model.debugger.AbinDebugger import Debugger, AbinDebugger, InfluencePath
 from typing import Tuple, Type, List, Any, Union, Optional, TypeVar
 from types import TracebackType
 import ast, astunparse
@@ -39,7 +39,7 @@ class FaultLocalizator():
     def __init__(self, func_name: str,
                 path_bugged_file: str,
                 test_cases: List[TestCase],
-                debugger: Debugger = AbductiveDebugger) -> None:
+                debugger: Debugger = AbinDebugger) -> None:
         logger.debug('Init FaultLocalizator')
         self.func_name = func_name
         self.path_bugged_file = path_bugged_file
