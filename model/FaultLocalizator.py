@@ -6,20 +6,19 @@ from importlib import import_module, reload
 from pathlib import Path
 from shutil import rmtree as remove_dir
 
-
-SIGNAL_ALARM_TIMEOUT = 3.0
-import signal
-def handler (signum, frame):
-    print('timeout')
-    raise KeyboardInterrupt(f'Signal handler called with signal {signum}')
-signal.signal(signal.SIGALRM, handler)
-
-
 import logging
 from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER
 logger = logging.getLogger(__name__)
 logger.setLevel(LOGGER_LEVEL)
 logger.addHandler(CONSOLE_HANDLER)
+
+#SIGNAL_ALARM_TIMEOUT = 3.0
+import signal
+def handler (signum, frame):
+    print('timeout')
+    logger.info(f'Timeout reached!.\nSignal handler called with signal {signum}')
+    raise KeyboardInterrupt(f'Signal handler called with signal {signum}')
+signal.signal(signal.SIGALRM, handler)
 
 
 Test = Any
@@ -83,13 +82,13 @@ class FaultLocalizator():
         test_result: ExpectedOutput
         debugger: Debugger = self.debugger()
         for i, test_case, expected_output, *input_args in self.test_cases.itertuples():
+            signal.alarm(2)
             with debugger:
                 if self.func is None:
                     raise ImportError(f"Failed to import the given function {self.func_name} from the model {self.model_name}.\
                     \nPlease check that the given parameter 'func_name' correspond to a function in the module.")
-                signal.alarm(3)
+                
                 test_result = self.func(*input_args)
-                signal.alarm(0)
                 logger.debug(f"test_result == expected_output\n{str(test_result)} == {str(expected_output)} ?")
                 if str(test_result) == str(expected_output):
                     new_observation[i] = (test_case, PassedTest)
@@ -98,7 +97,8 @@ class FaultLocalizator():
                     raise AssertionError(f"The result and the expected output are not equal.\
                         Result: {test_result}\n \
                         Expected: {expected_output}\n"
-                    )  
+                    ) 
+        signal.alarm(0) 
             
         logger.info(new_observation)
         self.observation = new_observation
