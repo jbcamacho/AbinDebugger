@@ -3,13 +3,19 @@ from typing import Dict
 this = sys.modules[__name__]
 this.TIMEOUT_SIGNAL_RECEIVED = 0
 
+from enum import Enum
+class ConnectionStatus(Enum):
+    Undefined = 0
+    Secured = 1
+    Established = 2
+
 DATABASE_SETTINGS: Dict[str, str] = {
     'URI': '',
     'HOST': '',
     'PORT': '',
     'DATABASE': '',
     'COLLECTION': '',
-    'STATUS': False
+    'STATUS': ConnectionStatus.Undefined
 }
 
 

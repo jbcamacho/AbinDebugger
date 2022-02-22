@@ -212,8 +212,10 @@ class AbinDriver(AbinView):
         return save_path
 
     def runAutoDebug(self):
-        if not DebugController.DATABASE_SETTINGS['STATUS']:
-            return QMessageBox.warning(self, "Warning!", "<p>Please connect to a Database.</p>")
+        if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Undefined:
+            return QMessageBox.warning(self, "Warning!", "<p>Please connect a Database.</p>")
+        if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Established:
+            return QMessageBox.warning(self, "Warning!", "<p>Please make sure to connect a Database with patterns.</p>")
         if self.csvTestSuite is None:
             return QMessageBox.warning(self, "Warning!", "<p>Please provide a test suite!.</p>")
         if self.bugged_file_path is None:
@@ -295,8 +297,8 @@ class AbinDriver(AbinView):
             'COLLECTION': collection_name,
             'STATUS':  False
         }
-        if test_db_connection(uri, host, port, db_name, collection_name):
-            DebugController.DATABASE_SETTINGS['STATUS'] = True
+        conn_status = test_db_connection(uri, host, port, db_name, collection_name)
+        DebugController.DATABASE_SETTINGS['STATUS'] = conn_status
         
 
 
