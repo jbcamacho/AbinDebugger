@@ -80,7 +80,7 @@ class AbinDriver(AbinView):
     
     def _stopDebugTimer(self):
         self.timer.stop()
-        self.statusLabel.setText(f"Debugging in progress... elapsed time: {self._debug_elapsed_time/10} sec(s)")
+        self.statusLabel.setText(f"Debugging finished. Total elapsed time: {self._debug_elapsed_time/10} sec(s)")
 
     def toHomePage(self) -> None:
         self.allPages.setCurrentWidget(self.homePage)
@@ -216,7 +216,6 @@ class AbinDriver(AbinView):
     def finishedAutoDebug(self):
         self.btnRunAutoDebug.setEnabled(True)
         self._stopDebugTimer()
-        self.statusLabel.setText(f"Debugging finished.")
         if self.debug_result is not None:
             msgResult = QMessageBox()
             (model_name, candidate, bugfixing_hyphotesis, *_) = self.debug_result
