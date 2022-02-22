@@ -34,6 +34,7 @@ class AbinDriver(AbinView):
         self.abinDebugger = abin_debugger
         self.max_complexity = 0
         self.debugged_program = None
+        self._debug_elapsed_time = 0
           
     def _connectActions(self):
         # Connect File actions
@@ -61,11 +62,25 @@ class AbinDriver(AbinView):
         self.testSuitePage.findChild(QPushButton, 'btnLoadTestSuite').clicked.connect(self.loadTestSuite)
 
         # Connect Logger to txtLogging and AutoDebug to a thread
-        #self.AutoDebug = Worker(self.AutoDebugTask, ())
-        #self.AutoDebug.finished.connect(self.finishedAutoDebug)
-        #self.AutoDebug.terminate()
+        self.AutoDebug = Worker(self.AutoDebugTask, ())
+        self.AutoDebug.finished.connect(self.finishedAutoDebug)
+        self.AutoDebug.terminate()
         self.txtLogging = self.AbductionPage.findChild(QPlainTextEdit, 'txtLogging')
         CONSOLE_HANDLER.sigLog.connect(self.txtLogging.appendPlainText)
+
+        self.timer.timeout.connect(self._showDebugTime)
+
+    def _showDebugTime(self):
+        self._debug_elapsed_time += 1
+        self.statusLabel.setText(f"Debugging in progress... elapsed time: {self._debug_elapsed_time/10} sec(s)")
+
+    def _resetDebugTimer(self):
+        self._debug_elapsed_time = 0
+        self.timer.start(100)
+    
+    def _stopDebugTimer(self):
+        self.timer.stop()
+        self.statusLabel.setText(f"Debugging in progress... elapsed time: {self._debug_elapsed_time/10} sec(s)")
 
     def toHomePage(self) -> None:
         self.allPages.setCurrentWidget(self.homePage)
@@ -193,12 +208,15 @@ class AbinDriver(AbinView):
             return QMessageBox.warning(self, "Warning!", "<p>Please provide a function name!.</p>")
         self.max_complexity = self.AbductionPage.findChild(QSpinBox, 'snbComplexity').value()
         self.btnRunAutoDebug.setEnabled(False)
-        #self.AutoDebug.start()
-        self.AutoDebugTask()
-        self.finishedAutoDebug()
+        self._resetDebugTimer()
+        self.AutoDebug.start()
+        #self.AutoDebugTask()
+        #self.finishedAutoDebug()
     
     def finishedAutoDebug(self):
         self.btnRunAutoDebug.setEnabled(True)
+        self._stopDebugTimer()
+        self.statusLabel.setText(f"Debugging finished.")
         if self.debug_result is not None:
             msgResult = QMessageBox()
             (model_name, candidate, bugfixing_hyphotesis, *_) = self.debug_result

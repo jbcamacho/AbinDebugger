@@ -1,6 +1,6 @@
 import sys
 import resources.qrc_resources as qrc_resources
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5 import sip, uic
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
@@ -138,6 +138,8 @@ class AbinView(QMainWindow):
         self.settingsAction     =   QAction(QIcon(":settings.svg")  , "Settings")
         
         self.logoutAction       =   QAction(QIcon(":log-out.svg")   , "Logout")
+
+        self.timer = QTimer()
 
     def _resetLayout(self, layout = None, layout_type = QVBoxLayout):
         if layout is not None:
