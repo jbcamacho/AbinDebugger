@@ -12,13 +12,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(LOGGER_LEVEL)
 logger.addHandler(CONSOLE_HANDLER)
 
-#SIGNAL_ALARM_TIMEOUT = 3.0
+import controller.DebugController as DebugController
 import signal
-def handler (signum, frame):
-    print('timeout')
-    logger.info(f'Timeout reached!.\nSignal handler called with signal {signum}')
-    raise KeyboardInterrupt(f'Signal handler called with signal {signum}')
-signal.signal(signal.SIGALRM, handler)
+signal.signal(signal.SIGALRM, DebugController.test_timeout_handler)
 
 
 Test = Any
@@ -82,12 +78,12 @@ class FaultLocalizator():
         test_result: ExpectedOutput
         debugger: Debugger = self.debugger()
         for i, test_case, expected_output, *input_args in self.test_cases.itertuples():
-            signal.alarm(2)
+            #print('before signal')
             with debugger:
+                signal.alarm(1)
                 if self.func is None:
                     raise ImportError(f"Failed to import the given function {self.func_name} from the model {self.model_name}.\
                     \nPlease check that the given parameter 'func_name' correspond to a function in the module.")
-                
                 test_result = self.func(*input_args)
                 logger.debug(f"test_result == expected_output\n{str(test_result)} == {str(expected_output)} ?")
                 if str(test_result) == str(expected_output):
@@ -98,12 +94,13 @@ class FaultLocalizator():
                         Result: {test_result}\n \
                         Expected: {expected_output}\n"
                     ) 
+            signal.alarm(0)
         signal.alarm(0) 
-            
+        #print('after signal')
         logger.info(new_observation)
         self.observation = new_observation
         if not self.are_all_test_pass():
-            self.influence_path = debugger.get_influence_path(self.model)
+            self.influence_path = debugger.get_influence_path(self.model, self.func_name)
         return (self.observation, self.influence_path)
 
     def run_test(self, input_args) -> ExpectedOutput:
