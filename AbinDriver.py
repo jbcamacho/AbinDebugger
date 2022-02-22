@@ -7,11 +7,13 @@ import pandas as pd
 from PyQt5.QtWidgets import (
     QApplication, QMessageBox, QFileDialog,
     QTableWidgetItem, QTableWidget, QPushButton,
-    QComboBox, QSpinBox, QListWidget, QPlainTextEdit
+    QComboBox, QSpinBox, QListWidget, QPlainTextEdit,
+    QTextEdit, QLineEdit
 )
-
+import controller.DebugController as DebugController
 import logging
-from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER, Worker
+from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER, Worker, TEST_DB_HANDLER
+from model.misc.test_db_connection import test_db_connection
 logger = logging.getLogger(__name__)
 logger.setLevel(LOGGER_LEVEL)
 logger.addHandler(CONSOLE_HANDLER)
@@ -42,10 +44,6 @@ class AbinDriver(AbinView):
         self.loadTestAction.triggered.connect(self.loadTestSuite)
         self.saveAction.triggered.connect(self.saveDebuggedProgram)
         self.exitAction.triggered.connect(self.close)
-        # Connect Edit actions
-        #self.copyAction.triggered.connect(self.copyContent)
-        #self.pasteAction.triggered.connect(self.pasteContent)
-        #self.cutAction.triggered.connect(self.cutContent)
         
         # Connect Help actions
         self.helpContentAction.triggered.connect(self.contactInfo)
@@ -55,19 +53,27 @@ class AbinDriver(AbinView):
         self.homeAction.triggered.connect(self.toHomePage)
         self.commandAction.triggered.connect(self.toTestSuitePage)
         self.abductionAction.triggered.connect(self.toDebuggerPage)
+        self.miningAction.triggered.connect(self.toMiningPage)
+        self.databaseAction.triggered.connect(self.toDatabasePage)
 
         # Connect Debugger Page Events
         self.btnRunAutoDebug = self.AbductionPage.findChild(QPushButton, 'btnStartDebug')
         self.btnRunAutoDebug.clicked.connect(self.runAutoDebug)
         self.testSuitePage.findChild(QPushButton, 'btnLoadTestSuite').clicked.connect(self.loadTestSuite)
+        self.databasePage.findChild(QPushButton, 'btnConnectDatabase').clicked.connect(self.testDBConn)
 
-        # Connect Logger to txtLogging and AutoDebug to a thread
+        ## Connect Logger to txtLogging and AutoDebug to a thread
         self.AutoDebug = Worker(self.AutoDebugTask, ())
         self.AutoDebug.finished.connect(self.finishedAutoDebug)
         self.AutoDebug.terminate()
         self.txtLogging = self.AbductionPage.findChild(QPlainTextEdit, 'txtLogging')
-        CONSOLE_HANDLER.sigLog.connect(self.txtLogging.appendPlainText)
+        CONSOLE_HANDLER.sigLog.connect(self.txtLogging.appendPlainText)   
 
+        ## Connect Logger to txtConnectionStatus
+        self.txtConnectionStatus = self.databasePage.findChild(QPlainTextEdit, 'txtConnectionStatus')
+        TEST_DB_HANDLER.sigLog.connect(self.txtConnectionStatus.appendHtml)
+
+        # Connect Timer for debugging elapsed time
         self.timer.timeout.connect(self._showDebugTime)
 
     def _showDebugTime(self):
@@ -93,6 +99,14 @@ class AbinDriver(AbinView):
     def toDebuggerPage(self) -> None:
         self.allPages.setCurrentWidget(self.AbductionPage)
         self.statusLabel.setText(f"Debugger")
+    
+    def toMiningPage(self) -> None:
+        self.allPages.setCurrentWidget(self.miningPage)
+        self.statusLabel.setText(f"Mining Setup")
+
+    def toDatabasePage(self) -> None:
+        self.allPages.setCurrentWidget(self.databasePage)
+        self.statusLabel.setText(f"Database Connection")
 
     def contactInfo(self):
         QMessageBox.about(self,
@@ -198,6 +212,8 @@ class AbinDriver(AbinView):
         return save_path
 
     def runAutoDebug(self):
+        if not DebugController.DATABASE_SETTINGS['STATUS']:
+            return QMessageBox.warning(self, "Warning!", "<p>Please connect to a Database.</p>")
         if self.csvTestSuite is None:
             return QMessageBox.warning(self, "Warning!", "<p>Please provide a test suite!.</p>")
         if self.bugged_file_path is None:
@@ -247,6 +263,41 @@ class AbinDriver(AbinView):
         logger.info(f"New Observations:\n{new_observation}\n")
         self.debug_result = (model_name, abinDebugger.candidate, abinDebugger.bugfixing_hyphotesis, behavior, prev_observation, new_observation)
 
+    def testDBConn(self):
+        self.txtConnectionStatus.setPlainText('')
+        txtHost = self.databasePage.findChild(QLineEdit, 'txtHost')
+        host = txtHost.text()
+        if not host:
+            host = txtHost.placeholderText()
+
+        txtPort = self.databasePage.findChild(QLineEdit, 'txtPort')
+        port = txtPort.text()
+        if not port:
+            port = txtPort.placeholderText()
+
+        txtDatabase = self.databasePage.findChild(QLineEdit, 'txtDatabase')
+        db_name = txtDatabase.text()
+        if not db_name:
+            db_name = txtDatabase.placeholderText()
+
+        txtCollection = self.databasePage.findChild(QLineEdit, 'txtCollection')
+        collection_name = txtCollection.text()
+        if not collection_name:
+            collection_name = txtCollection.placeholderText()
+        
+        uri = self.databasePage.findChild(QComboBox, 'cmbURI').currentText()
+
+        DebugController.DATABASE_SETTINGS = {
+            'URI': uri,
+            'HOST': host,
+            'PORT': port,
+            'DATABASE': db_name,
+            'COLLECTION': collection_name,
+            'STATUS':  False
+        }
+        if test_db_connection(uri, host, port, db_name, collection_name):
+            DebugController.DATABASE_SETTINGS['STATUS'] = True
+        
 
 
 

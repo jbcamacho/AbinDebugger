@@ -25,4 +25,5 @@ class ConsoleWindowLogHandler(logging.Handler, QObject):
 logger = logging.getLogger(__name__)
 LOGGER_LEVEL = logging.INFO
 CONSOLE_HANDLER = ConsoleWindowLogHandler()
+TEST_DB_HANDLER = ConsoleWindowLogHandler()
 logger.addHandler(CONSOLE_HANDLER)

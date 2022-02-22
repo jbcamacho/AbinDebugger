@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(LOGGER_LEVEL)
 logger.addHandler(CONSOLE_HANDLER)
 
+import controller.DebugController as DebugController
+
 USER = 'readOnlyUser'
 PWD = 'houIAX5DHvAYMADw'
 DEFAULT_DB = 'Bugfixes'
@@ -195,10 +197,10 @@ class HypothesisGenerator():
 
     @staticmethod
     def mongodb_connection():
-        client = pymongo.MongoClient(
-            f"mongodb+srv://{USER}:{PWD}@clusterbugfixes.p1yqn.mongodb.net/{DEFAULT_DB}?retryWrites=true&w=majority"
-        )
-        db = client.Bugfixes
-        collection_BugPatterns = db.BugPatterns
+        config = DebugController.DATABASE_SETTINGS
+        MONGO_URI = f"{config['URI']}://{config['HOST']}:{config['PORT']}"
+        client = pymongo.MongoClient(MONGO_URI)
+        db = client[config['DATABASE']]
+        collection_BugPatterns = db[config['COLLECTION']]
         return collection_BugPatterns
 

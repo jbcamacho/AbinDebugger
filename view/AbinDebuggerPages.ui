@@ -14,7 +14,7 @@
    <string>StackedWidget</string>
   </property>
   <property name="currentIndex">
-   <number>0</number>
+   <number>4</number>
   </property>
   <widget class="QWidget" name="homePage">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -455,7 +455,118 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="testPage"/>
+  <widget class="QWidget" name="miningPage"/>
+  <widget class="QWidget" name="databasePage">
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="1">
+     <widget class="QLabel" name="lblConnectionStatus">
+      <property name="text">
+       <string>Connection Status</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPlainTextEdit" name="txtConnectionStatus">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(243, 243, 243);</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="lblHost">
+      <property name="text">
+       <string>Host</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="txtHost">
+      <property name="placeholderText">
+       <string>localhost</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="lblPort">
+      <property name="text">
+       <string>Port</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="txtPort">
+      <property name="placeholderText">
+       <string>27017</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="lblURI">
+      <property name="text">
+       <string>URI</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QComboBox" name="cmbURI">
+      <item>
+       <property name="text">
+        <string>mongodb</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>mongodb+srv</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QPushButton" name="btnConnectDatabase">
+      <property name="text">
+       <string>Test Connection</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLineEdit" name="txtDatabase">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>Bugfixes</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QLineEdit" name="txtCollection">
+      <property name="placeholderText">
+       <string>BugPatterns</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="lblDatabase">
+      <property name="text">
+       <string>Database</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="lblCollection">
+      <property name="text">
+       <string>Collection</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <resources>
   <include location="../resources/resources.qrc"/>

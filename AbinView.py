@@ -32,6 +32,8 @@ class AbinView(QMainWindow):
         self.homePage = self.allPages.findChild(QWidget, 'homePage')
         self.testSuitePage = self.allPages.findChild(QWidget, 'testSuitePage')
         self.AbductionPage = self.allPages.findChild(QWidget, 'abductionPage')
+        self.miningPage = self.allPages.findChild(QWidget, 'miningPage')
+        self.databasePage = self.allPages.findChild(QWidget, 'databasePage')
         self.allPages.findChild(QTableWidget, 'tableTestSuite').horizontalHeader().setVisible(True)
         self.allPages.findChild(QTableWidget, 'tableTypes').horizontalHeader().setVisible(True)
         self._createActions()
@@ -53,15 +55,15 @@ class AbinView(QMainWindow):
         fileMenu.addSeparator()
         fileMenu.addAction(self.exitAction)
 
-        editMenu = menuBar.addMenu("&Edit")
-        editMenu.addAction(self.copyAction)
-        editMenu.addAction(self.pasteAction)
-        editMenu.addAction(self.cutAction)
-        editMenu.addSeparator()
+        # editMenu = menuBar.addMenu("&Edit")
+        # editMenu.addAction(self.copyAction)
+        # editMenu.addAction(self.pasteAction)
+        # editMenu.addAction(self.cutAction)
+        # editMenu.addSeparator()
 
-        findMenu = editMenu.addMenu("Find and Replace")
-        findMenu.addAction("Find...")
-        findMenu.addAction("Replace...")
+        # findMenu = editMenu.addMenu("Find and Replace")
+        # findMenu.addAction("Find...")
+        # findMenu.addAction("Replace...")
 
         helpMenu = menuBar.addMenu("&Help") #QIcon(":help-content.svg")
         helpMenu.addAction(self.helpContentAction)
@@ -83,11 +85,11 @@ class AbinView(QMainWindow):
         fileToolBar.addAction(self.saveAction)
         fileToolBar.setMovable(False)
 
-        editToolBar = self.addToolBar("Edit")
-        editToolBar.addAction(self.copyAction)
-        editToolBar.addAction(self.pasteAction)
-        editToolBar.addAction(self.cutAction)
-        editToolBar.setMovable(False)
+        # editToolBar = self.addToolBar("Edit")
+        # editToolBar.addAction(self.copyAction)
+        # editToolBar.addAction(self.pasteAction)
+        # editToolBar.addAction(self.cutAction)
+        # editToolBar.setMovable(False)
 
         # Using a QToolBar object and a toolbar area
         SideToolBar = QToolBar("Help", self)
@@ -105,26 +107,21 @@ class AbinView(QMainWindow):
         SideToolBar.addAction(self.databaseAction)
         SideToolBar.addSeparator()
         SideToolBar.addAction(self.settingsAction)
-        #SideToolBar.addSeparator()  
-        #SideToolBar.addAction(self.logoutAction)
-        #Qt.AlignBottom
         SideToolBar.setIconSize(QSize(50, 50))
         SideToolBar.setMovable(False)
 
     def _createActions(self):
         # Creating actions using the second constructor
         self.loadModelAction = QAction(QIcon(":load-model.svg"), "&Open Defective Program...", self)
-        #loadModelActionTip = "Load Test Suite"
-        #self.loadModelAction.setStatusTip(loadModelActionTip)
         self.loadModelAction.setToolTip("Load Bugged Program")
         self.loadTestAction = QAction(QIcon(":load-test.svg"), "&Open Test Suite...", self)
         self.loadTestAction.setToolTip("Load Test Suite")
         self.saveAction = QAction(QIcon(":save-model.svg"), "&Save Program...", self)
         self.saveAction.setToolTip("Save Debugged Program")
         self.exitAction = QAction("&Exit", self)
-        self.copyAction = QAction(QIcon(":edit-copy.svg"), "&Copy", self)
-        self.pasteAction = QAction(QIcon(":edit-paste.svg"), "&Paste", self)
-        self.cutAction = QAction(QIcon(":edit-cut.svg"), "C&ut", self)
+        # self.copyAction = QAction(QIcon(":edit-copy.svg"), "&Copy", self)
+        # self.pasteAction = QAction(QIcon(":edit-paste.svg"), "&Paste", self)
+        # self.cutAction = QAction(QIcon(":edit-cut.svg"), "C&ut", self)
         self.helpContentAction = QAction(QIcon(":help-content.svg"), "&Help Content", self)
         self.aboutAction = QAction(QIcon(":info.svg"), "&About", self)
 

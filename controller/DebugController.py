@@ -1,6 +1,17 @@
 import sys
+from typing import Dict
 this = sys.modules[__name__]
 this.TIMEOUT_SIGNAL_RECEIVED = 0
+
+DATABASE_SETTINGS: Dict[str, str] = {
+    'URI': '',
+    'HOST': '',
+    'PORT': '',
+    'DATABASE': '',
+    'COLLECTION': '',
+    'STATUS': False
+}
+
 
 import logging
 from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER
