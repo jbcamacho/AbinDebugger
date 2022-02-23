@@ -233,7 +233,7 @@ def mineBugCommitsFromRepo(owner: str, name: str, process_meta_data: str = "") -
   repo_data['no_mined_bugfixes'] = no_mined_bugfixes
   return (repo_data, bugfixes_data)
 
-def getTopRepositories(token: str = "", query: str = "", page: int = 1, max_per_page : int = 25) -> list:
+def getTopRepositories(lang: str = "", page: int = 1, max_per_page : int = 25) -> list:
   """ This function queries to the Github API to obtain the top repositores.
 
   :param token: The user access token to Github.
@@ -247,10 +247,8 @@ def getTopRepositories(token: str = "", query: str = "", page: int = 1, max_per_
   :returns: A list of strings containing the top repositories' data.
   :rtype: list.
   """
-  headers = {'Authorization': 'token %s' % token}
-  api_url = f"https://api.github.com/search/repositories?q={query}&page={page}&per_page={max_per_page}"
-  #api_url = f"https://api.github.com/search/repositories?q={query}"
-  api_response = requests.get(api_url, headers=headers)
+  api_url = f"https://api.github.com/search/repositories?q=language:{lang}&sort=stars&page={page}&per_page={max_per_page}"
+  api_response = requests.get(api_url)
   request_success_code = 200
   if api_response.status_code != request_success_code:
     return None
@@ -266,19 +264,6 @@ def getTopRepositories(token: str = "", query: str = "", page: int = 1, max_per_
         "clone_url": f"https://github.com/{owner}/{name}.git"
     })
   return top_repositories
-
-def getTopRepos(file_path: str = "top100PythonRepos.json") -> IO[str]:
-  """ T.
-
-  :returns: A JSON String that represents the abstracted ast graph.
-  :rtype: String.
-  """
-  query = 'language:python&sort=stars'
-  page = 5
-  max_per_page = 100
-  api_token = "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"
-  repositories = getTopRepositories(api_token, query, page, max_per_page)
-  writeJSONFile(repositories, file_path)
   
 def removeMinedRepo(file_path):
   """ This property is a hexdigest of the abstracted ast graph of ´node_to_abstract´.
