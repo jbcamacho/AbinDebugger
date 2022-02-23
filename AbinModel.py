@@ -50,8 +50,6 @@ class AbinModel():
         logger.info(f"Observations:\n{prev_observation}")
         logger.info(f"Influence Path by Suspiciousness Ranking:\n{influence_path}")
 
-        #print(f"Observations:\n{prev_observation}")
-        #print(f"Influence Path by Suspiciousness Ranking:\n{influence_path}")
         new_observation = []
         if behavior == Behavior.Correct:
             logger.debug(f"\n\nSUCCESSFUL REPAIR!")
@@ -59,10 +57,8 @@ class AbinModel():
         hypotheses_generator = self.hypotheses_generation(influence_path)
         with hypotheses_generator:
             for i, (model_name, hypothesis) in enumerate(hypotheses_generator):
-                print(f"\nTesting Hypothesis {i}.\nModel {model_name}.\nHypothesis: {hypothesis}")
                 logger.info(f"\nTesting Hypothesis {i}.\nModel {model_name}.\nHypothesis: {hypothesis}")
                 (behavior, new_observation) = self.hyphotesis_testing(prev_observation, model_name)
-                print(f"Behavior Type: {behavior}")
                 logger.info(f"Behavior Type: {behavior}")
                 if behavior == Behavior.Correct:# or behavior == Behavior.Improvement:
                     logger.debug(f"\nPrevious Observations:\n{prev_observation}\n")
@@ -126,7 +122,6 @@ def parse_csv_data(data):
   columnsNames = columnsNames[2:] # skip test_cases and expected_output columns
   for colName in columnsNames:
     newColName, castType = map(str.strip, colName.split(':'))
-    #print(newColName, castType)
     parsed_types.append({ 'input_args': newColName, 'type': castType })
     if castType in ['int', 'float', 'str']:
       parsed_data[newColName] = data[colName].map(getattr(__builtins__, castType))
@@ -163,7 +158,6 @@ def main():
     
     abin = AbinModel(func_name, path_bugged_file, test_cases)
     (model_name, behavior, prev_observation, new_observation) = abin.start_auto_debugging()
-    print(model_name)
 
 def debugger_is_active() -> bool:
     import sys

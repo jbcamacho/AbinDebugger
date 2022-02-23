@@ -54,7 +54,6 @@ class FaultLocalizator():
                 self.model = reload(self.model)
                 self.func = getattr(self.model, self.func_name, lambda : None)
             except Exception as e:
-                #print(f"An error ocurrer while importing the initial model0.\n Error: {e}")
                 logger.exception('An error ocurrer while importing the initial model0.')
                 self.model = None
                 self.func = None
@@ -78,7 +77,6 @@ class FaultLocalizator():
         test_result: ExpectedOutput
         debugger: Debugger = self.debugger()
         for i, test_case, expected_output, *input_args in self.test_cases.itertuples():
-            #print('before signal')
             with debugger:
                 signal.alarm(1)
                 if self.func is None:
@@ -96,7 +94,6 @@ class FaultLocalizator():
                     ) 
             signal.alarm(0)
         signal.alarm(0) 
-        #print('after signal')
         logger.info(new_observation)
         self.observation = new_observation
         if not self.are_all_test_pass():
@@ -115,7 +112,6 @@ class FaultLocalizator():
             with open(path, 'r') as f:
                 src = f.read()
         except Exception as e:
-            #print(f"Unable to open the file at the given path {path}.\n Error: {e}")
             logger.exception(f'Unable to open the file at the given path {path}.')
             return False
         else:
@@ -128,7 +124,6 @@ class FaultLocalizator():
             with open(bugged_model_path, 'w') as m:
                 m.write(parsed_source)
         except Exception as e:
-            #print(f"Unable to parse the given file.\n Error: {e}")
             logger.exception(f'Unable to parse the given file.')
             return False
         return True

@@ -55,7 +55,6 @@ class HyphotesisTester(FaultLocalizator):
         try:
             explanatory_power = no_passed_test_cases/no_test_cases
         except DivisionByZero:
-            #print("The given observation do not have any test case.")
             logger.exception("The given observation do not have any test case.")
         finally:
             return explanatory_power
@@ -80,12 +79,10 @@ class HyphotesisTester(FaultLocalizator):
     def __enter__(self):
         logger.debug('Entering HyphotesisTester')
         try:
-            #spec_from_file_location("module.name", "/path/to/file.py")
             self.model = import_module(name=f'..{self.model_name}', package='temp.subpkg')
             self.model = reload(self.model)
             self.func = getattr(self.model, self.func_name, lambda : None)
         except Exception as e:
-            #print(f"An error ocurrer while importing the model.\n Error: {e}")
             logger.exception("An error ocurrer while importing the model.")
             self.model = None
             self.func = None

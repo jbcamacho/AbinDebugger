@@ -112,7 +112,6 @@ class HypothesisGenerator():
             with open(new_model_path, 'w') as m:
                 m.writelines(new_model_src)
         except Exception as e:
-            #print(f"Unable to parse the new model {new_model_filename}.\n Error: {e}")
             logger.exception(f"Unable to parse the new model {new_model_filename}.")
             return False
         #self.abduction_depth += 1
@@ -188,7 +187,6 @@ class HypothesisGenerator():
             with open(curr_model_path, 'r') as f:
                 model_src = f.readlines()
         except Exception as e:
-            #print(f"Unable to open the file: {self.model_name}.\n Error: {e}")
             logger.exception(f"Unable to open the file: {self.model_name}.")
             return False
         return model_src
