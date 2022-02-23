@@ -39,10 +39,7 @@ class AbinView(QMainWindow):
         self._createActions()
         self._createMenuBar()
         self._createToolBars()
-        self._createStatusBar()
-        self.csvTestSuite = None
-
-        
+        self._createStatusBar()        
     
     def _createMenuBar(self):
         menuBar = self.menuBar()

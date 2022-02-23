@@ -6,6 +6,9 @@ import os
 from io import BytesIO
 from typing import Union, Tuple, Any, IO, Type, List
 
+from model.abstractor.Bugfix import Bugfix
+import controller.AbinLogging as AbinLogging
+
 def getBugCommitsDataDir(owner: str, name: str) -> str:
   """ Returns a path to the bugcommits's data of a specific repository.
   
@@ -75,7 +78,7 @@ def saveBugfix(bugfix_metadata: dict, file_path: str = r"/content/bugfixes.json"
   :type  file_path: str
   """
   if not bugfix_metadata: return 0
-  #print(bugfix_metadata)
+
   try:
     with open(file_path, 'w', encoding = 'utf-8') as out_file:
       if pretty:
@@ -100,11 +103,11 @@ def getRepo(owner: str, name: str) -> Any:
       represents the repository object.
   :rtype: PyDriller.Repository.
   """
-  print(f"Initializing {owner}/{name}...")
+  #print(f"Initializing {owner}/{name}...")
+  AbinLogging.mining_logger.info(f"Initializing {owner}/{name}...")
   folder_dir = os.path.join(os.getcwd(), "topRepositories")
   repo_name = f"{owner}/{name}"
   repo_dir = os.path.join(folder_dir, repo_name)
-  #repo_dir = getRepoDir(owner, name)
   if os.path.exists(repo_dir):
     repo = Repository(repo_dir)
   else:
@@ -113,7 +116,8 @@ def getRepo(owner: str, name: str) -> Any:
     if not os.path.exists(repo_dir):
       os.makedirs(repo_dir)
     clone_url = f"https://github.com/{owner}/{name}.git"
-    print(f"Cloning {owner}/{name} from {clone_url} ...")
+    #print(f"Cloning {owner}/{name} from {clone_url} ...")
+    AbinLogging.mining_logger.info(f"Cloning {owner}/{name} from {clone_url} ...")
     repo = Repository(clone_url, clone_repo_to=repo_dir)
   return repo
 
@@ -149,8 +153,7 @@ def commitFilesInspect(commits_files: list) -> Tuple[list, dict]:
           'filename': filename,
           'patch': patch,
       })
-      print(f"filename: {filename}")
-      #print(f"filename: {filename}.\npatch: {patch}.")
+
   return (bugfix_files, bugfix_metadata)
 
 def mineBugCommitsFromRepo(owner: str, name: str, process_meta_data: str = "") -> Tuple[dict, List]:
@@ -189,9 +192,9 @@ def mineBugCommitsFromRepo(owner: str, name: str, process_meta_data: str = "") -
     commit_sha = commit.hash
     message = commit.msg
     if count_commits%500 == 0:
-        clear_output()
         curr_process_data = f"{process_meta_data} Mining commit {count_commits} of {no_commits}."
-        print(curr_process_data)
+        AbinLogging.mining_logger.info(curr_process_data)
+
     if re.search(keywords, message, re.IGNORECASE):
       if not re.search(bad_keywords, message, re.IGNORECASE):
         no_bug_commits += 1
@@ -199,8 +202,8 @@ def mineBugCommitsFromRepo(owner: str, name: str, process_meta_data: str = "") -
           # check that the commit only has one parent.
           continue
         curr_process_data = f"{process_meta_data} Mining commit {count_commits} of {no_commits}."
-        print(curr_process_data)
-        print(f"commit sha: {commit_sha}")
+        AbinLogging.mining_logger.info(curr_process_data)
+
         bugfix_metadata = {}
         bugfix_metadata.clear()
         commits_files = commit.modified_files
@@ -211,18 +214,8 @@ def mineBugCommitsFromRepo(owner: str, name: str, process_meta_data: str = "") -
             "commit_sha": commit_sha
         })
 
-        """json_serialize_sets = lambda obj: list(obj) if isinstance(obj, set) else obj
-        bugfixes_data.append(
-            json.dumps(bugfix_metadata, 
-                       default=json_serialize_sets, 
-                       sort_keys=True)
-        )"""
         bugfixes_data.append(bugfix_metadata)
-        #saveBugfix(bugfix_metadata.copy(), pretty=1)
 
-        """curr_process_data = f"{process_meta_data} Mining commit {count_commits} of {no_commits}."
-        print(curr_process_data)
-        print(f"commit sha: {commit_sha}")"""
         no_mined_bugfixes += len(bugfix_files)
         repo_data['bugfixing_commits'].append({
             "sha": commit_sha,

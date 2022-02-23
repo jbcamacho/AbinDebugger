@@ -17,6 +17,9 @@ from model.misc.test_db_connection import test_db_connection
 logger = logging.getLogger(__name__)
 logger.setLevel(LOGGER_LEVEL)
 logger.addHandler(CONSOLE_HANDLER)
+import model.misc.bug_mining as bug_mining
+
+import controller.AbinLogging as AbinLogging
 
 #Pattern Model-View-Controller
 AbInModel = Type[AbinModel]
@@ -37,6 +40,8 @@ class AbinDriver(AbinView):
         self.max_complexity = 0
         self.debugged_program = None
         self._debug_elapsed_time = 0
+        self.csvTestSuite = None
+        self.lstRepos = None
           
     def _connectActions(self):
         # Connect File actions
@@ -61,8 +66,11 @@ class AbinDriver(AbinView):
         self.btnRunAutoDebug.clicked.connect(self.runAutoDebug)
         self.testSuitePage.findChild(QPushButton, 'btnLoadTestSuite').clicked.connect(self.loadTestSuite)
         self.databasePage.findChild(QPushButton, 'btnConnectDatabase').clicked.connect(self.testDBConn)
+        self.miningPage.findChild(QPushButton, 'btnGetRepos').clicked.connect(self.downloadRepos)
+        self.miningPage.findChild(QPushButton, 'btnLoadRepos').clicked.connect(lambda: self.loadRepos(''))
+        self.miningPage.findChild(QPushButton, 'btnMineRepos').clicked.connect(self.mineRepos)
 
-        ## Connect Logger to txtLogging and AutoDebug to a thread
+        ## Connect Logger to txtLogging and AutoDebugTask to a thread
         self.AutoDebug = Worker(self.AutoDebugTask, ())
         self.AutoDebug.finished.connect(self.finishedAutoDebug)
         self.AutoDebug.terminate()
@@ -72,6 +80,13 @@ class AbinDriver(AbinView):
         ## Connect Logger to txtConnectionStatus
         self.txtConnectionStatus = self.databasePage.findChild(QPlainTextEdit, 'txtConnectionStatus')
         TEST_DB_HANDLER.sigLog.connect(self.txtConnectionStatus.appendHtml)
+
+        ## Connect Logger to txtMiningLog and miningTask to a thread
+        self.miningThread = Worker(self.miningTask, ())
+        self.miningThread.finished.connect(self.finishedMineRepos)
+        self.miningThread.terminate()
+        self.txtMiningLog = self.miningPage.findChild(QPlainTextEdit, 'txtMiningLog')
+        AbinLogging.MINING_HANDLER.sigLog.connect(self.txtMiningLog.appendPlainText)
 
         # Connect Timer for debugging elapsed time
         self.timer.timeout.connect(self._showDebugTime)
@@ -206,7 +221,7 @@ class AbinDriver(AbinView):
         newest_debugged_path = curr_dir.joinpath("temp", self.debugged_program)
         with open(newest_debugged_path, 'r') as f:
             newest_debugged_model = f.read()
-        save_path = QFileDialog.getSaveFileName(self, 'Save File', 'repaired_program.py')
+        save_path = QFileDialog.getSaveFileName(self, 'Save Python - Repaired Program', 'repaired_program.py')
         with open(save_path[0], 'w') as f:
             f.write(newest_debugged_model)
         return save_path
@@ -227,9 +242,9 @@ class AbinDriver(AbinView):
         self.max_complexity = self.AbductionPage.findChild(QSpinBox, 'snbComplexity').value()
         self.btnRunAutoDebug.setEnabled(False)
         self._resetDebugTimer()
-        self.AutoDebug.start()
         #self.AutoDebugTask()
         #self.finishedAutoDebug()
+        self.AutoDebug.start()
     
     def finishedAutoDebug(self):
         self.btnRunAutoDebug.setEnabled(True)
@@ -300,7 +315,92 @@ class AbinDriver(AbinView):
         conn_status = test_db_connection(uri, host, port, db_name, collection_name)
         DebugController.DATABASE_SETTINGS['STATUS'] = conn_status
         
+    def downloadRepos(self) -> bool:
+        spnNoRepos = self.miningPage.findChild(QSpinBox, 'spnNoRepos')
+        spnNoRepoPages = self.miningPage.findChild(QSpinBox, 'spnNoRepoPages')
+        cmbLanguage = self.miningPage.findChild(QComboBox, 'cmbLanguage')
+        lang = cmbLanguage.currentText()
+        max_per_page = spnNoRepos.value()
+        page_no = spnNoRepoPages.value()
+        repositories_data = bug_mining.getTopRepositories(lang, page_no, max_per_page)
+        save_path = QFileDialog.getSaveFileName(self, 'Save JSON - Repositories', 'topRepos.json')
+        if not save_path[0]: return 0
+        bug_mining.writeJSONFile(repositories_data, save_path[0])
+        self.loadRepos(save_path[0])
+        return 1
 
+    def loadRepos(self, file_path: str = '') -> bool:
+        from json import load
+        if file_path:
+            repos_file = file_path
+        else: 
+            repos_file = QFileDialog.getOpenFileName(self, 'Load JSON - Repositories', '', 'JSON(*.json)')
+            repos_file = repos_file[0]
+        if not repos_file: return 0
+        with open(repos_file, 'r') as f:
+            repositories_data = load(f)
+        self.lstRepos = self.miningPage.findChild(QListWidget, 'lstRepos')
+        self.lstRepos.clear()
+        for i, repo in enumerate(repositories_data):
+            owner = repo['owner']
+            name = repo['name']
+            self.lstRepos.addItem(f"{i+1}\t{owner}/{name}")
+        return 1
+        
+    def mineRepos(self):
+        if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Undefined:
+            return QMessageBox.warning(self, "Warning!", "<p>Please connect a Database.</p>")
+        if self.lstRepos is None:
+            return QMessageBox.warning(self, "Warning!", "<p>Please load the repositories data.</p>")
+        self.miningThread.start()
+
+    def finishedMineRepos(self):
+        pass
+
+    def miningTask(self):
+        txtDatabase = self.miningPage.findChild(QLineEdit, 'txtReposDatabase')
+        db_name = txtDatabase.text()
+        if not db_name:
+            db_name = txtDatabase.placeholderText()
+
+        txtReposCollection = self.miningPage.findChild(QLineEdit, 'txtReposCollection')
+        nameReposCollection = txtReposCollection.text()
+        if not nameReposCollection:
+            nameReposCollection = txtReposCollection.placeholderText()
+
+        txtPatternsCollection = self.miningPage.findChild(QLineEdit, 'txtPatternsCollection')
+        namePatternsCollection = txtPatternsCollection.text()
+        if not namePatternsCollection:
+            namePatternsCollection = txtPatternsCollection.placeholderText()
+
+        from model.HypothesisGenerator import HypothesisGenerator as CONN
+        config = DebugController.DATABASE_SETTINGS
+        db_connection = CONN.mongodb_connection()
+        collection_RepoData = db_connection[nameReposCollection]
+        collection_BugPatterns = db_connection[namePatternsCollection]
+        
+        remaining_repos = self.lstRepos.count()
+        AbinLogging.mining_logger.info(f"Starting to Mine {remaining_repos} Repositories.\n")
+        for i in range(remaining_repos):
+            repo_item = self.lstRepos.takeItem(0)
+            repo = repo_item.text().split('\t')[1]
+            (owner, name) = repo.split('/')
+            AbinLogging.mining_logger.info(f"Current repository: {owner}/{name}.")
+            # check if the repo was not previosly mined
+            if len(list(collection_RepoData.find( { "repo": name, "owner": owner} ))) != 0:
+                AbinLogging.mining_logger.info(f"The repository {owner}/{name} was previously mined!.\n")
+                continue
+            AbinLogging.mining_logger.info(f"Mining repository {i + 1} of {remaining_repos}.\n")
+            process_meta_data = f"Repository: {owner}/{name}."
+            (repo_data, bugfixes_data) = bug_mining.mineBugCommitsFromRepo(owner, name, process_meta_data)
+            if bugfixes_data:
+                insert_result_RepoData = collection_RepoData.insert_one(repo_data.copy())
+                insert_result_BugPatterns = collection_BugPatterns.insert_many(bugfixes_data.copy())
+            else:
+                AbinLogging.mining_logger.info(f"Empty!, No commits were mined from repository {owner}/{name}.")
+
+    def stopMineRepos(self):
+        pass
 
 
 
