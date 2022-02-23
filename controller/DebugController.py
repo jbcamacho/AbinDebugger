@@ -19,11 +19,7 @@ DATABASE_SETTINGS: Dict[str, str] = {
 }
 
 
-import logging
-from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER
-logger = logging.getLogger(__name__)
-logger.setLevel(LOGGER_LEVEL)
-logger.addHandler(CONSOLE_HANDLER)
+import controller.AbinLogging as AbinLogging
 
 def test_timeout_handler(signum, frame):
     this.TIMEOUT_SIGNAL_RECEIVED = 1
@@ -32,4 +28,4 @@ def test_timeout_handler(signum, frame):
     Signal handler called with signal {signum}.
     """
     print(log_entry)
-    logger.info(log_entry)
+    AbinLogging.debugging_logger.info(log_entry)

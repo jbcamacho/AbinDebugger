@@ -5,13 +5,7 @@ import ast, astunparse
 from importlib import import_module, reload
 from pathlib import Path
 from shutil import rmtree as remove_dir
-
-import logging
-from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER
-logger = logging.getLogger(__name__)
-logger.setLevel(LOGGER_LEVEL)
-logger.addHandler(CONSOLE_HANDLER)
-
+import controller.AbinLogging as AbinLogging
 import controller.DebugController as DebugController
 import signal
 signal.signal(signal.SIGALRM, DebugController.test_timeout_handler)
@@ -35,7 +29,7 @@ class FaultLocalizator():
                 path_bugged_file: str,
                 test_cases: List[TestCase],
                 debugger: Debugger = AbinDebugger) -> None:
-        logger.debug('Init FaultLocalizator')
+        AbinLogging.debugging_logger.debug('Init FaultLocalizator')
         self.func_name = func_name
         self.path_bugged_file = path_bugged_file
         self.test_cases = test_cases
@@ -49,27 +43,27 @@ class FaultLocalizator():
         if self.prepare_bugged_file():
             self.model_name = 'model0'
             try:
-                logger.debug('Entering FaultLocalizator')
+                AbinLogging.debugging_logger.debug('Entering FaultLocalizator')
                 self.model = import_module(name=f'..{self.model_name}', package='temp.subpkg')
                 self.model = reload(self.model)
                 self.func = getattr(self.model, self.func_name, lambda : None)
             except Exception as e:
-                logger.exception('An error ocurrer while importing the initial model0.')
+                AbinLogging.debugging_logger.exception('An error ocurrer while importing the initial model0.')
                 self.model = None
                 self.func = None
         return self
 
     def __exit__(self, exc_tp: Type, exc_value: BaseException,
                  exc_traceback: TracebackType) -> Optional[bool]:
-        logger.debug('Exiting FaultLocalizator')
+        AbinLogging.debugging_logger.debug('Exiting FaultLocalizator')
         """status = self.debugger.__exit__(exc_tp, exc_value, exc_traceback)
         if status is not None:
             return True # Debugger 'AssertionError'; do not raise exception"""
               
         if exc_tp is not None:
-            logger.warning("\n\nAn error ocurred during the test.")
-            logger.warning(f"{exc_tp}: {exc_value}")
-            logger.warning(f"Unable to continue the test of hypothesis model: {self.model_name}")
+            AbinLogging.debugging_logger.warning("\n\nAn error ocurred during the test.")
+            AbinLogging.debugging_logger.warning(f"{exc_tp}: {exc_value}")
+            AbinLogging.debugging_logger.warning(f"Unable to continue the test of hypothesis model: {self.model_name}")
         return True  # Ignore exception, if any
 
     def automatic_test(self) -> Tuple[Observation, InfluencePath]:
@@ -83,7 +77,7 @@ class FaultLocalizator():
                     raise ImportError(f"Failed to import the given function {self.func_name} from the model {self.model_name}.\
                     \nPlease check that the given parameter 'func_name' correspond to a function in the module.")
                 test_result = self.func(*input_args)
-                logger.debug(f"test_result == expected_output\n{str(test_result)} == {str(expected_output)} ?")
+                AbinLogging.debugging_logger.debug(f"test_result == expected_output\n{str(test_result)} == {str(expected_output)} ?")
                 if str(test_result) == str(expected_output):
                     new_observation[i] = (test_case, PassedTest)
                 else:
@@ -94,7 +88,7 @@ class FaultLocalizator():
                     ) 
             signal.alarm(0)
         signal.alarm(0) 
-        logger.info(new_observation)
+        AbinLogging.debugging_logger.info(new_observation)
         self.observation = new_observation
         if not self.are_all_test_pass():
             self.influence_path = debugger.get_influence_path(self.model, self.func_name)
@@ -112,7 +106,7 @@ class FaultLocalizator():
             with open(path, 'r') as f:
                 src = f.read()
         except Exception as e:
-            logger.exception(f'Unable to open the file at the given path {path}.')
+            AbinLogging.debugging_logger.exception(f'Unable to open the file at the given path {path}.')
             return False
         else:
             curr_dir = Path(__file__).parent.parent.resolve()
@@ -124,7 +118,7 @@ class FaultLocalizator():
             with open(bugged_model_path, 'w') as m:
                 m.write(parsed_source)
         except Exception as e:
-            logger.exception(f'Unable to parse the given file.')
+            AbinLogging.debugging_logger.exception(f'Unable to parse the given file.')
             return False
         return True
 

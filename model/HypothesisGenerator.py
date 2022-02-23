@@ -9,23 +9,12 @@ from model.abstractor.PythonLLOC import PythonLLOC, LogicalLOC
 from model.abstractor.HypothesisAbductor import HypothesisAbductor
 from model.abstractor.Bugfix import BugfixMetadata
 from model.abstractor.RecursiveVisitor import ASTNode
-
-import logging
-from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER
-logger = logging.getLogger(__name__)
-logger.setLevel(LOGGER_LEVEL)
-logger.addHandler(CONSOLE_HANDLER)
-
+import controller.AbinLogging as AbinLogging
 import controller.DebugController as DebugController
-
-USER = 'readOnlyUser'
-PWD = 'houIAX5DHvAYMADw'
-DEFAULT_DB = 'Bugfixes'
 
 MatchingPatterns = Iterator[BugfixMetadata]
 Hypothesis = str
 Hypotheses = List[Hypothesis]
-
 class HypothesisGenerator():
     
     abduction_depth: int
@@ -112,7 +101,7 @@ class HypothesisGenerator():
             with open(new_model_path, 'w') as m:
                 m.writelines(new_model_src)
         except Exception as e:
-            logger.exception(f"Unable to parse the new model {new_model_filename}.")
+            AbinLogging.debugging_logger.exception(f"Unable to parse the new model {new_model_filename}.")
             return False
         #self.abduction_depth += 1
         return True
@@ -150,7 +139,7 @@ class HypothesisGenerator():
                             available_identifiers = logical_loc.get_available_identifiers()
                             patterns = self.get_matching_patterns(ast_hexdigest)
                             (self.matching_patterns, count) = patterns
-                            logger.info(f"Current Candidate: {self.candidate}. Patterns Found: {count}")
+                            AbinLogging.debugging_logger.info(f"Current Candidate: {self.candidate}. Patterns Found: {count}")
                 
                 model = self.get_current_model()
                 logical_loc = self.LogicalLOC(self.candidate, ''.join(model))
@@ -167,17 +156,17 @@ class HypothesisGenerator():
 
     def __exit__(self, exc_tp: Type, exc_value: BaseException,
                  exc_traceback: TracebackType) -> Optional[bool]:
-        logger.info(f"\n<=== Exit Process Data ===>")
-        logger.info(f"Current Candidate: {self.candidate}")
-        logger.info(f"Remaining Candidates: {list(self.bug_candidates)}")
-        logger.info(f"Abduction Depth: {self.abduction_depth}")
-        logger.info(f"Abduction Breadth: {self.abduction_breadth}")
-        logger.info(f"Abduction Complexity: {self.complexity}")
-        logger.info(f"Total Number of Abductions Performed: {self.abduction_depth*self.complexity}")
+        AbinLogging.debugging_logger.info(f"\n<=== Exit Process Data ===>")
+        AbinLogging.debugging_logger.info(f"Current Candidate: {self.candidate}")
+        AbinLogging.debugging_logger.info(f"Remaining Candidates: {list(self.bug_candidates)}")
+        AbinLogging.debugging_logger.info(f"Abduction Depth: {self.abduction_depth}")
+        AbinLogging.debugging_logger.info(f"Abduction Breadth: {self.abduction_breadth}")
+        AbinLogging.debugging_logger.info(f"Abduction Complexity: {self.complexity}")
+        AbinLogging.debugging_logger.info(f"Total Number of Abductions Performed: {self.abduction_depth*self.complexity}")
         if exc_tp is not None:
-            logger.warning("An error ocurred during the test.")
-            logger.warning(f"{exc_tp}: {exc_value}")
-            logger.warning(f"Unable to continue the test of hypothesis model: {self.model_name}")
+            AbinLogging.debugging_logger.warning("An error ocurred during the test.")
+            AbinLogging.debugging_logger.warning(f"{exc_tp}: {exc_value}")
+            AbinLogging.debugging_logger.warning(f"Unable to continue the test of hypothesis model: {self.model_name}")
         return True  # Ignore exception, if any
 
     def get_current_model(self):
@@ -187,7 +176,7 @@ class HypothesisGenerator():
             with open(curr_model_path, 'r') as f:
                 model_src = f.readlines()
         except Exception as e:
-            logger.exception(f"Unable to open the file: {self.model_name}.")
+            AbinLogging.debugging_logger.exception(f"Unable to open the file: {self.model_name}.")
             return False
         return model_src
 

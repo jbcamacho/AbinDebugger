@@ -4,13 +4,7 @@ from typing import Type, List
 from model.FaultLocalizator import FaultLocalizator
 from model.FaultLocalizator import Observation, TestCase, PassedTest, FailedTest
 from importlib import import_module, reload
-from importlib.util import spec_from_file_location
-
-import logging
-from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER
-logger = logging.getLogger(__name__)
-logger.setLevel(LOGGER_LEVEL)
-logger.addHandler(CONSOLE_HANDLER)
+import controller.AbinLogging as AbinLogging
 
 from enum import Enum
 class Behavior(Enum):
@@ -27,7 +21,7 @@ class HyphotesisTester(FaultLocalizator):
                 model_name: str,
                 test_cases: List[TestCase], 
                 debugger: Debugger = AbinDebugger) -> None:
-        logger.debug('Init HyphotesisTester')
+        AbinLogging.debugging_logger.debug('Init HyphotesisTester')
         self.prev_observation = prev_observation
         # [:-3] to remove the '.py' extension from the model_name
         self.model_name = model_name[:-3]
@@ -55,7 +49,7 @@ class HyphotesisTester(FaultLocalizator):
         try:
             explanatory_power = no_passed_test_cases/no_test_cases
         except DivisionByZero:
-            logger.exception("The given observation do not have any test case.")
+            AbinLogging.debugging_logger.exception("The given observation do not have any test case.")
         finally:
             return explanatory_power
     
@@ -77,13 +71,13 @@ class HyphotesisTester(FaultLocalizator):
         pass
 
     def __enter__(self):
-        logger.debug('Entering HyphotesisTester')
+        AbinLogging.debugging_logger.debug('Entering HyphotesisTester')
         try:
             self.model = import_module(name=f'..{self.model_name}', package='temp.subpkg')
             self.model = reload(self.model)
             self.func = getattr(self.model, self.func_name, lambda : None)
         except Exception as e:
-            logger.exception("An error ocurrer while importing the model.")
+            AbinLogging.debugging_logger.exception("An error ocurrer while importing the model.")
             self.model = None
             self.func = None
         return self 

@@ -22,14 +22,17 @@ class ConsoleWindowLogHandler(logging.Handler, QObject):
         message = str(logRecord.getMessage())
         self.sigLog.emit(message)
 
-
 LOGGER_LEVEL = logging.INFO
+
 CONSOLE_HANDLER = ConsoleWindowLogHandler()
-logger = logging.getLogger(__name__)
-logger.setLevel(LOGGER_LEVEL)
-logger.addHandler(CONSOLE_HANDLER)
+debugging_logger = logging.getLogger('DebuggingLogger')
+debugging_logger.setLevel(LOGGER_LEVEL)
+debugging_logger.addHandler(CONSOLE_HANDLER)
 
 TEST_DB_HANDLER = ConsoleWindowLogHandler()
+dbConnection_logger = logging.getLogger('DBConnLogger')
+dbConnection_logger.setLevel(LOGGER_LEVEL)
+dbConnection_logger.addHandler(TEST_DB_HANDLER)
 
 MINING_HANDLER = ConsoleWindowLogHandler()
 mining_logger = logging.getLogger('MiningLogger')
