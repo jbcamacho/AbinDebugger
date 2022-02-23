@@ -4,17 +4,21 @@ from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5 import sip, uic
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
-    QApplication, QLabel, QMainWindow, QToolBar, QAction, QVBoxLayout, QFrame,
+    QApplication, QLabel, QMainWindow, 
+    QToolBar, QAction, QVBoxLayout, QFrame,
     QStackedWidget, QWidget, QTableWidget
 )
-from view.TestSuitePageView import TestSuitePageView
-from view.AbductionView import AbductionPageView
+from controller.DebugController import ConnectionStatus
 
 class AbinDebuggerPages(QStackedWidget):
     def __init__(self, parent = None):
         QStackedWidget.__init__(self, parent)
         uic.loadUi('view/AbinDebuggerPages.ui', self)
-
+class VLine(QFrame):
+    # a simple VLine, like the one you get from designer
+    def __init__(self):
+        super(VLine, self).__init__()
+        self.setFrameShape(self.VLine|self.Sunken)
 class AbinView(QMainWindow):
     """Main Window."""
     def __init__(self, parent=None):
@@ -68,11 +72,28 @@ class AbinView(QMainWindow):
 
     def _createStatusBar(self):
         self.statusbar = self.statusBar()
-        # Adding a temporary message
-        self.statusbar.showMessage("Ready", 3000)
+                
         self.statusLabel = QLabel()
-        self.statusLabel.setText(f"Home")
+        self.statusLabel.setText(f"  Home  ")
+        self.statusDebugging = QLabel()
+        self.statusDebugging.setText(f"  Debug Process: IDLE  ")
+        self.statusDatabase = QLabel()
+        self.statusDatabase.setText(f"  DataBase Connection: {ConnectionStatus.Undefined.name}  ")
+        self.statusMining = QLabel()
+        self.statusMining.setText(f"  Mining Process: IDLE  ")
+
+        self.statusbar.addPermanentWidget(VLine())
+        self.statusbar.addPermanentWidget(self.statusDatabase)
+        self.statusbar.addPermanentWidget(VLine())
+        self.statusbar.addPermanentWidget(self.statusMining)
+        self.statusbar.addPermanentWidget(VLine())
+        self.statusbar.addPermanentWidget(self.statusDebugging)
+        self.statusbar.addPermanentWidget(VLine())
         self.statusbar.addPermanentWidget(self.statusLabel)
+        
+        
+        # Adding a temporary message
+        self.statusbar.showMessage("UI Ready!", 1500)
 
     def _createToolBars(self):
         # 

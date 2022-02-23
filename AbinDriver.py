@@ -15,6 +15,7 @@ from controller.AbinLogging import Worker
 from model.misc.test_db_connection import test_db_connection
 import model.misc.bug_mining as bug_mining
 import controller.AbinLogging as AbinLogging
+from controller.DebugController import ConnectionStatus
 
 #Pattern Model-View-Controller
 AbInModel = Type[AbinModel]
@@ -88,7 +89,7 @@ class AbinDriver(AbinView):
 
     def _showDebugTime(self):
         self._debug_elapsed_time += 1
-        self.statusLabel.setText(f"Debugging in progress... elapsed time: {self._debug_elapsed_time/10} sec(s)")
+        self.statusDebugging.setText(f"  Debug in progress... elapsed time: {self._debug_elapsed_time/10} sec(s)  ")
 
     def _resetDebugTimer(self):
         self._debug_elapsed_time = 0
@@ -96,27 +97,27 @@ class AbinDriver(AbinView):
     
     def _stopDebugTimer(self):
         self.timer.stop()
-        self.statusLabel.setText(f"Debugging finished. Total elapsed time: {self._debug_elapsed_time/10} sec(s)")
+        self.statusDebugging.setText(f"  Debugging finished total elapsed time: {self._debug_elapsed_time/10} sec(s)  ")
 
     def toHomePage(self) -> None:
         self.allPages.setCurrentWidget(self.homePage)
-        self.statusLabel.setText(f"Home")
+        self.statusLabel.setText(f"  Home  ")
 
     def toTestSuitePage(self) -> None:
         self.allPages.setCurrentWidget(self.testSuitePage)
-        self.statusLabel.setText(f"Test Suite")
+        self.statusLabel.setText(f"  Test Suite  ")
 
     def toDebuggerPage(self) -> None:
         self.allPages.setCurrentWidget(self.AbductionPage)
-        self.statusLabel.setText(f"Debugger")
+        self.statusLabel.setText(f"  Debugger  ")
     
     def toMiningPage(self) -> None:
         self.allPages.setCurrentWidget(self.miningPage)
-        self.statusLabel.setText(f"Mining Setup")
+        self.statusLabel.setText(f"  Mining  ")
 
     def toDatabasePage(self) -> None:
         self.allPages.setCurrentWidget(self.databasePage)
-        self.statusLabel.setText(f"Database Connection")
+        self.statusLabel.setText(f"  Database  ")
 
     def contactInfo(self):
         QMessageBox.about(self,
@@ -309,6 +310,7 @@ class AbinDriver(AbinView):
         }
         conn_status = test_db_connection(uri, host, port, db_name, collection_name)
         DebugController.DATABASE_SETTINGS['STATUS'] = conn_status
+        self.statusDatabase.setText(f"  DataBase Connection: {conn_status.name}  ")
         
     def downloadRepos(self) -> bool:
         spnNoRepos = self.miningPage.findChild(QSpinBox, 'spnNoRepos')
@@ -350,7 +352,7 @@ class AbinDriver(AbinView):
         self.miningThread.start()
 
     def finishedMineRepos(self):
-        pass
+        self.statusMining.setText(f"  Mining Process: IDLE  ")
 
     def miningTask(self):
         txtDatabase = self.miningPage.findChild(QLineEdit, 'txtReposDatabase')
@@ -381,6 +383,7 @@ class AbinDriver(AbinView):
             repo = repo_item.text().split('\t')[1]
             (owner, name) = repo.split('/')
             AbinLogging.mining_logger.info(f"Current repository: {owner}/{name}.")
+            self.statusMining.setText(f"  Mining {owner}/{name} repository {i + 1} of {remaining_repos}. ")
             # check if the repo was not previosly mined
             if len(list(collection_RepoData.find( { "repo": name, "owner": owner} ))) != 0:
                 AbinLogging.mining_logger.info(f"The repository {owner}/{name} was previously mined!.\n")
