@@ -69,7 +69,9 @@ class HypothesisGenerator():
         return hexdigest
 
     def get_matching_patterns(self, ast_node_hexdigest: str) -> Tuple[MatchingPatterns, int]:
+        config = DebugController.DATABASE_SETTINGS
         db_connection = self.mongodb_connection()
+        collection_BugPatterns = db_connection[config['COLLECTION']]
         QUERY = [
             { '$match': { 'bug_metadata.hexdigest': ast_node_hexdigest } },
             { '$group': { '_id': '$fix_metadata.hexdigest',
@@ -84,9 +86,9 @@ class HypothesisGenerator():
             { '$sort': { 'complexity': 1 } },
             { '$match': { 'complexity': { '$lte': self.max_complexity } } }
         ]
-        matching_patterns = db_connection.aggregate(QUERY)
+        matching_patterns = collection_BugPatterns.aggregate(QUERY)
         matching_patterns_count = len(list(matching_patterns))
-        matching_patterns = db_connection.aggregate(QUERY)
+        matching_patterns = collection_BugPatterns.aggregate(QUERY)
         self.matching_patterns = matching_patterns
         return (matching_patterns, matching_patterns_count)
     
@@ -200,7 +202,7 @@ class HypothesisGenerator():
         config = DebugController.DATABASE_SETTINGS
         MONGO_URI = f"{config['URI']}://{config['HOST']}:{config['PORT']}"
         client = pymongo.MongoClient(MONGO_URI)
-        db = client[config['DATABASE']]
-        collection_BugPatterns = db[config['COLLECTION']]
-        return collection_BugPatterns
+        db_connection = client[config['DATABASE']]
+        #collection_BugPatterns = db_connection[config['COLLECTION']]
+        return db_connection
 
