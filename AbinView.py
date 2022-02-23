@@ -152,12 +152,6 @@ class AbinView(QMainWindow):
         self.mainLayout.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.centralWidget.setLayout(self.mainLayout)
         
-    def _addTestSuitePage(self):
-        return TestSuitePageView()
-
-    def _addAbductionPage(self):
-        return AbductionPageView()
-
     def _addDatabasePage(self):
         pass
 
