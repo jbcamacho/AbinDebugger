@@ -218,9 +218,11 @@ class AbinDriver(AbinView):
         with open(newest_debugged_path, 'r') as f:
             newest_debugged_model = f.read()
         save_path = QFileDialog.getSaveFileName(self, 'Save Python - Repaired Program', 'repaired_program.py')
+        if not save_path[0]:
+            return 0
         with open(save_path[0], 'w') as f:
             f.write(newest_debugged_model)
-        return save_path
+        return 1
 
     def runAutoDebug(self):
         if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Undefined:
@@ -321,7 +323,8 @@ class AbinDriver(AbinView):
         page_no = spnNoRepoPages.value()
         repositories_data = bug_mining.getTopRepositories(lang, page_no, max_per_page)
         save_path = QFileDialog.getSaveFileName(self, 'Save JSON - Repositories', 'topRepos.json')
-        if not save_path[0]: return 0
+        if not save_path[0]:
+            return 0
         bug_mining.writeJSONFile(repositories_data, save_path[0])
         self.loadRepos(save_path[0])
         return 1
@@ -333,7 +336,8 @@ class AbinDriver(AbinView):
         else: 
             repos_file = QFileDialog.getOpenFileName(self, 'Load JSON - Repositories', '', 'JSON(*.json)')
             repos_file = repos_file[0]
-        if not repos_file: return 0
+        if not repos_file:
+            return 0
         with open(repos_file, 'r') as f:
             repositories_data = load(f)
         self.lstRepos = self.miningPage.findChild(QListWidget, 'lstRepos')
