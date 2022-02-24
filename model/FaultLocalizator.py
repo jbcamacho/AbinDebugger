@@ -72,7 +72,7 @@ class FaultLocalizator():
         debugger: Debugger = self.debugger()
         for i, test_case, expected_output, *input_args in self.test_cases.itertuples():
             with debugger:
-                signal.alarm(1)
+                signal.alarm(DebugController.TEST_TIMEOUT)
                 if self.func is None:
                     raise ImportError(f"Failed to import the given function {self.func_name} from the model {self.model_name}.\
                     \nPlease check that the given parameter 'func_name' correspond to a function in the module.")

@@ -465,7 +465,7 @@ Test Timeout</string>
      </widget>
     </item>
     <item row="9" column="3">
-     <widget class="QSpinBox" name="spinBox">
+     <widget class="QSpinBox" name="snbTimeout">
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>

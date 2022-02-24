@@ -18,6 +18,8 @@ DATABASE_SETTINGS: Dict[str, str] = {
     'STATUS': ConnectionStatus.Undefined
 }
 
+TEST_TIMEOUT: int = int(1)
+
 
 import controller.AbinLogging as AbinLogging
 

@@ -243,6 +243,8 @@ class AbinDriver(AbinView):
         if self.function_name == '':
             return QMessageBox.warning(self, "Warning!", "<p>Please provide a function name!.</p>")
         self.max_complexity = self.AbductionPage.findChild(QSpinBox, 'snbComplexity').value()
+        test_timeout = int(self.AbductionPage.findChild(QSpinBox, 'snbTimeout').value())
+        DebugController.TEST_TIMEOUT = test_timeout
         self.btnRunAutoDebug.setEnabled(False)
         self._resetDebugTimer()
         #self.AutoDebugTask()
