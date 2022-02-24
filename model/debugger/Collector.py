@@ -2,7 +2,7 @@ from model.debugger.Tracer import Tracer
 from model.debugger.StackInspector import StackInspector
 from types import FrameType, TracebackType
 from typing import Any, Set, Dict, Tuple, Callable, Optional, Type, List, Union
-import controller.DebugController as DebugController
+
 Coverage = Set[Tuple[Callable, int]]
 
 class Collector(Tracer):
@@ -149,20 +149,3 @@ class CoverageCollector(Collector, StackInspector):
     def coverage(self) -> Coverage:
         """Return a set (function, lineno) with all locations covered."""
         return self._coverage
-
-class AbinCollector(CoverageCollector):
-    def collect(self, frame: FrameType, event: str, arg: Any) -> None:
-        """
-        Save coverage for an observed event.
-        """
-        if DebugController.TIMEOUT_SIGNAL_RECEIVED == 1:
-            DebugController.TIMEOUT_SIGNAL_RECEIVED = 2
-            raise TimeoutError('DEBUG_SINAL_RECEIVED')
-        name = frame.f_code.co_name
-        function = self.search_func(name, frame)
-
-        if function is None:
-            function = self.create_function(frame)
-
-        location = (function, frame.f_lineno)
-        self._coverage.add(location)

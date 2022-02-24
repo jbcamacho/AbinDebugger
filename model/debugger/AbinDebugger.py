@@ -1,4 +1,4 @@
-from model.debugger.Collector import AbinCollector
+from model.debugger.AbinCollector import AbinCollector
 from model.debugger.StatisticalDebugger import OchiaiDebugger, Debugger
 from typing import Union, Tuple, Type, List, Dict, Optional
 from types import TracebackType
