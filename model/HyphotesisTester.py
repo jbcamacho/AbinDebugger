@@ -22,9 +22,10 @@ class HyphotesisTester(FaultLocalizator):
                 test_cases: List[TestCase], 
                 debugger: Debugger = AbinDebugger) -> None:
         AbinLogging.debugging_logger.debug('Init HyphotesisTester')
+        super().__init__(func_name, '', test_cases, debugger)
         self.prev_observation = prev_observation
         self.model_name = model_name[:-3] # [:-3] to remove the '.py' extension from the model_name
-        super().__init__(func_name, '', test_cases, debugger)
+        
         
 
     def compare_observations(self) -> Type[Behavior]:
@@ -55,7 +56,7 @@ class HyphotesisTester(FaultLocalizator):
             return explanatory_power
     
     def is_consistent(self) -> bool:
-        #Have the same test_cases?
+        # Have the same test_cases?
         if len(self.prev_observation) != len(self.observation):
             return False
         

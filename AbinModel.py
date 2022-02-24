@@ -93,7 +93,7 @@ class AbinModel():
         influence_path = []
         with self.fault_localizator(self.function_name,
             self.bugged_file_path, self.test_suite) as localizator:
-            (prev_observation, influence_path) = localizator.automatic_test()
+            (prev_observation, influence_path) = localizator.automatic_test(check_consistency=False)
             model_name = localizator.model_name
             if localizator.are_all_test_pass():
                 behavior = Behavior.Correct
@@ -108,7 +108,7 @@ class AbinModel():
         influence_path = []
         with self.hyphotesis_tester(prev_observation, 
             self.function_name, model_name, self.test_suite) as hypo_test:
-            (prev_observation, influence_path) = hypo_test.automatic_test()
+            (prev_observation, influence_path) = hypo_test.automatic_test(check_consistency=True)
             behavior = hypo_test.compare_observations()
             new_observation = hypo_test.observation
         return (behavior, new_observation)

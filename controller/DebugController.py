@@ -25,8 +25,9 @@ import controller.AbinLogging as AbinLogging
 
 def test_timeout_handler(signum, frame):
     this.TIMEOUT_SIGNAL_RECEIVED = 1
-    log_entry = f"""Timeout reached!.
-    Debug Signal changed to: {this.TIMEOUT_SIGNAL_RECEIVED}.
-    Signal handler called with signal {signum}.
-    """
-    AbinLogging.debugging_logger.info(log_entry)
+    AbinLogging.debugging_logger.info("Current test timeout reached!")
+    AbinLogging.debugging_logger.debug(f"""
+        Debug Signal changed to: {this.TIMEOUT_SIGNAL_RECEIVED}.
+        Signal handler called with signal {signum}.
+        """
+    )

@@ -2,6 +2,7 @@ from model.debugger.AbinDebugger import Debugger, AbinDebugger, InfluencePath
 from typing import Tuple, Type, List, Any, Union, Optional, TypeVar
 from types import TracebackType
 import ast, astunparse
+from re import sub as regex_sub
 from importlib import import_module, reload
 from pathlib import Path
 from shutil import rmtree as remove_dir
@@ -38,6 +39,7 @@ class FaultLocalizator():
         self.observation: Observation = []
         self.model = None
         self.func = None
+        self.prev_observation = None
 
     def __enter__(self) -> Any:
         if self.prepare_bugged_file():
@@ -49,7 +51,7 @@ class FaultLocalizator():
                 self.func = getattr(self.model, self.func_name, lambda : None)
             except Exception as e:
                 AbinLogging.debugging_logger.exception(
-                    'An error ocurrer while importing the initial model0.'
+                    'An error ocurred while importing the initial model0.'
                 )
                 self.model = None
                 self.func = None
@@ -60,19 +62,27 @@ class FaultLocalizator():
         AbinLogging.debugging_logger.debug('Exiting FaultLocalizator')
               
         if exc_tp is not None:
+            from traceback import format_exc
             AbinLogging.debugging_logger.warning(f"""
                 An error ocurred during the test.
-                {exc_tp}: {exc_value}
+                {exc_tp}:{exc_value}
                 Unable to continue the test of hypothesis model: {self.model_name}
                 """
             )
+            AbinLogging.debugging_logger.debug(f"""
+                <== Exception Traceback ==>
+                """
+            )
+            AbinLogging.debugging_logger.debug(f"{format_exc()}")
         return True  # Ignore exception, if any
 
-    def automatic_test(self) -> Tuple[Observation, InfluencePath]:
-        new_observation: Observation = [('', FailedTest) for i in range(len(self.test_cases))]
+    def automatic_test(self, check_consistency: bool = False) -> Tuple[Observation, InfluencePath]:
+        new_observation: Observation = [('UndefinedTest', FailedTest) for i in range(len(self.test_cases))]
         test_result: ExpectedOutput
         debugger: Debugger = self.debugger()
+        AbinLogging.debugging_logger.info(f"Starting Automatic Test")
         for i, test_case, expected_output, *input_args in self.test_cases.itertuples():
+            AbinLogging.debugging_logger.info(f"Testing {test_case}...")
             with debugger:
                 signal.alarm(DebugController.TEST_TIMEOUT)
                 if self.func is None:
@@ -96,9 +106,16 @@ class FaultLocalizator():
                         Result: {test_result}
                         Expected: {expected_output}
                         """
-                    ) 
+                    )
             signal.alarm(0)
-        signal.alarm(0)
+            if check_consistency and new_observation[i][1] == FailedTest:
+                AbinLogging.debugging_logger.debug('check_consistency')
+                is_consistent_ = self.check_result_consistency(new_observation[i], i)
+                if not is_consistent_:
+                    AbinLogging.debugging_logger.debug('break')
+                    break
+            
+        signal.alarm(0) # Make sure the signal is properly disabled before return
         self.observation = new_observation
         if not self.are_all_test_pass():
             self.influence_path = debugger.get_influence_path(self.model, self.func_name)
@@ -132,8 +149,23 @@ class FaultLocalizator():
             return False
         return True
 
-    def check_result_consistency(self):
-        pass
+    def check_result_consistency(self, 
+                            curr_test_result: TestResult, 
+                            test_case_id: int) -> bool:
+        if self.prev_observation is None:
+            return True # Cannot check consistency if there not previous observations
+        prev_test_result = self.prev_observation[test_case_id]
+        if (prev_test_result[1] == PassedTest
+            and curr_test_result[1] == FailedTest):
+            AbinLogging.debugging_logger.info(f"""
+                The current test{test_case_id + 1} result is inconsistent with the previous test{test_case_id + 1} result.
+                Previous Result: {prev_test_result}
+                Current Result: {curr_test_result}
+                """
+            )
+            return False
+    
+        return True
 
     @staticmethod
     def clean_temporal_files(curr_dir: Path) -> None:

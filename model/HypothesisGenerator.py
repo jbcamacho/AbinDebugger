@@ -166,7 +166,7 @@ class HypothesisGenerator():
         )
         if exc_tp is not None:
             AbinLogging.debugging_logger.warning(f"""
-                An error ocurred during the test.
+                An error ocurred during the hypotheses generation.
                 {exc_tp}: {exc_value}
                 Unable to continue the test of hypothesis model: {self.model_name}
                 """

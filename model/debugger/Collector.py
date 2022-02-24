@@ -157,7 +157,6 @@ class AbinCollector(CoverageCollector):
         """
         if DebugController.TIMEOUT_SIGNAL_RECEIVED == 1:
             DebugController.TIMEOUT_SIGNAL_RECEIVED = 2
-            #print('__collector__:DEBUG_SINAL_RECEIVED')
             raise TimeoutError('DEBUG_SINAL_RECEIVED')
         name = frame.f_code.co_name
         function = self.search_func(name, frame)
