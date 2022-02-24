@@ -10,7 +10,7 @@ Andreas Zeller: "The Debugging Book". Retrieved 2022-02-02 19:00:00-06:00.
     title = {The Debugging Book},
     year = {2021},
     publisher = {CISPA Helmholtz Center for Information Security},
-    howpublished = {\url{https://www.debuggingbook.org/}},
+    howpublished = {\\url{https://www.debuggingbook.org/}},
     note = {Retrieved 2022-02-02 19:00:00-06:00},
     url = {https://www.debuggingbook.org/},
     urldate = {2021-10-13 13:24:19+02:00}

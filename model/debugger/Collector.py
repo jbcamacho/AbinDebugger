@@ -3,16 +3,16 @@ This module is used to collect the events present in a trace of execution.
 
 The content of this file can be found in The Debugging Book.
 Andreas Zeller: "The Debugging Book". Retrieved 2022-02-02 19:00:00-06:00.
-@book{debuggingbook2021,
+{@book{debuggingbook2021,
     author = {Andreas Zeller},
     title = {The Debugging Book},
     year = {2021},
     publisher = {CISPA Helmholtz Center for Information Security},
-    howpublished = {\url{https://www.debuggingbook.org/}},
+    howpublished = {\\url{https://www.debuggingbook.org/}},
     note = {Retrieved 2022-02-02 19:00:00-06:00},
     url = {https://www.debuggingbook.org/},
     urldate = {2021-10-13 13:24:19+02:00}
-}
+}}
 """
 from model.debugger.Tracer import Tracer
 from model.debugger.StackInspector import StackInspector
