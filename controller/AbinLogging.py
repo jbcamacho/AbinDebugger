@@ -1,5 +1,6 @@
 import logging
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
+from textwrap import dedent
 
 class Worker(QThread):
     def __init__(self, func, args):
@@ -19,7 +20,7 @@ class ConsoleWindowLogHandler(logging.Handler, QObject):
         self.setFormatter(formatter)
 
     def emit(self, logRecord):
-        message = str(logRecord.getMessage())
+        message = dedent(str(logRecord.getMessage()))
         self.sigLog.emit(message)
 
 LOGGER_LEVEL = logging.INFO

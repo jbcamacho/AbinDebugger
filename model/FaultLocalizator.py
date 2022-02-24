@@ -41,14 +41,16 @@ class FaultLocalizator():
 
     def __enter__(self) -> Any:
         if self.prepare_bugged_file():
+            AbinLogging.debugging_logger.debug('Entering FaultLocalizator')
             self.model_name = 'model0'
             try:
-                AbinLogging.debugging_logger.debug('Entering FaultLocalizator')
                 self.model = import_module(name=f'..{self.model_name}', package='temp.subpkg')
                 self.model = reload(self.model)
                 self.func = getattr(self.model, self.func_name, lambda : None)
             except Exception as e:
-                AbinLogging.debugging_logger.exception('An error ocurrer while importing the initial model0.')
+                AbinLogging.debugging_logger.exception(
+                    'An error ocurrer while importing the initial model0.'
+                )
                 self.model = None
                 self.func = None
         return self
@@ -56,14 +58,14 @@ class FaultLocalizator():
     def __exit__(self, exc_tp: Type, exc_value: BaseException,
                  exc_traceback: TracebackType) -> Optional[bool]:
         AbinLogging.debugging_logger.debug('Exiting FaultLocalizator')
-        """status = self.debugger.__exit__(exc_tp, exc_value, exc_traceback)
-        if status is not None:
-            return True # Debugger 'AssertionError'; do not raise exception"""
               
         if exc_tp is not None:
-            AbinLogging.debugging_logger.warning("\n\nAn error ocurred during the test.")
-            AbinLogging.debugging_logger.warning(f"{exc_tp}: {exc_value}")
-            AbinLogging.debugging_logger.warning(f"Unable to continue the test of hypothesis model: {self.model_name}")
+            AbinLogging.debugging_logger.warning(f"""
+                An error ocurred during the test.
+                {exc_tp}: {exc_value}
+                Unable to continue the test of hypothesis model: {self.model_name}
+                """
+            )
         return True  # Ignore exception, if any
 
     def automatic_test(self) -> Tuple[Observation, InfluencePath]:
@@ -74,21 +76,29 @@ class FaultLocalizator():
             with debugger:
                 signal.alarm(DebugController.TEST_TIMEOUT)
                 if self.func is None:
-                    raise ImportError(f"Failed to import the given function {self.func_name} from the model {self.model_name}.\
-                    \nPlease check that the given parameter 'func_name' correspond to a function in the module.")
+                    raise ImportError(f"""
+                        Failed to import the given function {self.func_name} from the model {self.model_name}.
+                        Please check that the given parameter 'func_name' correspond to a function in the module.
+                        """
+                    )
                 test_result = self.func(*input_args)
-                AbinLogging.debugging_logger.debug(f"test_result == expected_output\n{str(test_result)} == {str(expected_output)} ?")
+                AbinLogging.debugging_logger.debug(f"""
+                    test_result == expected_output
+                    {str(test_result)} == {str(expected_output)}?
+                    """
+                )
                 if str(test_result) == str(expected_output):
                     new_observation[i] = (test_case, PassedTest)
                 else:
                     new_observation[i] = (test_case, FailedTest)
-                    raise AssertionError(f"The result and the expected output are not equal.\
-                        Result: {test_result}\n \
-                        Expected: {expected_output}\n"
+                    raise AssertionError(f"""
+                        The result and the expected output are not equal.
+                        Result: {test_result}
+                        Expected: {expected_output}
+                        """
                     ) 
             signal.alarm(0)
-        signal.alarm(0) 
-        AbinLogging.debugging_logger.info(new_observation)
+        signal.alarm(0)
         self.observation = new_observation
         if not self.are_all_test_pass():
             self.influence_path = debugger.get_influence_path(self.model, self.func_name)
@@ -121,6 +131,9 @@ class FaultLocalizator():
             AbinLogging.debugging_logger.exception(f'Unable to parse the given file.')
             return False
         return True
+
+    def check_result_consistency(self):
+        pass
 
     @staticmethod
     def clean_temporal_files(curr_dir: Path) -> None:

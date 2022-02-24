@@ -4,12 +4,7 @@ from model.FaultLocalizator import FaultLocalizator, TestCase
 from model.HyphotesisTester import Behavior, HyphotesisTester
 from model.HypothesisGenerator import HypothesisGenerator
 import pandas as pd
-
-import logging
-from controller.AbinLogging import LOGGER_LEVEL, CONSOLE_HANDLER
-logger = logging.getLogger(__name__)
-logger.setLevel(LOGGER_LEVEL)
-logger.addHandler(CONSOLE_HANDLER)
+import controller.AbinLogging as AbinLogging
 
 
 Localizator = FaultLocalizator
@@ -47,27 +42,47 @@ class AbinModel():
     
     def start_auto_debugging(self):
         (model_name, behavior, prev_observation, influence_path) = self.fault_localization()
-        logger.info(f"Observations:\n{prev_observation}")
-        logger.info(f"Influence Path by Suspiciousness Ranking:\n{influence_path}")
-
+        AbinLogging.debugging_logger.info(f"""
+            Observations:
+            {prev_observation}
+            Influence Path by Suspiciousness Ranking:
+            {influence_path}
+            """
+        )
         new_observation = []
         if behavior == Behavior.Correct:
-            logger.debug(f"\n\nSUCCESSFUL REPAIR!")
+            AbinLogging.debugging_logger.debug(f"\nSUCCESSFUL REPAIR!")
             return (model_name, behavior, prev_observation, [])
         hypotheses_generator = self.hypotheses_generation(influence_path)
         with hypotheses_generator:
             for i, (model_name, hypothesis) in enumerate(hypotheses_generator):
-                logger.info(f"\nTesting Hypothesis {i}.\nModel {model_name}.\nHypothesis: {hypothesis}")
+                AbinLogging.debugging_logger.info(f"""
+                    Testing Hypothesis {i}.
+                    Model {model_name}.
+                    Hypothesis: {hypothesis}
+                    """
+                )
                 (behavior, new_observation) = self.hyphotesis_testing(prev_observation, model_name)
-                logger.info(f"Behavior Type: {behavior}")
+                AbinLogging.debugging_logger.info(f""" 
+                    New Observations:
+                    {new_observation}
+                    Behavior Type:
+                    {behavior}
+                    """
+                )
                 if behavior == Behavior.Correct:# or behavior == Behavior.Improvement:
-                    logger.debug(f"\nPrevious Observations:\n{prev_observation}\n")
-                    logger.debug(f"\nNew Observations:\n{new_observation}\n")
-                    logger.debug(f"\n\nSUCCESSFUL REPAIR!")
+                    AbinLogging.debugging_logger.debug(f""" 
+                        Previous Observations:
+                        {prev_observation}
+                        New Observations:
+                        {new_observation}
+                        \nSUCCESSFUL REPAIR!
+                        """
+                    )
                     self.candidate = hypotheses_generator.candidate
                     self.bugfixing_hyphotesis = hypothesis
                     return (model_name, behavior, prev_observation, new_observation)
-        logger.debug(f"\n\nUNABLE TO REPAIR!")
+        AbinLogging.debugging_logger.debug(f"\nUNABLE TO REPAIR!")
         return ('', behavior, prev_observation, new_observation)
         
 
@@ -107,9 +122,12 @@ class AbinModel():
     def __exit__(self, exc_tp: Type, exc_value: BaseException,
                  exc_traceback: TracebackType) -> Optional[bool]:
         if exc_tp is not None:
-            logger.warning("\n\nAn error ocurred during in the model execution.")
-            logger.warning(f"{exc_tp}: {exc_value}")
-            logger.warning(f"Unable to debug.")
+            AbinLogging.debugging_logger.warning(f"""
+                An error ocurred during in the model execution.
+                {exc_tp}: {exc_value}
+                Unable to debug.
+                """
+            )
         #return True  # Ignore exception, if any
 
 def parse_csv_data(data):

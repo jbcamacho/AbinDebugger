@@ -16,7 +16,6 @@ from controller.AbinLogging import Worker
 from model.misc.test_db_connection import test_db_connection
 import model.misc.bug_mining as bug_mining
 import controller.AbinLogging as AbinLogging
-from controller.DebugController import ConnectionStatus
 
 #Pattern Model-View-Controller
 AbInModel = Type[AbinModel]
@@ -76,7 +75,7 @@ class AbinDriver(AbinView):
         self.AutoDebug.finished.connect(self.finishedAutoDebug)
         self.AutoDebug.terminate()
         self.txtLogging = self.AbductionPage.findChild(QPlainTextEdit, 'txtLogging')
-        AbinLogging.CONSOLE_HANDLER.sigLog.connect(self.txtLogging.appendPlainText)   
+        AbinLogging.CONSOLE_HANDLER.sigLog.connect(self.txtLogging.appendPlainText)
 
         ## Connect Logger to txtConnectionStatus
         self.txtConnectionStatus = self.databasePage.findChild(QPlainTextEdit, 'txtConnectionStatus')
@@ -186,7 +185,7 @@ class AbinDriver(AbinView):
         tabletypes.setHorizontalHeaderLabels(namesColumns)
         [tabletypes.setItem(i, j, QTableWidgetItem(str(self.csvTestTypes.iat[i,j]))) for i in range(numRows) for j in range(numColumns)]
         tabletypes.resizeColumnsToContents()
-        AbinLogging.debugging_logger.info(f'Loaded Test Suite from {csv_file[0]}\n')
+        AbinLogging.debugging_logger.info(f'Loaded Test Suite from {csv_file[0]}')
 
     def loadModel(self):
         def get_all_func_names(module_path) -> list:
@@ -209,7 +208,7 @@ class AbinDriver(AbinView):
         func_names = get_all_func_names(self.bugged_file_path)
         self.AbductionPage.findChild(QComboBox, 'cmbTargetFunction').clear()
         self.AbductionPage.findChild(QComboBox, 'cmbTargetFunction').addItems(func_names)
-        AbinLogging.debugging_logger.info(f'Loaded Defective Program from {self.bugged_file_path}\n')
+        AbinLogging.debugging_logger.info(f'Loaded Defective Program from {self.bugged_file_path}')
             
     def saveDebuggedProgram(self):
         if self.debugged_program is None:
@@ -268,7 +267,7 @@ class AbinDriver(AbinView):
                 if candidate and bugfixing_hyphotesis:
                     self.AbductionPage.findChild(QListWidget, 'lstModel').setCurrentRow(candidate - 3)
                     self.AbductionPage.findChild(QListWidget, 'lstModel').currentItem().setText(bugfixing_hyphotesis)
-            AbinLogging.debugging_logger.info(f"{msgTitle}\n")
+            AbinLogging.debugging_logger.info(f"{msgTitle}")
             msgResult.information(self, msgTitle, msgText)    
 
     def AutoDebugTask(self):
@@ -276,13 +275,18 @@ class AbinDriver(AbinView):
         self.debug_result = None
         AbinLogging.debugging_logger.info('Initializing Debugger...')
         abinDebugger = self.abinDebugger(self.function_name, self.bugged_file_path, self.csvTestSuite, self.max_complexity)
-        AbinLogging.debugging_logger.info('Starting Debugging Process...\n')
+        AbinLogging.debugging_logger.info('Starting Debugging Process...')
         result = abinDebugger.start_auto_debugging()
-        AbinLogging.debugging_logger.info('Debugging Process Finalized.\n')
+        AbinLogging.debugging_logger.info('Debugging Process Finalized.')
         (model_name, behavior, prev_observation, new_observation) = result
-        AbinLogging.debugging_logger.info(f"Behavior Type: {behavior}")
-        AbinLogging.debugging_logger.info(f"Previous Observations:\n{prev_observation}\n")
-        AbinLogging.debugging_logger.info(f"New Observations:\n{new_observation}\n")
+        AbinLogging.debugging_logger.info(f"""
+            Behavior Type: {behavior}
+            Previous Observations:
+            {prev_observation}
+            New Observations:
+            {new_observation}
+            """
+        )
         self.debug_result = (model_name, abinDebugger.candidate, abinDebugger.bugfixing_hyphotesis, behavior, prev_observation, new_observation)
 
     def testDBConn(self):
@@ -388,25 +392,35 @@ class AbinDriver(AbinView):
         collection_BugPatterns = db_connection[namePatternsCollection]
         
         remaining_repos = self.lstRepos.count()
-        AbinLogging.mining_logger.info(f"Starting to Mine {remaining_repos} Repositories.\n")
+        AbinLogging.mining_logger.info(
+            f"Starting to Mine {remaining_repos} Repositories."
+        )
         for i in range(remaining_repos):
             repo_item = self.lstRepos.takeItem(0)
             repo = repo_item.text().split('\t')[1]
             (owner, name) = repo.split('/')
             AbinLogging.mining_logger.info(f"Current repository: {owner}/{name}.")
-            self.statusMining.setText(f"  Mining {owner}/{name} repository {i + 1} of {remaining_repos}. ")
+            self.statusMining.setText(
+                f"  Mining {owner}/{name} repository {i + 1} of {remaining_repos}. "
+            )
             # check if the repo was not previosly mined
             if len(list(collection_RepoData.find( { "repo": name, "owner": owner} ))) != 0:
-                AbinLogging.mining_logger.info(f"The repository {owner}/{name} was previously mined!.\n")
+                AbinLogging.mining_logger.info(
+                    f"The repository {owner}/{name} was previously mined!."
+                )
                 continue
-            AbinLogging.mining_logger.info(f"Mining repository {i + 1} of {remaining_repos}.\n")
+            AbinLogging.mining_logger.info(
+                f"Mining repository {i + 1} of {remaining_repos}."
+            )
             process_meta_data = f"Repository: {owner}/{name}."
             (repo_data, bugfixes_data) = bug_mining.mineBugCommitsFromRepo(owner, name, process_meta_data)
             if bugfixes_data:
                 insert_result_RepoData = collection_RepoData.insert_one(repo_data.copy())
                 insert_result_BugPatterns = collection_BugPatterns.insert_many(bugfixes_data.copy())
             else:
-                AbinLogging.mining_logger.info(f"Empty!, No commits were mined from repository {owner}/{name}.")
+                AbinLogging.mining_logger.info(
+                    f"Empty!, No commits were mined from repository {owner}/{name}."
+                )
 
     def stopMineRepos(self):
         pass

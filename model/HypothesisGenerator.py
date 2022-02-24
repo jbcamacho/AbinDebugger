@@ -37,11 +37,6 @@ class HypothesisGenerator():
         self.max_complexity = max_complexity
         self.candidate = 0
         self.bug_candidates = map(lambda candidate: candidate[1], influence_path)
-
-        #SHORT#SHORT
-        #self.bug_candidates = iter(list(self.bug_candidates)[:3])
-        #SHORT#SHORT
-
         self.matching_patterns = iter([])
         self.hypotheses_set = iter([])
         self.remaining_LLOCs = []
@@ -123,9 +118,9 @@ class HypothesisGenerator():
                         try:
                             self.candidate = self.get_bug_candidate()
                         except StopIteration:
-                            raise StopIteration(
-                                'No more bug candidates to abstract. Automatic Program Repair Failed!'
-                                )
+                            msg_ = 'No more bug candidates to abstract. Automatic Program Repair Failed!'
+                            AbinLogging.debugging_logger.info(msg_)
+                            raise StopIteration(msg_)
                         else:
                             self.abduction_depth = 0
                             self.abduction_breadth += 1
@@ -139,7 +134,10 @@ class HypothesisGenerator():
                             available_identifiers = logical_loc.get_available_identifiers()
                             patterns = self.get_matching_patterns(ast_hexdigest)
                             (self.matching_patterns, count) = patterns
-                            AbinLogging.debugging_logger.info(f"Current Candidate: {self.candidate}. Patterns Found: {count}")
+                            AbinLogging.debugging_logger.info(f"""
+                            Current Candidate: {self.candidate}. Patterns Found: {count}
+                            """
+                            )
                 
                 model = self.get_current_model()
                 logical_loc = self.LogicalLOC(self.candidate, ''.join(model))
@@ -156,17 +154,23 @@ class HypothesisGenerator():
 
     def __exit__(self, exc_tp: Type, exc_value: BaseException,
                  exc_traceback: TracebackType) -> Optional[bool]:
-        AbinLogging.debugging_logger.info(f"\n<=== Exit Process Data ===>")
-        AbinLogging.debugging_logger.info(f"Current Candidate: {self.candidate}")
-        AbinLogging.debugging_logger.info(f"Remaining Candidates: {list(self.bug_candidates)}")
-        AbinLogging.debugging_logger.info(f"Abduction Depth: {self.abduction_depth}")
-        AbinLogging.debugging_logger.info(f"Abduction Breadth: {self.abduction_breadth}")
-        AbinLogging.debugging_logger.info(f"Abduction Complexity: {self.complexity}")
-        AbinLogging.debugging_logger.info(f"Total Number of Abductions Performed: {self.abduction_depth*self.complexity}")
+        AbinLogging.debugging_logger.info(f"""
+            <=== Exit Process Data ===>
+            Current Candidate: {self.candidate}
+            Remaining Candidates: {list(self.bug_candidates)}
+            Abduction Depth: {self.abduction_depth}
+            Abduction Breadth: {self.abduction_breadth}
+            Abduction Complexity: {self.complexity}
+            Total Number of Abductions Performed: {self.abduction_depth*self.complexity}
+            """
+        )
         if exc_tp is not None:
-            AbinLogging.debugging_logger.warning("An error ocurred during the test.")
-            AbinLogging.debugging_logger.warning(f"{exc_tp}: {exc_value}")
-            AbinLogging.debugging_logger.warning(f"Unable to continue the test of hypothesis model: {self.model_name}")
+            AbinLogging.debugging_logger.warning(f"""
+                An error ocurred during the test.
+                {exc_tp}: {exc_value}
+                Unable to continue the test of hypothesis model: {self.model_name}
+                """
+            )
         return True  # Ignore exception, if any
 
     def get_current_model(self):
@@ -176,7 +180,9 @@ class HypothesisGenerator():
             with open(curr_model_path, 'r') as f:
                 model_src = f.readlines()
         except Exception as e:
-            AbinLogging.debugging_logger.exception(f"Unable to open the file: {self.model_name}.")
+            AbinLogging.debugging_logger.exception(
+                f"Unable to open the file: {self.model_name}."
+            )
             return False
         return model_src
 
@@ -190,6 +196,5 @@ class HypothesisGenerator():
         MONGO_URI = f"{config['URI']}://{config['HOST']}:{config['PORT']}"
         client = pymongo.MongoClient(MONGO_URI)
         db_connection = client[config['DATABASE']]
-        #collection_BugPatterns = db_connection[config['COLLECTION']]
         return db_connection
 

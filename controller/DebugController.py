@@ -29,5 +29,4 @@ def test_timeout_handler(signum, frame):
     Debug Signal changed to: {this.TIMEOUT_SIGNAL_RECEIVED}.
     Signal handler called with signal {signum}.
     """
-    print(log_entry)
     AbinLogging.debugging_logger.info(log_entry)

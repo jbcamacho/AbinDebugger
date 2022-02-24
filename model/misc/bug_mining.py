@@ -191,10 +191,6 @@ def mineBugCommitsFromRepo(owner: str, name: str, process_meta_data: str = "") -
     count_commits += 1
     commit_sha = commit.hash
     message = commit.msg
-    if count_commits%500 == 0:
-        curr_process_data = f"{process_meta_data} Mining commit {count_commits} of {no_commits}."
-        AbinLogging.mining_logger.info(curr_process_data)
-
     if re.search(keywords, message, re.IGNORECASE):
       if not re.search(bad_keywords, message, re.IGNORECASE):
         no_bug_commits += 1

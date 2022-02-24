@@ -23,8 +23,7 @@ class HyphotesisTester(FaultLocalizator):
                 debugger: Debugger = AbinDebugger) -> None:
         AbinLogging.debugging_logger.debug('Init HyphotesisTester')
         self.prev_observation = prev_observation
-        # [:-3] to remove the '.py' extension from the model_name
-        self.model_name = model_name[:-3]
+        self.model_name = model_name[:-3] # [:-3] to remove the '.py' extension from the model_name
         super().__init__(func_name, '', test_cases, debugger)
         
 
@@ -49,7 +48,9 @@ class HyphotesisTester(FaultLocalizator):
         try:
             explanatory_power = no_passed_test_cases/no_test_cases
         except DivisionByZero:
-            AbinLogging.debugging_logger.exception("The given observation do not have any test case.")
+            AbinLogging.debugging_logger.exception(
+                "The given observation do not have any test case."
+            )
         finally:
             return explanatory_power
     
@@ -59,7 +60,8 @@ class HyphotesisTester(FaultLocalizator):
             return False
         
         for prev_test_result, curr_test_result in zip(self.prev_observation, self.observation):
-            if prev_test_result[1] == PassedTest and curr_test_result[1] == FailedTest:
+            if (prev_test_result[1] == PassedTest
+                and curr_test_result[1] == FailedTest):
                 return False
         return True
     
@@ -73,11 +75,16 @@ class HyphotesisTester(FaultLocalizator):
     def __enter__(self):
         AbinLogging.debugging_logger.debug('Entering HyphotesisTester')
         try:
-            self.model = import_module(name=f'..{self.model_name}', package='temp.subpkg')
+            self.model = import_module(
+                name=f'..{self.model_name}',
+                package='temp.subpkg'
+            )
             self.model = reload(self.model)
             self.func = getattr(self.model, self.func_name, lambda : None)
         except Exception as e:
-            AbinLogging.debugging_logger.exception("An error ocurrer while importing the model.")
+            AbinLogging.debugging_logger.exception(
+                "An error ocurrer while importing the model."
+            )
             self.model = None
             self.func = None
         return self 
