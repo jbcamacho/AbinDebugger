@@ -56,19 +56,14 @@ class AbinView(QMainWindow):
         fileMenu.addSeparator()
         fileMenu.addAction(self.exitAction)
 
-        # editMenu = menuBar.addMenu("&Edit")
-        # editMenu.addAction(self.copyAction)
-        # editMenu.addAction(self.pasteAction)
-        # editMenu.addAction(self.cutAction)
+        databaseMenu = menuBar.addMenu("&Connection")
+        databaseMenu.addAction(self.connectAction)
         # editMenu.addSeparator()
 
-        # findMenu = editMenu.addMenu("Find and Replace")
-        # findMenu.addAction("Find...")
-        # findMenu.addAction("Replace...")
-
-        helpMenu = menuBar.addMenu("&Help") #QIcon(":help-content.svg")
+        helpMenu = menuBar.addMenu("&Help")
         helpMenu.addAction(self.helpContentAction)
         helpMenu.addAction(self.aboutAction)
+        helpMenu.addAction(self.githubAction)
 
     def _createStatusBar(self):
         self.statusbar = self.statusBar()
@@ -102,15 +97,20 @@ class AbinView(QMainWindow):
         fileToolBar.addAction(self.loadTestAction)
         fileToolBar.addAction(self.saveAction)
         fileToolBar.setMovable(False)
+        fileToolBar.addSeparator()
+        
+        databaseToolBar = self.addToolBar("Connect DB")
+        databaseToolBar.addAction(self.connectAction)
+        databaseToolBar.setMovable(False)
+        databaseToolBar.addSeparator()
 
-        # editToolBar = self.addToolBar("Edit")
-        # editToolBar.addAction(self.copyAction)
-        # editToolBar.addAction(self.pasteAction)
-        # editToolBar.addAction(self.cutAction)
-        # editToolBar.setMovable(False)
+        helpToolBar = self.addToolBar("Help")
+        helpToolBar.addAction(self.githubAction)
+        helpToolBar.setMovable(False)
+        helpToolBar.addSeparator()
 
         # Using a QToolBar object and a toolbar area
-        SideToolBar = QToolBar("Help", self)
+        SideToolBar = QToolBar("Features", self)
         self.addToolBar(Qt.LeftToolBarArea, SideToolBar)
         SideToolBar.addAction(self.homeAction)
         SideToolBar.addSeparator()
@@ -137,11 +137,14 @@ class AbinView(QMainWindow):
         self.saveAction = QAction(QIcon(":save-model.svg"), "&Save Program...", self)
         self.saveAction.setToolTip("Save Debugged Program")
         self.exitAction = QAction("&Exit", self)
-        # self.copyAction = QAction(QIcon(":edit-copy.svg"), "&Copy", self)
-        # self.pasteAction = QAction(QIcon(":edit-paste.svg"), "&Paste", self)
-        # self.cutAction = QAction(QIcon(":edit-cut.svg"), "C&ut", self)
+        
+        self.connectAction = QAction(QIcon(":database.svg"), "&Connect DB", self)
+        self.connectAction.setToolTip("Connect to database")
+
         self.helpContentAction = QAction(QIcon(":help-content.svg"), "&Help Content", self)
         self.aboutAction = QAction(QIcon(":info.svg"), "&About", self)
+        self.githubAction = QAction(QIcon(":github.svg"), "&Github Project...", self)
+        self.githubAction.setToolTip("Go to the project page...")
 
         #Left SideBar Actions
         self.homeAction         =   QAction(QIcon(":home.svg")      , "Home")

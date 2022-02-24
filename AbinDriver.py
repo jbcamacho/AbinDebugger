@@ -4,6 +4,7 @@ from AbinView import AbinView
 from AbinModel import AbinModel
 from typing import Type
 import pandas as pd
+from webbrowser import open as linkOpen
 from PyQt5.QtWidgets import (
     QApplication, QMessageBox, QFileDialog,
     QTableWidgetItem, QTableWidget, QPushButton,
@@ -46,9 +47,13 @@ class AbinDriver(AbinView):
         self.saveAction.triggered.connect(self.saveDebuggedProgram)
         self.exitAction.triggered.connect(self.close)
         
+        # Connect Connection actions
+        self.connectAction.triggered.connect(self.testDBConn)
+
         # Connect Help actions
         self.helpContentAction.triggered.connect(self.contactInfo)
         self.aboutAction.triggered.connect(self.about)
+        self.githubAction.triggered.connect(lambda: linkOpen("https://github.com/jbcamacho/abin_debugger.git"))
 
         # Connect Left SideBar Actions
         self.homeAction.triggered.connect(self.toHomePage)

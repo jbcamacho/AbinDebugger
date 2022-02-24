@@ -6,9 +6,7 @@
     <file alias="save-model.svg">ui/save.svg</file>
     <file alias="file-exit.svg">ui/file-minus.svg</file>
     <file>cinves-logo.png</file>
-    <file alias="edit-copy.svg">ui/copy.svg</file>
-    <file alias="edit-cut.svg">ui/scissors.svg</file>
-    <file alias="edit-paste.svg">ui/clipboard.svg</file>
+    <file alias="github.svg">ui/github.svg</file>
     <file alias="help-content.svg">ui/help-circle.svg</file>
     <file alias="info.svg">ui/info.svg</file>
     <file alias="home.svg">ui/home.svg</file>
