@@ -1,3 +1,21 @@
+"""
+This module is used to observe program state during an execution.
+The observed state is used collect the events that happened during
+the execution of the bugged program.
+
+The content of this file can be found in The Debugging Book.
+Andreas Zeller: "The Debugging Book". Retrieved 2022-02-02 19:00:00-06:00.
+@book{debuggingbook2021,
+    author = {Andreas Zeller},
+    title = {The Debugging Book},
+    year = {2021},
+    publisher = {CISPA Helmholtz Center for Information Security},
+    howpublished = {\url{https://www.debuggingbook.org/}},
+    note = {Retrieved 2022-02-02 19:00:00-06:00},
+    url = {https://www.debuggingbook.org/},
+    urldate = {2021-10-13 13:24:19+02:00}
+}
+"""
 import sys
 from types import FrameType, TracebackType
 from typing import Any, Callable, Optional, Type, TextIO
