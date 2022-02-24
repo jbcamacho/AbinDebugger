@@ -1,3 +1,7 @@
+"""
+This module contains global variables necesary for the threaded execution of
+the program. Also contains the settings used across the modules.
+"""
 import sys
 from typing import Dict
 this = sys.modules[__name__]
@@ -23,7 +27,13 @@ TEST_TIMEOUT: int = int(1)
 
 import controller.AbinLogging as AbinLogging
 
-def test_timeout_handler(signum, frame):
+def test_timeout_handler(signum: int, frame) -> None:
+    """ The timeout handler.
+    
+    This function triggers the change of the control variable
+    <TIMEOUT_SIGNAL_RECEIVED> in order to raise a timeout exception
+    in the AbinCollector class.
+    """
     this.TIMEOUT_SIGNAL_RECEIVED = 1
     AbinLogging.debugging_logger.info("Current test timeout reached!")
     AbinLogging.debugging_logger.debug(f"""

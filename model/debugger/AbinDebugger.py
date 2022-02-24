@@ -48,8 +48,8 @@ class AbinDebugger(OchiaiDebugger):
         'NameConstant':28,
         'AsyncFor':29
     }
-    
-    def __init__(self, collector_class: Type = AbinCollector, log: bool = False):
+    influence_path: InfluencePath
+    def __init__(self, collector_class: Type = AbinCollector, log: bool = False) -> None:
         """Constructor Method"""
         super().__init__(collector_class, log)
         self.influence_path: List = []
