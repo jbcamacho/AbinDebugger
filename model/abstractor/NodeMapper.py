@@ -1,14 +1,15 @@
 import ast
 import builtins 
 from typing import Type, Callable, List, Union, Any, Dict, Set, AnyStr
+from model.abstractor.Visitors import RecursiveVisitor
 
 ASTIdentifier = AnyStr
 ASTIdentifiers = List[ASTIdentifier]
 IDToken = AnyStr
 IDTokens = Dict[str, Set[IDToken]]
-ASTNode = Type[ast.AST]
+ASTNode = ast.AST
 
-class RecursiveVisitor(ast.NodeVisitor):
+class NodeMapper(RecursiveVisitor):
     """ 
     This class is used to visit all the nodes in a ast and get the avaiable identifiers 
     """
@@ -22,16 +23,8 @@ class RecursiveVisitor(ast.NodeVisitor):
         self.visit(self.prepare_node(ast_node))
       else:
         self.visit(ast_node)
-
-    def recursive(func: Callable) -> Callable:
-        """ decorator to make visitor work recursive """
-        def wrapper(self, node: ASTNode) -> None:
-            func(self, node)
-            for child in ast.iter_child_nodes(node):
-                self.visit(child)
-        return wrapper
     
-    @recursive
+    @RecursiveVisitor.recursive
     def generic_visit(self, node: ASTNode) -> None:
         node_name: str
         node_id: Union[Any, None]

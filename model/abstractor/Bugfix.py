@@ -3,7 +3,7 @@ import ast
 import json
 import copy
 from typing_extensions import TypedDict
-from model.abstractor.RecursiveVisitor import RecursiveVisitor, ASTNode, IDTokens
+from model.abstractor.NodeMapper import NodeMapper, ASTNode, IDTokens
 from model.abstractor.PythonLLOC import PythonLLOC, LogicalLOC
 from model.abstractor.NodeAbstractor import NodeAbstractor, NodeMetadata
 
@@ -88,9 +88,9 @@ class Bugfix():
   
   def get_available_identifiers(self) -> IDTokens:
     tree_bug = self.bugged_LOC.ast_node
-    rec_bug = RecursiveVisitor(tree_bug, prepare_node=True)
+    rec_bug = NodeMapper(tree_bug, prepare_node=True)
     tree_fix = self.fixed_LOC.ast_node
-    rec_fix = RecursiveVisitor(tree_fix, prepare_node=True)
+    rec_fix = NodeMapper(tree_fix, prepare_node=True)
 
     all_keys = set(rec_bug.id_tokens.keys()).union(set(rec_fix.id_tokens.keys()))
     identifiers: IDTokens = {key:set() for key in all_keys}

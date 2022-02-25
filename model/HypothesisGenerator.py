@@ -8,7 +8,7 @@ from model.abstractor.NodeAbstractor import NodeAbstractor
 from model.abstractor.PythonLLOC import PythonLLOC, LogicalLOC
 from model.abstractor.HypothesisAbductor import HypothesisAbductor
 from model.abstractor.Bugfix import BugfixMetadata
-from model.abstractor.RecursiveVisitor import ASTNode
+from model.abstractor.NodeMapper import ASTNode
 import controller.AbinLogging as AbinLogging
 import controller.DebugController as DebugController
 

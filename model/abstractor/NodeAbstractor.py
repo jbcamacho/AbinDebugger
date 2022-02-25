@@ -2,7 +2,7 @@ import ast
 import hashlib
 from typing import AnyStr, Union, Tuple, Type, Dict
 from typing_extensions import TypedDict
-from model.abstractor.RecursiveVisitor import ASTIdentifiers, ASTNode, IDTokens
+from model.abstractor.NodeMapper import ASTIdentifiers, ASTNode, IDTokens
 import builtins
 
 UserIdentifier = AnyStr

@@ -3,11 +3,11 @@ from io import BytesIO
 import re
 import ast
 from typing import Tuple, Union
-from model.abstractor.RecursiveVisitor import RecursiveVisitor, ASTIdentifiers, IDTokens, ASTNode
+from model.abstractor.NodeMapper import NodeMapper, ASTIdentifiers, IDTokens, ASTNode
 
 LogicalLOC = Union[Tuple[str, int, int], Tuple[None, int, int]]
 
-class PythonLLOC(RecursiveVisitor):
+class PythonLLOC(NodeMapper):
   """ Python Logical Line of Code (PythonLLOC)
   """
   id_tokens: IDTokens

@@ -7,7 +7,7 @@ import itertools
 import typing
 from model.abstractor.Bugfix import BugfixMetadata
 from model.abstractor.NodeAbstractor import IDMapping, NodeAbstractor, NodeMapping
-from model.abstractor.RecursiveVisitor import ASTIdentifiers, ASTNode, IDTokens
+from model.abstractor.NodeMapper import ASTIdentifiers, ASTNode, IDTokens
 
 
 class HypothesisAbductor(ast.NodeVisitor):

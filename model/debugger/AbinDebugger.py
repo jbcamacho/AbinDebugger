@@ -9,7 +9,7 @@ from model.debugger.AbinCollector import AbinCollector
 from model.debugger.StatisticalDebugger import OchiaiDebugger, Debugger
 from typing import Union, Tuple, Type, List, Dict, Optional
 from types import TracebackType, ModuleType
-from model.abstractor.RecursiveVisitor import ASTNode
+from model.abstractor.NodeMapper import ASTNode
 from model.abstractor.Visitors import TargetVisitor, CallVisitor, FunctionVisitor, StatementVisitor
 import controller.DebugController as DebugController
 
