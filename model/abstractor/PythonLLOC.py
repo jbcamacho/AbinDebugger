@@ -3,37 +3,30 @@ from io import BytesIO
 import re
 import ast
 from typing import Tuple, Union
-from model.abstractor.NodeMapper import NodeMapper, ASTIdentifiers, IDTokens, ASTNode
+from model.abstractor.NodeMapper import NodeMapper, IDTokens, ASTNode
 
 LogicalLOC = Union[Tuple[str, int, int], Tuple[None, int, int]]
 
 class PythonLLOC(NodeMapper):
-  """ Python Logical Line of Code (PythonLLOC)
-  """
-  id_tokens: IDTokens
+  """ This class acts as a support class to obtain
+  a Python Logical Line of Code (PythonLLOC). """
+  
+  id_tokens: Union[None, IDTokens]
   line_no: int
   source_code: str
-  ast_identifiers: ASTIdentifiers
-
   def __init__(self, line_num: int, src: str) -> None:
+      """Constructor Method"""
       self.line_no = line_num
       self.source_code = src
-
-  def __str__(self):
-    pass
+      self.id_tokens = None
 
   @property
   def logical_LOC(self) -> LogicalLOC:
-    """Gets a logical line of Python code.
+    """ This property represents a logical line of Python code.
 
-    :param src: The Python source code.
-    :type  src: str
-    :param line_num: The line number of the code fragment from where
-        the logical line of code will be extacted.
-    :type  line_num: int
     :returns: The tuple representing the logical line of Python code, 
         if not found then an empty string will be returned.
-    :rtype: Tuple[str, int, int]
+    :rtype: LogicalLOC
     """
     curr_LOC: str = ''
     curr_LOC_start: int = 0
@@ -75,12 +68,8 @@ class PythonLLOC(NodeMapper):
 
   @property
   def ast_node(self) -> Union[ASTNode, None]:
-    """Gets an AST node corresponding to the given LOC.
+    """ This property represents the ASTNode corresponding to the given LOC.
 
-    :param src: The Python source code.
-    :type  src: str
-    :param logical_LOC: The tuple representing the logical line of Python code.
-    :type  logical_LOC: Tuple[str, int, int]
     :returns: The AST Node representing the given logical LOC, 
         if not found then a None value will be returned.
     :rtype: ast.AST
@@ -112,6 +101,10 @@ class PythonLLOC(NodeMapper):
     return None
 
   def get_available_identifiers(self) -> IDTokens:
+    """ This Method will returns all the identifiers in an ASTNode.
+        
+    :rtype: IDTokens
+    """
     try:
       ast_tree: ASTNode = ast.parse(self.source_code, mode='exec')
     except Exception as e:
