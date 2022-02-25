@@ -1,8 +1,10 @@
-from decimal import DivisionByZero
+"""
+
+"""
 from model.debugger.AbinDebugger import Debugger, AbinDebugger
-from typing import Type, List
 from model.FaultLocalizator import FaultLocalizator
 from model.FaultLocalizator import Observation, TestCase, PassedTest, FailedTest
+from typing import Type, List
 from importlib import import_module, reload
 import controller.AbinLogging as AbinLogging
 
@@ -48,7 +50,7 @@ class HyphotesisTester(FaultLocalizator):
         no_passed_test_cases = sum(map(test_outcome, observation))
         try:
             explanatory_power = no_passed_test_cases/no_test_cases
-        except DivisionByZero:
+        except ZeroDivisionError:
             AbinLogging.debugging_logger.exception(
                 "The given observation do not have any test case."
             )

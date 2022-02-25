@@ -1,3 +1,7 @@
+"""
+This module contains the Bugfix class.
+This class is used to obtain a bugfix's metadata of the abstracted representation.
+"""
 import ast
 import json
 import copy

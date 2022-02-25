@@ -1,3 +1,7 @@
+"""
+This module contains the support class PythonLLOC.
+This class is used to obtain  a Python Logical Line of Code (PythonLLOC).
+"""
 import tokenize
 from io import BytesIO
 import re

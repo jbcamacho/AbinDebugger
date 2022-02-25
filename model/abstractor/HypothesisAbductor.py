@@ -1,3 +1,7 @@
+"""
+This module contains the core class HypothesisAbductor.
+This class is used to abduct a hypotheses.
+"""
 import ast
 import astunparse
 import re

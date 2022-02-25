@@ -1,10 +1,14 @@
-from pydriller import Repository, Git
+"""
+This module contains all the necesary functions
+to mine the bugfixing commits from a repository
+and abstract them.
+"""
+from pydriller import Repository
 import requests
 import json
 import re
 import os
-from io import BytesIO
-from typing import Union, Tuple, Any, IO, Type, List
+from typing import Dict, Tuple, Any, List
 
 from model.abstractor.Bugfix import Bugfix
 import controller.AbinLogging as AbinLogging
@@ -69,7 +73,7 @@ def json_serialize_sets(obj: Any) -> Any:
   return obj
 
 
-def saveBugfix(bugfix_metadata: dict, file_path: str = r"/content/bugfixes.json", pretty: bool = 0) -> bool:
+def saveBugfix(bugfix_metadata: dict, file_path: str, pretty: bool = 0) -> bool:
   """ This function dumps JSON data into a file.
 
   :param bugfix_metadata: JSON data that will be dumped.
@@ -82,9 +86,12 @@ def saveBugfix(bugfix_metadata: dict, file_path: str = r"/content/bugfixes.json"
   try:
     with open(file_path, 'w', encoding = 'utf-8') as out_file:
       if pretty:
-        json.dump(bugfix_metadata, out_file, default=json_serialize_sets, separators=(',', ':'), indent=4, sort_keys=True)
+        json.dump(bugfix_metadata, out_file, 
+          default=json_serialize_sets, indent=4,
+          separators=(',', ':'), sort_keys=True)
       else:
-        json.dump(bugfix_metadata, out_file, default=json_serialize_sets, sort_keys=True)
+        json.dump(bugfix_metadata, out_file, 
+          default=json_serialize_sets, sort_keys=True)
   except Exception as e:
       print(f"Could not write file path {file_path}")
       print(f"Exception: {e}")
@@ -92,7 +99,7 @@ def saveBugfix(bugfix_metadata: dict, file_path: str = r"/content/bugfixes.json"
   else:
     return 1
 
-def getRepo(owner: str, name: str) -> Any:
+def getRepo(owner: str, name: str) -> Repository:
   """ This function create an instance of PyDriller.Repository.
 
   :param owner: The owner of the repository.
@@ -103,7 +110,6 @@ def getRepo(owner: str, name: str) -> Any:
       represents the repository object.
   :rtype: PyDriller.Repository.
   """
-  #print(f"Initializing {owner}/{name}...")
   AbinLogging.mining_logger.info(f"Initializing {owner}/{name}...")
   folder_dir = os.path.join(os.getcwd(), "topRepositories")
   repo_name = f"{owner}/{name}"
@@ -116,7 +122,6 @@ def getRepo(owner: str, name: str) -> Any:
     if not os.path.exists(repo_dir):
       os.makedirs(repo_dir)
     clone_url = f"https://github.com/{owner}/{name}.git"
-    #print(f"Cloning {owner}/{name} from {clone_url} ...")
     AbinLogging.mining_logger.info(f"Cloning {owner}/{name} from {clone_url} ...")
     repo = Repository(clone_url, clone_repo_to=repo_dir)
   return repo
@@ -157,14 +162,14 @@ def commitFilesInspect(commits_files: list) -> Tuple[list, dict]:
   return (bugfix_files, bugfix_metadata)
 
 def mineBugCommitsFromRepo(owner: str, name: str, process_meta_data: str = "") -> Tuple[dict, List]:
-  """ This function.
+  """ This function carry out the mining process from the given repository.
 
   :param owner: The owner of the repository.
   :type  owner: str
   :param name: The name of the repository.
   :type name: str
-  :returns: A JSON String that represents the repository data
-      along with the bugfixing commits.
+  :returns: A JSON String that represents the repository's metadata
+  along with the bugfixing commits.
   :rtype: dict
   """
   repo = getRepo(owner, name)
@@ -222,19 +227,17 @@ def mineBugCommitsFromRepo(owner: str, name: str, process_meta_data: str = "") -
   repo_data['no_mined_bugfixes'] = no_mined_bugfixes
   return (repo_data, bugfixes_data)
 
-def getTopRepositories(lang: str = "", page: int = 1, max_per_page : int = 25) -> list:
+def getTopRepositories(lang: str = "", page: int = 1, max_per_page : int = 25) -> List[Dict[str, str]]:
   """ This function queries to the Github API to obtain the top repositores.
 
-  :param token: The user access token to Github.
-  :type  str
-  :param query: The query that will be processed by the Github API.
+  :param lang: The programming language.
   :type  str
   :param page: The page from which the query's data will be extracted.
   :type  str
   :param max_per_page: The Maximun number of registers that will be obtained from the query. 
   :type  str
-  :returns: A list of strings containing the top repositories' data.
-  :rtype: list.
+  :returns: A JSON Object containing the top repositories' data.
+  :rtype: List[Dict[str, str]]
   """
   api_url = f"https://api.github.com/search/repositories?q=language:{lang}&sort=stars&page={page}&per_page={max_per_page}"
   api_response = requests.get(api_url)
@@ -254,11 +257,11 @@ def getTopRepositories(lang: str = "", page: int = 1, max_per_page : int = 25) -
     })
   return top_repositories
   
-def removeMinedRepo(file_path):
-  """ This property is a hexdigest of the abstracted ast graph of ´node_to_abstract´.
+def removeMinedRepo(file_path) -> None:
+  """ This helper function will remove the mined
+  repositorys's data from the given file.
 
-  :returns hexdigest: A JSON String that represents the abstracted ast graph.
-  :rtype   hexdigest: String.
+  :rtype: None
   """
   try:
     with open(file_path, 'r') as f:

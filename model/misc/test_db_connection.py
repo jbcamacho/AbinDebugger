@@ -1,3 +1,6 @@
+"""
+This module check the `ConnectionStatus` of a given database's settings.
+"""
 from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError
 from controller.DebugController import ConnectionStatus
@@ -10,7 +13,25 @@ def test_db_connection( uri:str = 'mongodb',
                         database_name: str = 'Bugfixes',
                         dbcollection: str = 'BugPatterns',
                         retry_times:int = 3) -> ConnectionStatus:
+    """ Method to visit all the nodes.
 
+    If the visited node have an identifier,
+    it will be mapped to the self.id_tokens.
+        
+    :param uri: The URI used by the MongoDB's engine.
+    :type  uri: str
+    :param host: The host to which the DB will be connected.
+    :type  host: str
+    :param port: The port to which the DB will be connected.
+    :type  port: str
+    :param database_name: The database that will be tested for conectivity.
+    :type  database_name: str
+    :param dbcollection: The collection that will be tested for conectivity.
+    :type  dbcollection: str
+    :param retry_times: The number of retries to connect to the DB.
+    :type  retry_times: int
+    :rtype: ConnectionStatus
+    """
     MONGO_URI = f"{uri}://{host}:{port}"
     AbinLogging.dbConnection_logger.info(
         f"<pre>Testing connection on {MONGO_URI}...\n\n</pre>"
