@@ -6,7 +6,7 @@ import ast
 import hashlib
 from typing import List, Union, Tuple, Type, Dict
 from typing_extensions import TypedDict
-from model.abstractor.NodeMapper import ASTIdentifiers, ASTNode, IDTokens
+from model.abstractor.NodeMapper import ASTIdentifiers, ASTNode, NodeMapper
 import builtins
 
 UserIdentifier = str
@@ -24,7 +24,7 @@ class NodeMetadata(TypedDict):
   map_ids: IDMapping
   map_nodes: NodeMapping
 
-class NodeAbstractor(ast.NodeVisitor):
+class NodeAbstractor(NodeMapper):
     """ This class is used to abstract an AST node. """
     ast_identifiers: ASTIdentifiers
     ast_node: ASTNode
@@ -48,12 +48,14 @@ class NodeAbstractor(ast.NodeVisitor):
 
     
     def generic_visit(self, node: ASTNode) -> None:
-      """ Depth-First Visit to every node in the ``node_to_abstract``.
+      """ Method to visit to every node in the `node_to_abstract`.
       
-      This function is called every time a new node is visited.
+      This function is called every time a new node is visited
+      and assign a new attribute `abstraction` to the node.
 
       :param node: The AST Node.
       :type  node: ast.AST
+      :rtype: None
       """
       node.abstraction = self.abstract_node(node)
       if node.abstraction not in self.adj_lst.keys():
@@ -65,16 +67,18 @@ class NodeAbstractor(ast.NodeVisitor):
 
     
     def abstract_node(self, node: ASTNode) -> NodeAbstraction:
-      """ This function abstracts the given AST node into a enum name.
+      """ This method abstracts the given AST.
+      
+      The abstraction will be mappend into a NodeMapping
+      and it will be returned.
 
       :param node: The AST Node.
-      :type  node: ast.AST
-      :returns: A enum name that will acts as the ``node`` abstraction.
+      :type  node: ASTNode
       :rtype: str
       """
       abstraction: NodeAbstraction
       if hasattr(node, 'abstraction'):
-        # There is no need to abstract a node that has an abstraction
+        # Do not abstract a node that already has an abstraction
         return node.abstraction
       node_name = type(node).__name__
       abstraction = node_name
@@ -102,10 +106,18 @@ class NodeAbstractor(ast.NodeVisitor):
 
     @property
     def ast_graph(self) -> str:
+      """ This property returns the node ast graph as a JSON string.
+
+      :rtype: str
+      """
       return ast.dump(self.ast_node, annotate_fields=False)
 
     @property
     def ast_hexdigest(self) -> str:
+      """ This property returns the hexdigest of the self.ast_graph property.
+
+      :rtype: str
+      """
       m = hashlib.sha256()
       data = self.ast_graph.encode('utf-8')
       m.update(data)
@@ -113,6 +125,10 @@ class NodeAbstractor(ast.NodeVisitor):
 
     @property
     def ast_node_data(self) -> NodeMetadata:
+      """ This property returns the abstracted node's metadata.
+
+      :rtype: NodeMetadata
+      """
       data: NodeMetadata
       if self.ast_node:
         data = {
@@ -124,20 +140,3 @@ class NodeAbstractor(ast.NodeVisitor):
         }
         return data
       return {}
-
-    @staticmethod
-    def prepare_node(node: ASTNode) -> ASTNode:
-      if hasattr(node, 'body'):
-        if node.body != []:
-          node.body = []
-      if hasattr(node, 'orelse'):
-        if node.orelse != []:
-          node.orelse = []
-      if hasattr(node, 'finalbody'):
-        if node.finalbody != []:
-          node.finalbody = []
-      return node
-      
-    @staticmethod
-    def is_builtins(obj_name: str) -> bool:
-      return True if (obj_name in dir(builtins)) else False
