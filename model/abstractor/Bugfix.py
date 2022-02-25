@@ -1,4 +1,3 @@
-#from ast import * # Needed for eval(ASTNode)
 import ast
 import json
 import copy
@@ -8,13 +7,15 @@ from model.abstractor.PythonLLOC import PythonLLOC, LogicalLOC
 from model.abstractor.NodeAbstractor import NodeAbstractor, NodeMetadata
 
 class BugfixMetadata(TypedDict):
+    """ This class defines the JSON structure of
+    the bugfix's metadata"""
     commit_sha: str
     available_identifiers: IDTokens
     bug_metadata: NodeMetadata
     fix_metadata: NodeMetadata
 
 class Bugfix():
-
+  """ This class represent a bugfix obtained from a bugfixing commit"""
   bugged_LOC: LogicalLOC
   fixed_LOC: LogicalLOC
   bugged_node: ASTNode
@@ -23,9 +24,10 @@ class Bugfix():
   fix: NodeAbstractor
   _notes: str
 
-  def __init__(self, bugged_lineno: int, bugged_source: str, fixed_lineno: int, fixed_source: str) -> None:
-    """Constructor method
-    """
+  def __init__( self, 
+    bugged_lineno: int, bugged_source: str, 
+    fixed_lineno: int, fixed_source: str ) -> None:
+    """ Constructor method """
     self.bugged_LOC = PythonLLOC(bugged_lineno, bugged_source)
     self._notes = ""
     bugged_node = copy.deepcopy(self.bugged_LOC.ast_node)
@@ -44,11 +46,16 @@ class Bugfix():
       self.fix = NodeAbstractor(fixed_node, nodes_mapping)
 
   def __str__(self):
+    """ Class String representation method """
     print_data = json.dumps(self.bugfix_data, indent=4)
     return self._notes + f'\nMetadata: {print_data}'
 
   @property
   def bugfix_data(self) -> BugfixMetadata:
+    """ This property returns the bugfix's metadata.
+
+      :rtype: BugfixMetadata
+      """
     bugfix_metadata: BugfixMetadata = {}
     if self.bug and self.fix:
       bug_metadata = self.bug.ast_node_data
@@ -77,25 +84,41 @@ class Bugfix():
     return bugfix_metadata
 
   def get_bug_node(self) -> ASTNode:
+    """ This method return the ASTNode object corresponding to the bug
+    
+    : rtype: ASTNode
+    """
     data = self.bug.ast_node_data
     node = eval(data['abstract_node'], vars(ast), {})
     return node
 
   def get_fix_node(self) -> ASTNode:
+    """ This method return the ASTNode object corresponding to the fix 
+    
+    : rtype: ASTNode
+    """
     data = self.fix.ast_node_data
     node = eval(data['abstract_node'], vars(ast), {})
     return node
   
   def get_available_identifiers(self) -> IDTokens:
+    """ This method return all the available identifiers
+    
+    This method uses two instances of `NodeMapper`,
+    in order to obtain both (bug and fix) identifiers
+    and merge them together.
+    
+    : rtype: IDTokens
+    """
     tree_bug = self.bugged_LOC.ast_node
-    rec_bug = NodeMapper(tree_bug, prepare_node=True)
+    bug_mapper = NodeMapper(tree_bug, prepare_node=True)
     tree_fix = self.fixed_LOC.ast_node
-    rec_fix = NodeMapper(tree_fix, prepare_node=True)
+    fix_mapper = NodeMapper(tree_fix, prepare_node=True)
 
-    all_keys = set(rec_bug.id_tokens.keys()).union(set(rec_fix.id_tokens.keys()))
+    all_keys = set(bug_mapper.id_tokens.keys()).union(set(fix_mapper.id_tokens.keys()))
     identifiers: IDTokens = {key:set() for key in all_keys}
     for id in identifiers:
-      set1 = rec_bug.id_tokens.get(id, set())
-      set2 = rec_fix.id_tokens.get(id, set())
+      set1 = bug_mapper.id_tokens.get(id, set())
+      set2 = fix_mapper.id_tokens.get(id, set())
       identifiers[id] = list(set1.union(set2))
     return identifiers

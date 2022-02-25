@@ -1,22 +1,28 @@
+"""
+This module contains the NodeMapper class
+that works as a support class to obtain
+all the identifiers in a given AST.
+"""
 import ast
 import builtins 
-from typing import Type, Callable, List, Union, Any, Dict, Set, AnyStr
+from typing import List, Union, Any, Dict, Set
 from model.abstractor.Visitors import RecursiveVisitor
 
-ASTIdentifier = AnyStr
+ASTIdentifier = str
 ASTIdentifiers = List[ASTIdentifier]
-IDToken = AnyStr
+IDToken = str
 IDTokens = Dict[str, Set[IDToken]]
 ASTNode = ast.AST
 
 class NodeMapper(RecursiveVisitor):
-    """ 
-    This class is used to visit all the nodes in a ast and get the avaiable identifiers 
-    """
+    """ This class is used to visit all the nodes in a ast.AST
+    and get the avaiable identifiers."""
+
     ast_identifiers: ASTIdentifiers
     id_tokens: IDTokens
-
     def __init__(self, ast_node: ASTNode, prepare_node: bool = False) -> None:
+      """Constructor Method"""
+      super().__init__()
       self.ast_identifiers: ASTIdentifiers = ['id', 'n', 's', 'name', 'asname', 'module', 'attr', 'arg']
       self.id_tokens = {}
       if prepare_node:
@@ -26,6 +32,15 @@ class NodeMapper(RecursiveVisitor):
     
     @RecursiveVisitor.recursive
     def generic_visit(self, node: ASTNode) -> None:
+        """ Method to visit all the nodes.
+
+        If the visited node have an identifier,
+        it will be mapped to the self.id_tokens.
+        
+        :param node: The visited node
+        :type  node: ASTNode
+        :rtype: None
+        """
         node_name: str
         node_id: Union[Any, None]
         for ast_id in self.ast_identifiers:
@@ -47,10 +62,24 @@ class NodeMapper(RecursiveVisitor):
     
     @staticmethod
     def is_builtins(obj_name: str) -> bool:
+      """ Method to query membership of an object to builtins.
+      
+      :param obj_name: The object name
+      :type  obj_name: str
+      :rtype: bool
+      """
       return True if (obj_name in dir(builtins)) else False
 
     @staticmethod
     def prepare_node(node: ASTNode) -> ASTNode:
+      """ Method to prepare an ASTNode.
+
+      This method removes the node body, orelse, finalbody properties.
+      
+      :param node: The visited node
+        :type  node: ASTNode
+        :rtype: ASTNode
+      """
       if hasattr(node, 'body'):
         if node.body != []:
           node.body = []

@@ -7,7 +7,6 @@ import hashlib
 from typing import List, Union, Tuple, Type, Dict
 from typing_extensions import TypedDict
 from model.abstractor.NodeMapper import ASTIdentifiers, ASTNode, NodeMapper
-import builtins
 
 UserIdentifier = str
 NodeAbstraction = str
@@ -54,7 +53,7 @@ class NodeAbstractor(NodeMapper):
       and assign a new attribute `abstraction` to the node.
 
       :param node: The AST Node.
-      :type  node: ast.AST
+      :type  node: ASTNode
       :rtype: None
       """
       node.abstraction = self.abstract_node(node)

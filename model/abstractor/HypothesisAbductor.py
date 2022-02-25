@@ -1,27 +1,28 @@
 import ast
-#from ast import * # Needed for eval(ASTNode)
 import astunparse
 import re
 import copy
 import itertools
-import typing
+from typing import Union, Type, Tuple, List
 from model.abstractor.Bugfix import BugfixMetadata
 from model.abstractor.NodeAbstractor import IDMapping, NodeAbstractor, NodeMapping
 from model.abstractor.NodeMapper import ASTIdentifiers, ASTNode, IDTokens
 
 
 class HypothesisAbductor(ast.NodeVisitor):
-
+  """ This is the core class used to abduct a new hypothesis """
   ast_identifiers: ASTIdentifiers
-  abducted_fix: NodeAbstractor
-  actual_bug: NodeAbstractor
+  abducted_fix: Union[None, NodeAbstractor]
+  actual_bug: Union[None, NodeAbstractor]
   bugfix: BugfixMetadata
-  posible_ids: typing.Type[itertools.product]
-  map_tuple_ordering: typing.List
+  posible_ids: Type[itertools.product]
+  map_tuple_ordering: List
 
-  def __init__(self, node_to_abduct: ASTNode, bugfix: BugfixMetadata, available_identifiers: IDTokens = []):
-    """Constructor method
-    """
+  def __init__(self,
+        node_to_abduct: ASTNode,
+        bugfix: BugfixMetadata,
+        available_identifiers: IDTokens = []) -> None:
+    """ Constructor method """
     self.abducted_fix = None
     self.ast_identifiers = ['id', 'n', 's', 'name', 'asname', 'module', 'attr', 'arg']
     self.available_identifiers = self.merge_available_identifiers(
@@ -38,13 +39,24 @@ class HypothesisAbductor(ast.NodeVisitor):
     self.map_tuple_ordering = ordering
     
   def abduct_fix(self) -> None:
+    """ This method controls the abduction process. """
     (new_mapping_id, new_mapping_nodes) = self.next_abductive_mapping()
     self.abducted_fix = eval(self.bugfix['fix_metadata']['abstract_node'], vars(ast), {})
     self.abducted_fix.map_ids = new_mapping_id.copy()
     self.abducted_fix.map_nodes = new_mapping_nodes.copy()
     self.visit(self.abducted_fix)
 
-  def abduct_node(self, node) -> None:
+  def abduct_node(self, node: ASTNode) -> None:
+    """ This method tranforms the given node in a hypothesis
+    
+    This method will transverse all the abstracted identifiers
+    and replace them by a new node mappping, in order to,
+    get a whole new hypothesis.
+
+    :param node: The abstracted node
+    :type  node: ASTNode
+    :rtype: None
+    """
     for ast_id in self.ast_identifiers:
       if hasattr(node, ast_id):
         node_id = getattr(node, ast_id, None)
@@ -64,11 +76,23 @@ class HypothesisAbductor(ast.NodeVisitor):
           setattr(node, ast_id, abduction)
 
   def generic_visit(self, node: ASTNode) -> None:
+    """ Method to visit all the nodes.
+
+    The method `abduct_node` will be applied to all the visited nodes.
+        
+    :param node: The visited node
+    :type  node: ASTNode
+    :rtype: None
+    """
     self.abduct_node(node)
     for child in ast.iter_child_nodes(node):
         self.visit(child)
 
   def diff_node_mapping(self) -> NodeMapping:
+    """ This Method will calculate the difference between two NodeMappings.
+
+    :rtype: NodeMapping
+    """
     map_to_fix = self.bugfix['fix_metadata']['map_nodes']
     map_bug = self.actual_bug.map_nodes.copy()
     all_keys = set(map_to_fix.keys()).union(set(map_bug.keys()))
@@ -82,7 +106,14 @@ class HypothesisAbductor(ast.NodeVisitor):
         map_result[key] = abs(map_to_fix[key] - map_bug[key])
     return map_result
 
-  def get_possible_ids(self) -> typing.Type[itertools.product]:
+  def get_possible_ids(self) -> Type[itertools.product]:
+    """ This Method will calculate the product of the missing IDs.
+
+    The product is a n-tuple of the missing identifiers requiered
+    to fill the abstractions during the `abduct_node` process.
+
+    :rtype: Type[itertools.product]
+    """
     if self.actual_bug is None: return (iter([]), ())
     map_tuple = self.diff_node_mapping()
     n_tuple = []
@@ -94,7 +125,11 @@ class HypothesisAbductor(ast.NodeVisitor):
     # The starred expression is used to unpack a iterable
     return (itertools.product(*n_tuple), n_tuple_ordering)
 
-  def next_abductive_mapping(self) -> typing.Tuple[IDMapping, NodeMapping]:
+  def next_abductive_mapping(self) -> Tuple[IDMapping, NodeMapping]:
+    """ This method generate a Tuple[IDMapping, NodeMapping].
+    
+    : rtype: Tuple[IDMapping, NodeMapping]
+    """
     curr_ids = self.curr_ids
     map_ids_fix = {value:key for key, value in self.actual_bug.map_ids.copy().items()}
     map_nodes_fix = self.actual_bug.map_nodes.copy()
@@ -110,6 +145,7 @@ class HypothesisAbductor(ast.NodeVisitor):
 
   @property
   def hypothesis(self) -> str:
+    """ This property represents the abducted hypothesis """
     if self.abducted_fix:
       LOC = astunparse.unparse(self.abducted_fix)
       #just keep the unicode str of LOC
@@ -118,9 +154,17 @@ class HypothesisAbductor(ast.NodeVisitor):
     return None
 
   def __iter__(self) -> None:
+    """ Class Iterator Constructor """
     return self
 
   def __next__(self) -> str:
+    """ Class Iterator Next Constructor
+
+    This method will iterate over all posible hypothesis
+    until the iterator `self.posible_ids` is exhausted.
+    
+    : rtype: str
+    """
     try:
       self.curr_ids = list(next(self.posible_ids))
     except StopIteration:
@@ -131,7 +175,15 @@ class HypothesisAbductor(ast.NodeVisitor):
       return self.hypothesis
 
   @staticmethod
-  def merge_available_identifiers(id_tokens1: dict, id_tokens2: dict) -> IDTokens:
+  def merge_available_identifiers(id_tokens1: IDTokens, id_tokens2: IDTokens) -> IDTokens:
+    """ This method merge two IDTokens into one.
+    
+    :param id_tokens1: The identifiers mapping 1
+    :type  id_tokens1: IDTokens
+    :param id_tokens2: The identifiers mapping 2
+    :type  id_tokens2: IDTokens
+    :rtype: IDTokens
+    """
     all_keys = set(id_tokens1.keys()).union(set(id_tokens2.keys()))
     identifiers = {key:set() for key in all_keys}
     for id in identifiers:
@@ -142,6 +194,7 @@ class HypothesisAbductor(ast.NodeVisitor):
 
   @staticmethod
   def is_int(x):
+    """ This method check if a given string is an integer type """
     try:
         a = int(x)
     except (TypeError, ValueError):
@@ -151,6 +204,7 @@ class HypothesisAbductor(ast.NodeVisitor):
 
   @staticmethod
   def is_float(x):
+    """ This method check if a given string is a float type """
     try:
         a = float(x)
     except (TypeError, ValueError):
@@ -160,6 +214,7 @@ class HypothesisAbductor(ast.NodeVisitor):
 
   @staticmethod
   def is_complex(x):
+    """ This method check if a given string is a complex type """
     try:
       a = complex(x)
     except (TypeError, ValueError):
