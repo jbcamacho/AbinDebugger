@@ -1,17 +1,23 @@
+"""
+This module contains the NodeAbstractor class
+that is the core class to abract the ASTs.
+"""
 import ast
 import hashlib
-from typing import AnyStr, Union, Tuple, Type, Dict
+from typing import List, Union, Tuple, Type, Dict
 from typing_extensions import TypedDict
 from model.abstractor.NodeMapper import ASTIdentifiers, ASTNode, IDTokens
 import builtins
 
-UserIdentifier = AnyStr
-NodeAbstraction = AnyStr
+UserIdentifier = str
+NodeAbstraction = str
 NodeName = Type[ast.AST.__name__]
 IDMapping = Dict[UserIdentifier, NodeAbstraction]
 NodeMapping = Dict[NodeName, int]
 
 class NodeMetadata(TypedDict):
+  """ This class defines the JSON structure of
+  the abstracted node's metadata"""
   hexdigest: str
   ast_type: str
   abstract_node: str
@@ -19,25 +25,16 @@ class NodeMetadata(TypedDict):
   map_nodes: NodeMapping
 
 class NodeAbstractor(ast.NodeVisitor):
-    """This class is used to abstract an AST node into a DAG.
-
-    :param logical_LOC: The tuple representing the logical line of Python code.
-    :type  logical_LOC: Tuple[str, int, int]
-    :param node_to_abstract: The AST Node representing the given logical LOC.
-    :type  node_to_abstract: ast.AST
-    """
+    """ This class is used to abstract an AST node. """
     ast_identifiers: ASTIdentifiers
     ast_node: ASTNode
-    id_tokens: IDTokens
-    line_no: int
-    source_code: str
     map_ids: IDMapping
     map_nodes: NodeMapping
+    adj_lst: List
 
     def __init__(self, node_to_abstract: ASTNode, 
                  nodes_mapping: Union[Tuple[IDMapping, NodeMapping], None] = None) -> None:
-      """Constructor method
-      """
+      """Constructor Method"""
       self.ast_identifiers = ['id', 'n', 's', 'name', 'asname', 'module', 'attr', 'arg']
       self.ast_node = self.prepare_node(node_to_abstract)
       self.adj_lst = {}
@@ -45,8 +42,7 @@ class NodeAbstractor(ast.NodeVisitor):
         self.map_ids = {}
         self.map_nodes = {}
       else:
-        self.map_ids = nodes_mapping[0]
-        self.map_nodes = nodes_mapping[1]
+        (self.map_ids, self.map_nodes) = nodes_mapping
       
       self.visit(self.ast_node)
 
