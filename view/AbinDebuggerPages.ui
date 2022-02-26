@@ -381,16 +381,6 @@
       </property>
      </widget>
     </item>
-    <item row="10" column="0">
-     <widget class="QLabel" name="lblLogging">
-      <property name="text">
-       <string>Logging</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
     <item row="6" column="3">
      <widget class="QSpinBox" name="snbComplexity">
       <property name="alignment">
@@ -471,6 +461,16 @@ Test Timeout</string>
       </property>
       <property name="value">
        <number>1</number>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0" alignment="Qt::AlignTop">
+     <widget class="QLabel" name="lblLogging">
+      <property name="text">
+       <string>Logging</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </item>
