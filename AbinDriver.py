@@ -328,7 +328,14 @@ class AbinDriver(AbinView):
             {new_observation}
             """
         )
-        self.debug_result = (model_name, abinDebugger.candidate, abinDebugger.bugfixing_hyphotesis, behavior, prev_observation, new_observation)
+        self.debug_result = (
+            model_name, 
+            abinDebugger.candidate, 
+            abinDebugger.bugfixing_hyphotesis, 
+            behavior, 
+            prev_observation, 
+            new_observation
+        )
 
     def testDBConn(self):
         """ This method establish a connection to the database """

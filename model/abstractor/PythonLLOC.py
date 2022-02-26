@@ -104,6 +104,28 @@ class PythonLLOC(NodeMapper):
           return node
     return None
 
+  def get_nested_node(self) -> Union[str, None]:
+    """ This method returns the a nested node name.
+
+    If the Logical LOC is part of a elif structure
+    then 'elif' will be returned.
+    
+    :rtype: Union[str, None]
+    """
+    loc = None
+    try:
+      logical_LOC = self.logical_LOC
+    except Exception as e:
+      print(f"An exception ocurred during the parsing.")
+      print(f"Unable to parse the LOC at line no. {self.line_no}.")
+      print(f"<--Exception Message-->\n\t{e}\n<--Exception Message-->")
+      return None
+    
+    loc = logical_LOC[0]
+    if re.search('elif.*', loc):
+      return 'elif'
+    return None
+
   def get_available_identifiers(self) -> IDTokens:
     """ This Method will returns all the identifiers in an ASTNode.
         

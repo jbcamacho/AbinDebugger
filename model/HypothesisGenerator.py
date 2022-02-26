@@ -34,6 +34,7 @@ class HypothesisGenerator():
     matching_patterns: MatchingPatterns
     hypotheses_set: Iterator[Hypotheses]
     max_complexity: int
+    nested_node: str
 
     def __init__(self, influence_path: list, max_complexity: int = 3) -> None:
         """ Constructor Method """
@@ -49,6 +50,7 @@ class HypothesisGenerator():
         self.LogicalLOC = PythonLLOC
         self.abductor = HypothesisAbductor
         self.node_abstractor = NodeAbstractor
+        self.nested_node = None
 
     def get_bug_candidate(self) -> int:
         """ This method return the next bug candidate in the iterator.
@@ -117,15 +119,16 @@ class HypothesisGenerator():
         hypotheses = HypothesisAbductor(bugged_node, pattern, available_identifiers)
         return iter(hypotheses)
 
-    def build_hypothesis_model(self, hypothesis: Hypothesis) -> bool:
+    def build_hypothesis_model(self, hypothesis: Hypothesis) -> Union[str, None]:
         """ This methos create a new model to test the given hypothesis.
         
         :param hypothesis: The hypothesis that need a model.
         :type  hypothesis: Hypothesis
-        : rtype: bool
+        :rtype: Union[str, None]
         """
         new_model_src = self.get_current_model()
-        
+        if self.nested_node == 'elif' and re.search('if.*', hypothesis):
+            hypothesis = 'el' + hypothesis
         indent = re.split('\w', new_model_src[self.candidate - 1])
         hypothesis = indent[0] + hypothesis + '\n'
         new_model_src[self.candidate - 1] = hypothesis
@@ -139,9 +142,9 @@ class HypothesisGenerator():
                 m.writelines(new_model_src)
         except Exception as e:
             AbinLogging.debugging_logger.exception(f"Unable to parse the new model {new_model_filename}.")
-            return False
+            return None
         #self.abduction_depth += 1
-        return True
+        return hypothesis
 
     def __iter__(self) -> None:
         """ Class Iterator Constructor """
@@ -191,10 +194,11 @@ class HypothesisGenerator():
                 
                 model = self.get_current_model()
                 logical_loc = self.LogicalLOC(self.candidate, ''.join(model))
+                self.nested_node = logical_loc.get_nested_node()
                 ast_bug_candidate = deepcopy(logical_loc.ast_node)
                 available_identifiers = logical_loc.get_available_identifiers()
                 self.hypotheses_set = self.apply_bugfix_pattern(ast_bug_candidate, pattern, available_identifiers)
-        self.build_hypothesis_model(hypothesis)
+        hypothesis = self.build_hypothesis_model(hypothesis)
         self.abduction_breadth += 1
 
         return ('model1.py', hypothesis)

@@ -62,7 +62,7 @@ class AbinModel():
         if behavior == Behavior.Correct:
             AbinLogging.debugging_logger.debug(f"\nSUCCESSFUL REPAIR!")
             return (model_name, behavior, prev_observation, [])
-        hypotheses_generator = self.hypotheses_generation(influence_path)
+        hypotheses_generator = self.hypotheses_generation(influence_path, self.max_complexity)
         with hypotheses_generator:
             for i, (model_name, hypothesis) in enumerate(hypotheses_generator):
                 AbinLogging.debugging_logger.info(f"""
