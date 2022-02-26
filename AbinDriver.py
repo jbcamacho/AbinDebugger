@@ -33,6 +33,7 @@ class AbinDriver(AbinView):
     def __init__(self, parent=None, abin_debugger: AbInModel = AbinModel):
         """ Constructor Method """
         super().__init__(parent)
+        self.defaultFontSize = self.font().pointSize()
         self._connectActions()
         self.csvTestSuite = None
         self.csvTestTypes = None  
@@ -53,6 +54,11 @@ class AbinDriver(AbinView):
         self.saveAction.triggered.connect(self.saveDebuggedProgram)
         self.exitAction.triggered.connect(self.close)
         
+        # Connect View actions
+        self.zoomDefaultAction.triggered.connect(lambda: self.setStyleSheet(f"font-size: {self.defaultFontSize}pt;"))
+        self.zoomInAction.triggered.connect(lambda: self.setStyleSheet(f"font-size: {self.font().pointSize() + 1}pt;"))
+        self.zoomOutAction.triggered.connect(lambda: self.setStyleSheet(f"font-size: {self.font().pointSize() - 1}pt;"))
+
         # Connect Connection actions
         self.connectAction.triggered.connect(self.testDBConn)
 

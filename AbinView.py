@@ -35,7 +35,9 @@ class AbinView(QMainWindow):
         self.setWindowTitle("Abin Debugger")
         self.setWindowIcon(QIcon(":radar.png"))
         self.resize(1000, 800)
-        
+        self._setupUI()
+    
+    def _setupUI(self):
         self.centralWidget = QFrame()
         self.setCentralWidget(self.centralWidget)
         self._resetLayout()
@@ -49,11 +51,12 @@ class AbinView(QMainWindow):
         self.databasePage = self.allPages.findChild(QWidget, 'databasePage')
         self.allPages.findChild(QTableWidget, 'tableTestSuite').horizontalHeader().setVisible(True)
         self.allPages.findChild(QTableWidget, 'tableTypes').horizontalHeader().setVisible(True)
+
         self._createActions()
         self._createMenuBar()
         self._createToolBars()
         self._createStatusBar()
-    
+
     def _createMenuBar(self):
         """ This method creates the UI's menu bar"""
         menuBar = self.menuBar()
@@ -65,6 +68,11 @@ class AbinView(QMainWindow):
         fileMenu.addAction(self.saveAction)
         fileMenu.addSeparator()
         fileMenu.addAction(self.exitAction)
+
+        viewMenu = menuBar.addMenu("&View")
+        viewMenu.addAction(self.zoomDefaultAction)
+        viewMenu.addAction(self.zoomInAction)
+        viewMenu.addAction(self.zoomOutAction)
 
         databaseMenu = menuBar.addMenu("&Connection")
         databaseMenu.addAction(self.connectAction)
@@ -151,6 +159,10 @@ class AbinView(QMainWindow):
         self.saveAction.setToolTip("Save Debugged Program")
         self.exitAction = QAction("&Exit", self)
         
+        self.zoomDefaultAction = QAction("&Default Zoom", self)
+        self.zoomInAction = QAction("Zoom &In", self)
+        self.zoomOutAction = QAction("Zoom &Out", self)
+
         self.connectAction = QAction(QIcon(":database.svg"), "&Connect DB", self)
         self.connectAction.setToolTip("Connect to database")
 
