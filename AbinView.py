@@ -1,3 +1,7 @@
+"""
+This module is the view of the system.
+This is the view representation of the MVC software pattern.
+"""
 import sys
 import resources.qrc_resources as qrc_resources
 from PyQt5.QtCore import Qt, QSize, QTimer
@@ -11,18 +15,22 @@ from PyQt5.QtWidgets import (
 from controller.DebugController import ConnectionStatus
 
 class AbinDebuggerPages(QStackedWidget):
+    """ This class loads the pages' UI """
     def __init__(self, parent = None):
+        """ Constructor Method """
         QStackedWidget.__init__(self, parent)
         uic.loadUi('view/AbinDebuggerPages.ui', self)
 class VLine(QFrame):
-    # a simple VLine, like the one you get from designer
+    """ This class creates a simple VLine.
+    The VLine is used to separate the status bar labels."""
     def __init__(self):
+        """ Constructor Method """
         super(VLine, self).__init__()
         self.setFrameShape(self.VLine|self.Sunken)
 class AbinView(QMainWindow):
-    """Main Window."""
+    """ This class is the encapsulation of the view"""
     def __init__(self, parent=None):
-        """Initializer."""
+        """ Constructor Method """
         super().__init__(parent)
         self.setWindowTitle("Abin Debugger")
         self.resize(1000, 800)
@@ -46,6 +54,7 @@ class AbinView(QMainWindow):
         self._createStatusBar()        
     
     def _createMenuBar(self):
+        """ This method creates the UI's menu bar"""
         menuBar = self.menuBar()
         
         #fileMenu = menuBar.addMenu(QIcon(":menu.svg"), "&Menu")
@@ -66,6 +75,7 @@ class AbinView(QMainWindow):
         helpMenu.addAction(self.githubAction)
 
     def _createStatusBar(self):
+        """ This method creates the UI's status bar"""
         self.statusbar = self.statusBar()
                 
         self.statusLabel = QLabel()
@@ -91,7 +101,8 @@ class AbinView(QMainWindow):
         self.statusbar.showMessage("UI Ready!", 1500)
 
     def _createToolBars(self):
-        # 
+        """ This method creates the UI's tool bars"""
+
         fileToolBar = self.addToolBar("Menu")
         fileToolBar.addAction(self.loadModelAction)
         fileToolBar.addAction(self.loadTestAction)
@@ -129,7 +140,8 @@ class AbinView(QMainWindow):
         SideToolBar.setMovable(False)
 
     def _createActions(self):
-        # Creating actions using the second constructor
+        """ This method creates the UI's actions"""
+
         self.loadModelAction = QAction(QIcon(":load-model.svg"), "&Open Defective Program...", self)
         self.loadModelAction.setToolTip("Load Bugged Program")
         self.loadTestAction = QAction(QIcon(":load-test.svg"), "&Open Test Suite...", self)
@@ -160,6 +172,7 @@ class AbinView(QMainWindow):
         self.timer = QTimer()
 
     def _resetLayout(self, layout = None, layout_type = QVBoxLayout):
+        """ This method reset the UI's layout"""
         if layout is not None:
             while layout.count():
                 item = layout.takeAt(0)
@@ -173,26 +186,6 @@ class AbinView(QMainWindow):
         self.mainLayout.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.centralWidget.setLayout(self.mainLayout)
         
-    def _addDatabasePage(self):
-        pass
-
-    def _addCommandPage(self):
-        pass
-
-    def _addHomePage(self):
-        pass
-
-    def _addMiningPage(self):
-        pass
-
-    def _addStatsPage(self):
-        pass
-
-    def _addSettingsPage(self):
-        pass  
-        
-
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

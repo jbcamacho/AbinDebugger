@@ -1,5 +1,8 @@
 """
-
+This module contains the FaultLocalizator class.
+This class in charge of locate the most suspicious lines of code
+that may hold a defect.
+This is one of the core modules used to automatically repair a defect.
 """
 from model.debugger.AbinDebugger import Debugger, AbinDebugger, InfluencePath
 from typing import Tuple, Type, List, Any, Union, Optional, TypeVar
@@ -26,6 +29,7 @@ TestCase = Tuple[Test, InputArgs, ExpectedOutput]
 Observation = List[TestResult]
 
 class FaultLocalizator():
+    """ This class is used to automatically locate a defective LOC """
     time_out=3
     influence_path: InfluencePath
 
@@ -33,6 +37,7 @@ class FaultLocalizator():
                 path_bugged_file: str,
                 test_cases: List[TestCase],
                 debugger: Debugger = AbinDebugger) -> None:
+        """ Constructor Method """
         AbinLogging.debugging_logger.debug('Init FaultLocalizator')
         self.func_name = func_name
         self.path_bugged_file = path_bugged_file
@@ -45,6 +50,7 @@ class FaultLocalizator():
         self.prev_observation = None
 
     def __enter__(self) -> Any:
+        """ Context manager method used to initialize the defective model/program """
         if self.prepare_bugged_file():
             AbinLogging.debugging_logger.debug('Entering FaultLocalizator')
             self.model_name = 'model0'
@@ -62,6 +68,19 @@ class FaultLocalizator():
 
     def __exit__(self, exc_tp: Type, exc_value: BaseException,
                  exc_traceback: TracebackType) -> Optional[bool]:
+        """ Context manager method to ignore/consume all the exceptions.
+        
+        This method is used to void a raising exception that occurred
+        during the execution of the class methods.
+
+        :param exc_tp: Type of the raised exception.
+        :type  exc_tp: Type
+        :param exc_value: The raised exception object.
+        :type  exc_value: BaseException
+        :param exc_traceback: The trace-back object of the exception.
+        :type  exc_traceback: TracebackType
+        :rtype: bool
+        """
         AbinLogging.debugging_logger.debug('Exiting FaultLocalizator')
               
         if exc_tp is not None:
@@ -80,6 +99,20 @@ class FaultLocalizator():
         return True  # Ignore exception, if any
 
     def automatic_test(self, check_consistency: bool = False) -> Tuple[Observation, InfluencePath]:
+        """ This method returns an observation of the executed test cases and a inflience path.
+        
+        
+        This method test all the test cases against the provided model.
+        Also, it feed a debugger that relies on the statistical analisis 
+        of the observed events during the execution of the test cases
+        to automatically detect the most suspicios LOC that may hold the defect.
+        
+        
+        :param check_consistency: A control variable to enter
+        to the check_result_consistency method.
+        :type  check_consistency: bool
+        :rtype: Tuple[Observation, InfluencePath]
+        """
         new_observation: Observation = [('UndefinedTest', FailedTest) for i in range(len(self.test_cases))]
         test_result: ExpectedOutput
         debugger: Debugger = self.debugger()
@@ -125,12 +158,19 @@ class FaultLocalizator():
         return (self.observation, self.influence_path)
 
     def run_test(self, input_args) -> ExpectedOutput:
+        """ Dummy Method for futher implementations """
         return self.func(*input_args)
     
-    def are_all_test_pass(self):
+    def are_all_test_pass(self) -> bool:
+        """ This method check if the whole test suite's outcome is PassedTest 
+        :rtype: bool
+        """
         return FailedTest not in map(lambda x: x[1], self.observation)
 
     def prepare_bugged_file(self) -> bool:
+        """ This method prepares the provided model/program to be used by the class itself.
+        :rtype: bool
+        """
         path = self.path_bugged_file
         try:
             with open(path, 'r') as f:
@@ -155,6 +195,17 @@ class FaultLocalizator():
     def check_result_consistency(self, 
                             curr_test_result: TestResult, 
                             test_case_id: int) -> bool:
+        """ This method checks the consistency of two test cases.
+
+        This method checks the consistency of the current test case
+        agaist the same test case observed in a previous observation.
+
+        :param curr_test_result: Current test case.
+        :type  curr_test_result: TestResult
+        :param test_case_id: Current test case identifier.
+        :type  test_case_id: int
+        :rtype: bool
+        """
         if self.prev_observation is None:
             return True # Cannot check consistency if there not previous observations
         prev_test_result = self.prev_observation[test_case_id]
@@ -172,7 +223,7 @@ class FaultLocalizator():
 
     @staticmethod
     def clean_temporal_files(curr_dir: Path) -> None:
-
+        """ This method cleans up the temporal folder """
         with curr_dir.joinpath('temp') as temp_dir:
             if temp_dir.exists():
                 remove_dir(temp_dir)

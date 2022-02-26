@@ -1,9 +1,14 @@
+"""
+This module is the controller of the system.
+This is the controller representation of the MVC software pattern.
+"""
 import sys
 import builtins
 from AbinView import AbinView
 from AbinModel import AbinModel
-from typing import Type
+from typing import Tuple, Type
 import pandas as pd
+from pandas import DataFrame
 from webbrowser import open as linkOpen
 from PyQt5.QtWidgets import (
     QApplication, QMessageBox, QFileDialog,
@@ -24,8 +29,9 @@ AbInView = Type[AbinView]
 
 
 class AbinDriver(AbinView):
-    
+    """ This class is the encapsulation of the controller"""
     def __init__(self, parent=None, abin_debugger: AbInModel = AbinModel):
+        """ Constructor Method """
         super().__init__(parent)
         self._connectActions()
         self.csvTestSuite = None
@@ -40,6 +46,7 @@ class AbinDriver(AbinView):
         self.lstRepos = None
           
     def _connectActions(self):
+        """ This method connect all the signals to a QWidget object"""
         # Connect File actions
         self.loadModelAction.triggered.connect(self.loadModel)
         self.loadTestAction.triggered.connect(self.loadTestSuite)
@@ -92,38 +99,47 @@ class AbinDriver(AbinView):
         self.timer.timeout.connect(self._showDebugTime)
 
     def _showDebugTime(self):
+        """ This method show the debug elapsed time in the status bar """
         self._debug_elapsed_time += 1
         self.statusDebugging.setText(f"  Debug in progress... elapsed time: {self._debug_elapsed_time/10} sec(s)  ")
 
     def _resetDebugTimer(self):
+        """ This method resets the debug QTimer """
         self._debug_elapsed_time = 0
         self.timer.start(100)
     
     def _stopDebugTimer(self):
+        """ This method stops the debug QTimer """
         self.timer.stop()
         self.statusDebugging.setText(f"  Debugging finished total elapsed time: {self._debug_elapsed_time/10} sec(s)  ")
 
     def toHomePage(self) -> None:
+        """ This method set the QStackedWidget to the QWidget homePage """
         self.allPages.setCurrentWidget(self.homePage)
         self.statusLabel.setText(f"  Home  ")
 
     def toTestSuitePage(self) -> None:
+        """ This method set the QStackedWidget to the QWidget toTestSuitePage """
         self.allPages.setCurrentWidget(self.testSuitePage)
         self.statusLabel.setText(f"  Test Suite  ")
 
     def toDebuggerPage(self) -> None:
+        """ This method set the QStackedWidget to the QWidget toDebuggerPage """
         self.allPages.setCurrentWidget(self.AbductionPage)
         self.statusLabel.setText(f"  Debugger  ")
     
     def toMiningPage(self) -> None:
+        """ This method set the QStackedWidget to the QWidget toMiningPage """
         self.allPages.setCurrentWidget(self.miningPage)
         self.statusLabel.setText(f"  Mining  ")
 
     def toDatabasePage(self) -> None:
+        """ This method set the QStackedWidget to the QWidget toDatabasePage """
         self.allPages.setCurrentWidget(self.databasePage)
         self.statusLabel.setText(f"  Database  ")
 
     def contactInfo(self):
+        """ This method shows up a messagebox showing the contact info"""
         QMessageBox.about(self,
             "Contact Info",
             "<center>Automatic Debugging of Semantic Bugs in Python Programs Using Abductive Inference</center>"
@@ -133,13 +149,22 @@ class AbinDriver(AbinView):
         )
     
     def about(self):
+        """ This method shows up a messagebox showing the about info"""
         QMessageBox.about(self,
             "AbinDebugger V1.0",
             "<center>This software was developed as part of a Master's Thesis.</center>",
         )
 
-    def loadTestSuite(self):
+    def loadTestSuite(self) -> Tuple[DataFrame, DataFrame]:
+        """ This method loads the test suite.
+        
+        This method will popup a window for the user to select a .csv file
+        that corresponds to the test suite of the bugged program.
+
+        : rtype: Tuple[DataFrame, DataFrame]
+        """
         def parse_csv_data(data):
+            """ This method parses the .csv file into a pandas dataframe """
             from json import loads
             parsed_data = pd.DataFrame()
             parsed_types = []
@@ -188,7 +213,13 @@ class AbinDriver(AbinView):
         AbinLogging.debugging_logger.info(f'Loaded Test Suite from {csv_file[0]}')
 
     def loadModel(self):
+        """This method loads the bugged program.
+        
+        This method will popup a window for the user to select a .py file
+        that corresponds to the bugged program.
+        """
         def get_all_func_names(module_path) -> list:
+            """ This method return all the function names in the bugged program """
             from importlib.util import spec_from_file_location, module_from_spec
             from inspect import getmembers, isfunction, ismethod
             file = module_path.split('/')[-1]
@@ -210,7 +241,14 @@ class AbinDriver(AbinView):
         self.AbductionPage.findChild(QComboBox, 'cmbTargetFunction').addItems(func_names)
         AbinLogging.debugging_logger.info(f'Loaded Defective Program from {self.bugged_file_path}')
             
-    def saveDebuggedProgram(self):
+    def saveDebuggedProgram(self) -> bool:
+        """ This method saves the repaired program.
+
+        This method will popup a window for the user to select a path
+        to save the repaired program.
+        
+        : rtype: bool
+        """
         if self.debugged_program is None:
             return QMessageBox.information(self, 
                 "Unable to perform action",
@@ -229,6 +267,7 @@ class AbinDriver(AbinView):
         return 1
 
     def runAutoDebug(self):
+        """ This method execute the AutoDebugTask in a Qthread """
         if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Undefined:
             return QMessageBox.warning(self, "Warning!", "<p>Please connect a Database.</p>")
         if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Established:
@@ -251,6 +290,7 @@ class AbinDriver(AbinView):
         self.AutoDebug.start()
     
     def finishedAutoDebug(self):
+        """ This method is executed when AutoDebugTask finishes """
         self.btnRunAutoDebug.setEnabled(True)
         self._stopDebugTimer()
         if self.debug_result is not None:
@@ -271,6 +311,7 @@ class AbinDriver(AbinView):
             msgResult.information(self, msgTitle, msgText)    
 
     def AutoDebugTask(self):
+        """ This method encapsulates the Automatic Repair of the Bugged Program """
         self.txtLogging.clear()
         self.debug_result = None
         AbinLogging.debugging_logger.info('Initializing Debugger...')
@@ -290,6 +331,7 @@ class AbinDriver(AbinView):
         self.debug_result = (model_name, abinDebugger.candidate, abinDebugger.bugfixing_hyphotesis, behavior, prev_observation, new_observation)
 
     def testDBConn(self):
+        """ This method establish a connection to the database """
         self.txtConnectionStatus.setPlainText('')
         txtHost = self.databasePage.findChild(QLineEdit, 'txtHost')
         host = txtHost.text()
@@ -326,6 +368,10 @@ class AbinDriver(AbinView):
         self.statusDatabase.setText(f"  DataBase Connection: {conn_status.name}  ")
         
     def downloadRepos(self) -> bool:
+        """ This method encapsulates the task of downloading the repositories to be mined.
+        
+        : rtype: bool
+        """
         spnNoRepos = self.miningPage.findChild(QSpinBox, 'spnNoRepos')
         spnNoRepoPages = self.miningPage.findChild(QSpinBox, 'spnNoRepoPages')
         cmbLanguage = self.miningPage.findChild(QComboBox, 'cmbLanguage')
@@ -341,6 +387,13 @@ class AbinDriver(AbinView):
         return 1
 
     def loadRepos(self, file_path: str = '') -> bool:
+        """ This method load a .json file that contains the data of the repositories to be mined.
+        
+        :param file_path: The path to the .json file
+        that will be loaded.
+        :type  file_path: str
+        : rtype: bool
+        """
         from json import load
         if file_path:
             repos_file = file_path
@@ -360,6 +413,7 @@ class AbinDriver(AbinView):
         return 1
         
     def mineRepos(self):
+        """ This method execute the miningTask in a Qthread """
         if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Undefined:
             return QMessageBox.warning(self, "Warning!", "<p>Please connect a Database.</p>")
         if self.lstRepos is None:
@@ -367,9 +421,11 @@ class AbinDriver(AbinView):
         self.miningThread.start()
 
     def finishedMineRepos(self):
+        """ This method is executed when miningTask finishes """
         self.statusMining.setText(f"  Mining Process: IDLE  ")
 
     def miningTask(self):
+        """ This method encapsulates the bug mining task """
         txtDatabase = self.miningPage.findChild(QLineEdit, 'txtReposDatabase')
         db_name = txtDatabase.text()
         if not db_name:
@@ -423,12 +479,13 @@ class AbinDriver(AbinView):
                 )
 
     def stopMineRepos(self):
+        """ Abstract Method """
         pass
 
 
 
 def debugger_is_active() -> bool:
-    """Return if the debugger is currently active"""
+    """ This method return if the debugger is currently active """
     gettrace = getattr(sys, 'gettrace', lambda : None) 
     return gettrace() is not None
 

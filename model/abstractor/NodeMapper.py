@@ -21,7 +21,7 @@ class NodeMapper(RecursiveVisitor):
     ast_identifiers: ASTIdentifiers
     id_tokens: IDTokens
     def __init__(self, ast_node: ASTNode, prepare_node: bool = False) -> None:
-      """Constructor Method"""
+      """ Constructor Method """
       super().__init__()
       self.ast_identifiers: ASTIdentifiers = ['id', 'n', 's', 'name', 'asname', 'module', 'attr', 'arg']
       self.id_tokens = {}

@@ -1,6 +1,11 @@
-from typing import List, Type, Optional
+"""
+This module is the model of the system.
+This is the model representation of the MVC software pattern.
+"""
+import sys
+from typing import List, Type, Optional, Tuple
 from types import TracebackType
-from model.FaultLocalizator import FaultLocalizator, TestCase
+from model.FaultLocalizator import FaultLocalizator, TestCase, Observation, InfluencePath
 from model.HyphotesisTester import Behavior, HyphotesisTester
 from model.HypothesisGenerator import HypothesisGenerator
 import pandas as pd
@@ -13,7 +18,7 @@ Generator = HypothesisGenerator
 Refinement = 'HypothesisRefinement'
 
 class AbinModel():
-
+    """ This class is the encapsulation of the model"""
     function_name: str
     bugged_file_path: str
     test_suite: List[TestCase]
@@ -22,25 +27,29 @@ class AbinModel():
     hypotheses_generator: Generator
     current_behavior: Behavior
     max_complexity: int
+    candidate: int
+    bugfixing_hyphotesis: str
 
     def __init__(self, function_name: str, bugged_file_path: str, test_suite: List[TestCase],
                 max_complexity: int = 3,
                 localizator: Localizator = FaultLocalizator,
                 tester: Tester = HyphotesisTester,
                 generator: Generator = HypothesisGenerator) -> None:
-
+        """ Constructor Method """
         self.function_name = function_name
         self.bugged_file_path = bugged_file_path
         self.test_suite = test_suite
         self.max_complexity = max_complexity
         self.candidate = None
         self.bugfixing_hyphotesis = None
-
         self.fault_localizator = localizator
         self.hyphotesis_tester = tester
         self.hypotheses_generator = generator
     
-    def start_auto_debugging(self):
+    def start_auto_debugging(self) -> Tuple[str, Behavior, Observation, Observation]:
+        """ This method encapsulates the whole debugging process.
+        :rtype: Tuple[str, Behavior, Observation, Observation]
+        """
         (model_name, behavior, prev_observation, influence_path) = self.fault_localization()
         AbinLogging.debugging_logger.info(f"""
             Observations:
@@ -85,8 +94,10 @@ class AbinModel():
         AbinLogging.debugging_logger.debug(f"\nUNABLE TO REPAIR!")
         return ('', behavior, prev_observation, new_observation)
         
-
-    def fault_localization(self):
+    def fault_localization(self) -> Tuple[str, Behavior, Observation, InfluencePath]:
+        """ This method encapsulates the fault localization process.
+        : rtype: Tuple[str, Behavior, Observation, InfluencePath]
+        """
         model_name = ''
         behavior = Behavior.Undefined
         prev_observation = []
@@ -99,10 +110,30 @@ class AbinModel():
                 behavior = Behavior.Correct
         return (model_name, behavior, prev_observation, influence_path)
 
-    def hypotheses_generation(self, influence_path, max_complexity=3):
+    def hypotheses_generation(self, 
+        influence_path: InfluencePath, 
+        max_complexity: int = 3) -> Generator:
+        """ This method encapsulates the hypotheses generation process.
+
+        :param influence_path: The visited node
+        :type  influence_path: InfluencePath
+        :param max_complexity: The maximun hypothesis' complexity allowed.
+        :type  max_complexity: int
+        :rtype : Tuple[Behavior, Observation]
+        """
         return self.hypotheses_generator(influence_path, max_complexity)
 
-    def hyphotesis_testing(self, prev_observation, model_name):
+    def hyphotesis_testing(self, 
+        prev_observation: Observation, 
+        model_name: str) -> Tuple[Behavior, Observation]:
+        """ This method encapsulates the hypothesis testing process.
+        
+        :param prev_observation: The previous observation.
+        :type  prev_observation: Observation
+        :param model_name: The model's name.
+        :type  model_name: str
+        :rtype : Tuple[Behavior, Observation]
+        """
         behavior = Behavior.Undefined
         new_observation = []
         influence_path = []
@@ -117,10 +148,21 @@ class AbinModel():
         pass
     
     def __enter__(self):
+        """ Context manager method """
         return self
 
     def __exit__(self, exc_tp: Type, exc_value: BaseException,
                  exc_traceback: TracebackType) -> Optional[bool]:
+        """ Context manager method to re-raise exceptions that happened during the process.
+        
+        :param exc_tp: Type of the raised exception.
+        :type  exc_tp: Type
+        :param exc_value: The raised exception object.
+        :type  exc_value: BaseException
+        :param exc_traceback: The trace-back object of the exception.
+        :type  exc_traceback: TracebackType
+        :rtype: bool
+        """
         if exc_tp is not None:
             AbinLogging.debugging_logger.warning(f"""
                 An error ocurred during in the model execution.
@@ -129,6 +171,8 @@ class AbinModel():
                 """
             )
         #return True  # Ignore exception, if any
+
+
 
 def parse_csv_data(data):
   from json import loads
@@ -178,8 +222,7 @@ def main():
     (model_name, behavior, prev_observation, new_observation) = abin.start_auto_debugging()
 
 def debugger_is_active() -> bool:
-    import sys
-    """Return if the debugger is currently active"""
+    """ This method return if the debugger is currently active """
     gettrace = getattr(sys, 'gettrace', lambda : None) 
     return gettrace() is not None
 

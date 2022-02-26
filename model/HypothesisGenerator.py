@@ -1,25 +1,27 @@
 """
-
+This module contains the HypothesisGenerator class.
+This class in charge of generating new hypotheses to repaor a defect.
+This is one of the core modules used to automatically repair a defect.
 """
 from copy import deepcopy
 from pathlib import Path
 from typing import List, Iterator, Tuple, Union, Type, Optional
 from types import TracebackType
-from model.abstractor.NodeAbstractor import NodeAbstractor
+from model.abstractor.NodeAbstractor import NodeAbstractor, NodeAbstraction
 from model.abstractor.PythonLLOC import PythonLLOC
 from model.abstractor.HypothesisAbductor import HypothesisAbductor
-from model.abstractor.Bugfix import BugfixMetadata
-from model.abstractor.NodeMapper import ASTNode
+from model.abstractor.NodeMapper import ASTNode, IDTokens
 import controller.AbinLogging as AbinLogging
 import controller.DebugController as DebugController
 import re
-import pymongo
+from pymongo import MongoClient
 
-MatchingPatterns = Iterator[BugfixMetadata]
+MatchingPattern = NodeAbstraction
+MatchingPatterns = Iterator[MatchingPattern]
 Hypothesis = str
 Hypotheses = List[Hypothesis]
 class HypothesisGenerator():
-    
+    """ This class is used to automatically generate a set of hypotheses """
     abduction_depth: int
     abduction_breadth: int
     complexity: int
@@ -34,6 +36,7 @@ class HypothesisGenerator():
     max_complexity: int
 
     def __init__(self, influence_path: list, max_complexity: int = 3) -> None:
+        """ Constructor Method """
         self.abduction_depth = 0
         self.abduction_breadth = 0
         self.complexity = 0
@@ -48,14 +51,29 @@ class HypothesisGenerator():
         self.node_abstractor = NodeAbstractor
 
     def get_bug_candidate(self) -> int:
+        """ This method return the next bug candidate in the iterator.
+        : rtype: int
+        """
         return next(self.bug_candidates)
 
     def abstract_bug_candidate(self, ast_bug_candidate: ASTNode) -> str:
+        """ This method return hexdigest of the abstracted node.
+        : rtype: str
+        """
         bugged_node_abstract = self.node_abstractor(ast_bug_candidate)
         hexdigest = bugged_node_abstract.ast_hexdigest
         return hexdigest
 
     def get_matching_patterns(self, ast_node_hexdigest: str) -> Tuple[MatchingPatterns, int]:
+        """ This method query the database to obtain a list of MatchingPatterns
+        
+        The hex digest of the abstracted node is used to query
+        all identical patterns in the database. The query is an aggregator.
+
+        :param ast_node_hexdigest: the hexdigest of the abstracted node.
+        :type  ast_node_hexdigest: str
+        : rtype: Tuple[MatchingPatterns, int]
+        """
         config = DebugController.DATABASE_SETTINGS
         db_connection = self.mongodb_connection()
         collection_BugPatterns = db_connection[config['COLLECTION']]
@@ -79,12 +97,33 @@ class HypothesisGenerator():
         self.matching_patterns = matching_patterns
         return (matching_patterns, matching_patterns_count)
     
-    def apply_bugfix_pattern(self, bugged_node, pattern, available_identifiers) -> Iterator[Hypotheses]:
+    def apply_bugfix_pattern(self, 
+        bugged_node: NodeAbstractor, 
+        pattern: MatchingPattern, 
+        available_identifiers: IDTokens) -> Iterator[Hypotheses]:
+        """ This method apply the fix pattern to the abstracted node.
+
+        This method return a iterator of hypotheses generated
+        by the application of the fix pattern.
+        
+        :param bugged_node: The abstracted node object.
+        :type  bugged_node: NodeAbstractor
+        :param pattern: The fix pattern.
+        :type  pattern: MatchingPattern
+        :param available_identifiers: the hexdigest of the abstracted node.
+        :type  available_identifiers: IDTokens
+        : rtype: Iterator[Hypotheses]
+        """
         hypotheses = HypothesisAbductor(bugged_node, pattern, available_identifiers)
         return iter(hypotheses)
 
-    def build_hypothesis_model(self, hypothesis: Hypothesis) -> None:
+    def build_hypothesis_model(self, hypothesis: Hypothesis) -> bool:
+        """ This methos create a new model to test the given hypothesis.
         
+        :param hypothesis: The hypothesis that need a model.
+        :type  hypothesis: Hypothesis
+        : rtype: bool
+        """
         new_model_src = self.get_current_model()
         
         indent = re.split('\w', new_model_src[self.candidate - 1])
@@ -105,15 +144,23 @@ class HypothesisGenerator():
         return True
 
     def __iter__(self) -> None:
+        """ Class Iterator Constructor """
         return self
 
     def __next__(self) -> str:
+        """ Class Iterator Next Constructor
+
+        This method will iterate over all bug candidates and generate a hypothesis
+        until the iterator `self.bug_candidates` is exhausted.
+        
+        : rtype: str
+        """
         hypothesis: Hypothesis = None
         while hypothesis is None:
             try:
                 hypothesis = next(self.hypotheses_set)
             except StopIteration:
-                pattern: Union[BugfixMetadata, None] = None
+                pattern: Union[MatchingPattern, None] = None
                 while pattern is None:
                     try:
                         pattern = next(self.matching_patterns)
@@ -153,10 +200,24 @@ class HypothesisGenerator():
         return ('model1.py', hypothesis)
 
     def __enter__(self):
+        """ Context manager method """
         return self
 
     def __exit__(self, exc_tp: Type, exc_value: BaseException,
                  exc_traceback: TracebackType) -> Optional[bool]:
+        """ Context manager method to ignore/consume all the exceptions.
+        
+        This method is used to void a raising exception that occurred
+        during the execution of the class methods.
+
+        :param exc_tp: Type of the raised exception.
+        :type  exc_tp: Type
+        :param exc_value: The raised exception object.
+        :type  exc_value: BaseException
+        :param exc_traceback: The trace-back object of the exception.
+        :type  exc_traceback: TracebackType
+        :rtype: bool
+        """
         AbinLogging.debugging_logger.info(f"""
             <=== Exit Process Data ===>
             Current Candidate: {self.candidate}
@@ -176,7 +237,10 @@ class HypothesisGenerator():
             )
         return True  # Ignore exception, if any
 
-    def get_current_model(self):
+    def get_current_model(self) -> List[str]:
+        """ This method return the model source code.
+        : rtype: List[str]
+        """
         curr_dir = Path(__file__).parent.parent.resolve()
         curr_model_path = curr_dir.joinpath('temp', self.model_name)
         try:
@@ -191,13 +255,17 @@ class HypothesisGenerator():
 
     @property
     def model_name(self):
+        """ This property represent the current model name"""
         return f"model{str(self.abduction_depth)}.py"
 
     @staticmethod
-    def mongodb_connection():
+    def mongodb_connection() -> MongoClient:
+        """ This method return a connection to the database
+        : rtype: MongoClient
+        """
         config = DebugController.DATABASE_SETTINGS
         MONGO_URI = f"{config['URI']}://{config['HOST']}:{config['PORT']}"
-        client = pymongo.MongoClient(MONGO_URI)
+        client = MongoClient(MONGO_URI)
         db_connection = client[config['DATABASE']]
         return db_connection
 
