@@ -5,7 +5,6 @@
     <file alias="load-model.svg">ui/plus-circle.svg</file>
     <file alias="save-model.svg">ui/save.svg</file>
     <file alias="file-exit.svg">ui/file-minus.svg</file>
-    <file>cinves-logo.png</file>
     <file alias="github.svg">ui/github.svg</file>
     <file alias="help-content.svg">ui/help-circle.svg</file>
     <file alias="info.svg">ui/info.svg</file>
@@ -17,5 +16,7 @@
     <file alias="database.svg">ui/database.svg</file>
     <file alias="settings.svg">ui/settings.svg</file>
     <file alias="log-out.svg">ui/log-out.svg</file>
+    <file alias="radar.png">radar.png</file>
+    <file>cinves-logo.png</file>
   </qresource>
 </RCC>

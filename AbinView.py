@@ -33,6 +33,7 @@ class AbinView(QMainWindow):
         """ Constructor Method """
         super().__init__(parent)
         self.setWindowTitle("Abin Debugger")
+        self.setWindowIcon(QIcon(":radar.png"))
         self.resize(1000, 800)
         
         self.centralWidget = QFrame()
@@ -51,7 +52,7 @@ class AbinView(QMainWindow):
         self._createActions()
         self._createMenuBar()
         self._createToolBars()
-        self._createStatusBar()        
+        self._createStatusBar()
     
     def _createMenuBar(self):
         """ This method creates the UI's menu bar"""
