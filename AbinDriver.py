@@ -4,6 +4,8 @@ This is the controller representation of the MVC software pattern.
 """
 import sys
 import builtins
+
+from numpy import double
 from AbinView import AbinView
 from AbinModel import AbinModel
 from typing import Tuple, Type
@@ -14,7 +16,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMessageBox, QFileDialog,
     QTableWidgetItem, QTableWidget, QPushButton,
     QComboBox, QSpinBox, QListWidget, QPlainTextEdit,
-    QTextEdit, QLineEdit
+    QDoubleSpinBox, QLineEdit
 )
 import controller.DebugController as DebugController
 from controller.AbinLogging import Worker
@@ -287,7 +289,7 @@ class AbinDriver(AbinView):
         if self.function_name == '':
             return QMessageBox.warning(self, "Warning!", "<p>Please provide a function name!.</p>")
         self.max_complexity = self.AbductionPage.findChild(QSpinBox, 'snbComplexity').value()
-        test_timeout = int(self.AbductionPage.findChild(QSpinBox, 'snbTimeout').value())
+        test_timeout = float(self.AbductionPage.findChild(QDoubleSpinBox, 'snbTimeout').value())
         DebugController.TEST_TIMEOUT = test_timeout
         self.btnRunAutoDebug.setEnabled(False)
         self._resetDebugTimer()

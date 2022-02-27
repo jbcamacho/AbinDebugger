@@ -120,7 +120,8 @@ class FaultLocalizator():
         for i, test_case, expected_output, *input_args in self.test_cases.itertuples():
             AbinLogging.debugging_logger.info(f"Testing {test_case}...")
             with debugger:
-                signal.alarm(DebugController.TEST_TIMEOUT)
+                #signal.alarm(DebugController.TEST_TIMEOUT)
+                signal.setitimer(signal.ITIMER_REAL, DebugController.TEST_TIMEOUT)
                 if self.func is None:
                     raise ImportError(f"""
                         Failed to import the given function {self.func_name} from the model {self.model_name}.
@@ -143,7 +144,8 @@ class FaultLocalizator():
                         Expected: {expected_output}
                         """
                     )
-            signal.alarm(0)
+            #signal.alarm(0)
+            signal.setitimer(signal.ITIMER_REAL, 0)
             if check_consistency and new_observation[i][1] == FailedTest:
                 AbinLogging.debugging_logger.debug('check_consistency')
                 is_consistent_ = self.check_result_consistency(new_observation[i], i)
@@ -151,7 +153,8 @@ class FaultLocalizator():
                     AbinLogging.debugging_logger.debug('break')
                     break
             
-        signal.alarm(0) # Make sure the signal is properly disabled before return
+        #signal.alarm(0) # Make sure the signal is properly disabled before return
+        signal.setitimer(signal.ITIMER_REAL, 0)
         self.observation = new_observation
         if not self.are_all_test_pass():
             self.influence_path = debugger.get_influence_path(self.model, self.func_name)
