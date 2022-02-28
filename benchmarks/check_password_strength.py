@@ -1,5 +1,22 @@
 """
-Benchmark obtained from : https://github.com/visheshdvivedi/Top-10-Easy-Python-Project-Ideas-For-Beginners/blob/main/password_strength_checker.py
+Given a string representing a password, this benchmark checks the password strength.
+:param s: A string.
+:type  s: str
+:rtype: Tuple[int, int, int, int, int, int]
+
+"benchmark_metadata": {[
+    {
+        "Function": ['check_password_strength'],
+        "Bug": [('Line 34', 'whitespace_count = 1')],
+        "Fix": [('Line 34', 'whitespace_count += 1')]
+    }
+]}
+The content of this file can be found in GitHub from author visheshdvivedi.
+@misc{visheshdvivedi,
+    title={Top-10-easy-python-project-ideas-for-beginners/password_strength_checker.py},
+    url={https://github.com/visheshdvivedi/Top-10-Easy-Python-Project-Ideas-For-Beginners/blob/main/password_strength_checker.py},
+    journal={GitHub},
+    author={Visheshdvivedi}} 
 """
 
 import string
@@ -14,7 +31,7 @@ def check_password_strength(password):
         elif char in string.digits:
             number_count += 1
         elif char == ' ':
-            whitespace_count = 1
+            whitespace_count = 1 # <-- FIX whitespace_count += 1
         else:
             special_char_count += 1
     strength = 0
@@ -41,13 +58,5 @@ def check_password_strength(password):
         remarks = "Your password is hard to guess. But you can make it even more secure"
     elif strength == 5:
         remarks = "Now that's one hell of a strong password !!! Hackers don't have a chance guessing that password."
-
-    """print("Your password has:-")
-    print(f"{lower_alpha_count} lowercase letters")
-    print(f"{upper_alpha_count} uppercase letters")
-    print(f"{number_count} digits")
-    print(f'{whitespace_count} whitespaces')
-    print(f"{special_char_count} special characters")
-    print(f"Password score: {strength}/5")
-    print(f"Remarks: {remarks}")"""
+    
     return (strength, lower_alpha_count, upper_alpha_count, number_count, whitespace_count, special_char_count)

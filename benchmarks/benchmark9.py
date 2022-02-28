@@ -1,6 +1,18 @@
 """
 
-From: https://www.geeksforgeeks.org/check-whether-a-number-has-consecutive-0s-in-the-given-base-or-not/
+"benchmark_metadata": {[
+    {
+        "Function": [''],
+        "Bug": [('', '')],
+        "Fix": [('', '')]
+    }
+]}
+The content of this file can be found in geeksforgeeks.
+@misc{geeksforgeeks_2021,
+	title={Check whether a number has consecutive 0's in the given base or not},
+	url={https://www.geeksforgeeks.org/check-whether-a-number-has-consecutive-0s-in-the-given-base-or-not/},
+	journal={GeeksforGeeks}, author={GeeksforGeeks}, year={2021}, month={Apr}
+} 
 """
 # Python implementation of the above approach
 

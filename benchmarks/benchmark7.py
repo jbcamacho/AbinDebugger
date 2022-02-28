@@ -1,6 +1,18 @@
 """
 
-From: https://www.geeksforgeeks.org/python-program-for-bitonic-sort/
+"benchmark_metadata": {[
+    {
+        "Function": [''],
+        "Bug": [('', '')],
+        "Fix": [('', '')]
+    }
+]}
+The content of this file can be found in geeksforgeeks.
+@misc{geeksforgeeks_2022,
+ 	title={Python program for Bitonic Sort},
+	 url={https://www.geeksforgeeks.org/python-program-for-bitonic-sort/},
+	 journal={GeeksforGeeks}, author={GeeksforGeeks}, year={2022}, month={Jan}
+} 
 """
 
 # Python program for Bitonic Sort. Note that this program

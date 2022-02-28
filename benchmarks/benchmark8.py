@@ -1,6 +1,18 @@
 """
 
-From: https://www.geeksforgeeks.org/python-program-for-cycle-sort/
+"benchmark_metadata": {[
+    {
+        "Function": [''],
+        "Bug": [('', '')],
+        "Fix": [('', '')]
+    }
+]}
+The content of this file can be found in geeksforgeeks
+@misc{geeksforgeeks_2020,
+  title={Python program for Cycle Sort},
+  url={https://www.geeksforgeeks.org/python-program-for-cycle-sort/},
+  journal={GeeksforGeeks}, author={GeeksforGeeks}, year={2020}, month={Dec}
+} 
 """
 
 # Python program to impleament cycle sort

@@ -90,7 +90,7 @@ class AbinDebugger(OchiaiDebugger):
         # print('***********************')
         self.influence_path = new_path
         return self.influence_path
-        #self.influence_path = list(filter(lambda x: x[0] not in ['debug', 'isEnabledFor', 'run_test'], self.rank()))
+        # self.influence_path = list(filter(lambda x: x[0] not in ['debug', 'isEnabledFor', 'run_test'], self.rank()))
         # if self.influence_path:
         #     return self.influence_path
         # rank = self.get_statistical_ranking()

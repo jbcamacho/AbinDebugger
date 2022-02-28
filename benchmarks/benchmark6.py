@@ -1,6 +1,18 @@
 """
 
-From: https://www.geeksforgeeks.org/python-program-for-number-of-solutions-to-modular-equations/
+"benchmark_metadata": {[
+    {
+        "Function": [''],
+        "Bug": [('', '')],
+        "Fix": [('', '')]
+    }
+]}
+The content of this file can be found in geeksforgeeks.
+@misc{geeksforgeeks_2018,
+    title={Python program for number of solutions to modular equations},
+    url={https://www.geeksforgeeks.org/python-program-for-number-of-solutions-to-modular-equations/},
+    journal={GeeksforGeeks}, author={GeeksforGeeks}, year={2018}, month={Dec}
+} 
 """
 # Python Program to find number of possible
 # values of X to satisfy A mod X = B 

@@ -1,7 +1,30 @@
 """
+Given an integer, this benchmark check whether it is a prime number or not.
 A number is said to be happy if it yields 1 when replaced by the sum of squares of its digits repeatedly.
 If this process results in an endless cycle of numbers containing 4, then the number will be an unhappy number.
-From: https://www.javatpoint.com/python-program-to-check-if-the-given-number-is-happy-number
+:param s: An integer.
+:type  s: int
+:rtype: bool
+
+"benchmark_metadata": {[
+    {
+        "Function": ['checkHappyNumber1', 'isHappyNumber1'],
+        "Bug": [('Line 36', 'num = num/10')],
+        "Fix": [('Line 36', 'num = num//10')]
+    },
+    {
+        "Function": [checkHappyNumber2, isHappyNumber2],
+        "Bug": [('Line 55', 'while(num > 1):')],
+        "Fix": [('Line 55', 'while(num > 0):')]
+    }
+]}
+
+The content of this file can be found in JavaTpoint.
+@misc{JavaTpoint,
+	author = {JavaTpoint},
+	title = {{Python Check Prime Number - javatpoint}},
+	url = {https://www.javatpoint.com/python-program-to-check-if-the-given-number-is-happy-number},
+}
 """
 def isHappyNumber1(num):    
     rem = sum = 0    
@@ -10,7 +33,7 @@ def isHappyNumber1(num):
     while(num > 0):    
         rem = num%10    
         sum = sum + (rem*rem) 
-        num = num/10   #<-- num = num//10 
+        num = num/10   #<-- FIX num = num//10 
     return sum 
         
 def checkHappyNumber1(num):
@@ -29,7 +52,7 @@ def isHappyNumber2(num):
     rem = sum = 0    
         
     #Calculates the sum of squares of digits    
-    while(num > 1):    #<--- while(num > 0):
+    while(num > 1):    #<--- FIX while(num > 0):
         rem = num%10    
         sum = sum + (rem*rem) 
         num = num//10   

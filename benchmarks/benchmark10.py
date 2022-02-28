@@ -1,37 +1,25 @@
 """
-public static int numZero (int [ ] arr)
-{​​​​​​​​​  // Effects: If arr is null throw NullPointerException
-   // else return the number of occurrences of 0 in arr
-   int count = 0;
-   for (int i = 1; i < arr.length; i++)
-   {​​​​​​​​​
-      if (arr [ i ] == 0)
-      {​​​​​​​​​
-         count++;
-      }​​​​​​​​​
-   }​​​​​​​​​
-   return count;
-}
+Given an integer, this benchmark calculates the factorial of it.
+:param sales_today: An integer.
+:type  sales_today: int
+:rtype: int
+
+"benchmark_metadata": {[
+    {
+        "Function": ['factorial'],
+        "Bug": [('', '')],
+        "Fix": [('', '')]
+    }
+]}
 """
+def factorial(x):
+    """Recursive function to calculate the 
+    factorial of an integer"""
+    if x < 0:
+        return None
+    elif x == 1 or x == 0:
+        return 1
+    else:
+        return (x * factorial(x-1))
 
-def int_num_zeros(arr):
-    if arr == []:
-        raise ValueError
-    count = 0
-    for i in range(1, len(arr)):
-    #for i in range(len(arr) - 1):
-        if arr[i] == 0:
-            count += 1
-    return count
-
-def int_count_zeros(arr):
-    if arr == []:
-        raise ValueError
-    count = 0
-    for n in arr:
-        if arr == 0:
-            count += 1
-    return count
-
-
-#len(list(filter(lambda x: x == 0, arr)))
+print(factorial(3))
