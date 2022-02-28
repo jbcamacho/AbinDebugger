@@ -36,7 +36,7 @@ def toK(N, K):
 		r = N % K
 		N = N//K
 		s = r * w + s
-		w* = 10
+		w = 10
 	return s
 
 # Function to check for consecutive 0
