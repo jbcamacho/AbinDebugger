@@ -4,29 +4,32 @@ Given an integer, this benchmark check whether it is a prime number or not.
 :type  s: int
 :rtype: bool
 
-"benchmark_metadata": {[
-    {
-        "Function": ['PrimeChecker1'],
-        "Bug": [('Line 39', 'a >= 1:')],
-        "Fix": [('Line 33', 'if a > 1:')]
-    },
-    {
-        "Function": ['PrimeChecker2'],
-        "Bug": [('Line 56', 'return True')],
-        "Fix": [('Line 56', 'return False')]
-    },
-    {
-        "Function": ['PrimeChecker3'],
-        "Bug": [
-            ('Line 59', 'a >= 1:'),
-            ('Line 66', 'return True')
-        ]
-        "Fix": [
-            ('Line 59', 'if a > 1:'),
-            ('Line 66', 'return False')
-        ]
-    }
-]}
+{
+    "benchmark_name": "PrimeChecker",
+    "benchmark_metadata": [
+        {
+            "Function": ["PrimeChecker1"],
+            "Bug": [ {"Position": 39, "LOC": "if a >= 1:"} ],
+            "Fix": [ {"Position": 39, "LOC": "if a > 1:"} ]
+        },
+        {
+            "Function": ["PrimeChecker2"],
+            "Bug": [ {"Position": 59, "LOC": "return True"} ],
+            "Fix": [ {"Position": 59, "LOC": "return False"} ]
+        },
+        {
+            "Function": ["PrimeChecker3"],
+            "Bug": [
+                {"Position": 62, "LOC": "if a >= 1:"},
+                {"Position": 69, "LOC": "return True"}
+            ],
+            "Fix": [
+                {"Position": 62, "LOC": "if a > 1:"},
+                {"Position": 69, "LOC": "return False"}
+            ]
+        }
+    ]
+}
 
 The content of this file can be found in JavaTpoint.
 @misc{JavaTpoint,
@@ -56,7 +59,7 @@ def PrimeChecker2(a) -> bool:
         return True # <---- FIX return False
 
 def PrimeChecker3(a) -> bool:   
-    if a >= 1:  # <---- FIX if a > 1:
+    if a > 1:  # <---- FIX if a > 1:
         for j in range(2, int(a/2) + 1):  
             if (a % j) == 0:  
                 return False  

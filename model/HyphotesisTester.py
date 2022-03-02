@@ -43,7 +43,9 @@ class HyphotesisTester(FaultLocalizator):
         """
         if self.is_consistent:
             prev_explanatory_power = self.get_explanatory_power(self.prev_observation)
+            AbinLogging.debugging_logger.info(f'prev_explanatory_power: {prev_explanatory_power}')
             curr_explanatory_power = self.get_explanatory_power(self.observation)
+            AbinLogging.debugging_logger.info(f'curr_explanatory_power: {curr_explanatory_power}')
             if curr_explanatory_power == 1:
                 return Behavior.Correct
             elif prev_explanatory_power < curr_explanatory_power:

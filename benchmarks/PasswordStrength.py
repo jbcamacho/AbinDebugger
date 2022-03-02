@@ -4,13 +4,17 @@ Given a string representing a password, this benchmark checks the password stren
 :type  s: str
 :rtype: Tuple[int, int, int, int, int, int]
 
-"benchmark_metadata": {[
-    {
-        "Function": ['check_password_strength'],
-        "Bug": [('Line 34', 'whitespace_count = 1')],
-        "Fix": [('Line 34', 'whitespace_count += 1')]
-    }
-]}
+{
+    "benchmark_name": "PasswordStrength",
+    "benchmark_metadata": [
+        {
+            "Function": ["check_password_strength"],
+            "Bug": [ {"Position": 38, "LOC": "whitespace_count = 1"} ],
+            "Fix": [ {"Position": 38, "LOC": "whitespace_count += 1"} ]
+        }
+    ]
+}
+
 The content of this file can be found in GitHub from author visheshdvivedi.
 @misc{visheshdvivedi,
     title={Top-10-easy-python-project-ideas-for-beginners/password_strength_checker.py},

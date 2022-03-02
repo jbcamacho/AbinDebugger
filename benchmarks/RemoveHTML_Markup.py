@@ -4,13 +4,16 @@ Given a HTML string, this benchmark removes HTML markup and converts it into tex
 :type  s: str
 :rtype: str
 
-"benchmark_metadata": {[
-    {
-        "Function": ['remove_html_markup'],
-        "Bug": [('Line 37', 'elif c == '"' or c == "'" and tag:')],
-        "Fix": [('Line 37', 'elif (c == '"' or c == "'") and tag:')]
-    }
-]}
+{
+    "benchmark_name": "RemoveHTML_Markup",
+    "benchmark_metadata": [
+        {
+            "Function": ["remove_html_markup"],
+            "Bug": [ {"Position": 40, "LOC": "elif c == '\\\"' or c == \\\"'\\\" and tag:"} ],
+            "Fix": [ {"Position": 40, "LOC": "elif (c == '\\\"' or c == \\\"'\\\") and tag:"} ]
+        }
+    ]
+}
 
 The content of this file can be found in The Debugging Book.
 @book{debuggingbook2021,

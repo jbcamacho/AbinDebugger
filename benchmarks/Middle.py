@@ -8,13 +8,17 @@ Given three real numbers x, y and z, this benchmark returns the "middle" number 
 :type  z: Tuple[int, float]
 :rtype: Tuple[int, float]
 
-"benchmark_metadata": {[
-    {
-        "Function": ['Middle'],
-        "Bug": [('Line 35', 'return y')],
-        "Fix": [('Line 35', 'return x')]
-    }
-]}
+{
+    "benchmark_name": "Middle",
+    "benchmark_metadata": [
+        {
+            "Function": ["middle"],
+            "Bug": [ {"Position": 39, "LOC": "return y"} ],
+            "Fix": [ {"Position": 39, "LOC": "return x"} ]
+        }
+    ]
+}
+
 The content of this file can be found in The Debugging Book.
 @book{debuggingbook2021,
     author = {Andreas Zeller},

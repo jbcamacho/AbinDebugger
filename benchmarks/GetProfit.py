@@ -6,13 +6,16 @@ Given two dictionaries, this benchmark calculates the sum of all values in them.
 :type  sales_yesterday: dict
 :rtype: int
 
-"benchmark_metadata": {[
-    {
-        "Function": ['get_profit'],
-        "Bug": [('Line 21', 'for cost in sales_today:')],
-        "Fix": [('Line 21', 'for cost in sales_today.values():')]
-    }
-]}
+{
+    "benchmark_name": "GetProfit",
+    "benchmark_metadata": [
+        {
+            "Function": ["get_profit"],
+            "Bug": [ {"Position": 24, "LOC": "for cost in sales_today:"} ],
+            "Fix": [ {"Position": 24, "LOC": "for cost in sales_today.values():"} ]
+        }
+    ]
+}
 """
 def get_profit(sales_today: dict, sales_yesterday: dict) -> int:
     accom: int = 0

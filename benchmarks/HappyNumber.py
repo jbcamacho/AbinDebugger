@@ -6,18 +6,32 @@ If this process results in an endless cycle of numbers containing 4, then the nu
 :type  s: int
 :rtype: bool
 
-"benchmark_metadata": {[
-    {
-        "Function": ['checkHappyNumber1', 'isHappyNumber1'],
-        "Bug": [('Line 36', 'num = num/10')],
-        "Fix": [('Line 36', 'num = num//10')]
-    },
-    {
-        "Function": [checkHappyNumber2, isHappyNumber2],
-        "Bug": [('Line 55', 'while(num > 1):')],
-        "Fix": [('Line 55', 'while(num > 0):')]
-    }
-]}
+{
+    "benchmark_name": "HappyNumber",
+    "benchmark_metadata": [
+        {
+            "Function": ["checkHappyNumber1", "isHappyNumber1"],
+            "Bug": [ {"Position": 50, "LOC": "num = num/10"} ],
+            "Fix": [ {"Position": 50, "LOC": "num = num//10"} ]
+        },
+        {
+            "Function": ["checkHappyNumber2", "isHappyNumber2"],
+            "Bug": [ {"Position": 69, "LOC": "while{num > 1}:"} ],
+            "Fix": [ {"Position": 69, "LOC": "while{num > 0}:"} ]
+        },
+        {
+            "Function": ["checkHappyNumber3", "isHappyNumber3"],
+            "Bug": [
+                {"Position": 91, "LOC": "while{num > 1}:"},
+                {"Position": 99, "LOC": "while{result != 1 and result == 4}:"}
+            ],
+            "Fix": [
+                {"Position": 91, "LOC": "while{num > 0}:"},
+                {"Position": 99, "LOC": "while{result != 1 and result != 4}:"}
+            ]
+        }
+    ]
+}
 
 The content of this file can be found in JavaTpoint.
 @misc{JavaTpoint,
@@ -70,3 +84,24 @@ def checkHappyNumber2(num):
   elif(result == 4):    
       return 0
 
+def isHappyNumber3(num):    
+    rem = sum = 0    
+        
+    #Calculates the sum of squares of digits    
+    while(num > 1):    #<--- FIX while(num > 0):
+        rem = num%10    
+        sum = sum + (rem*rem) 
+        num = num//10   
+    return sum 
+        
+def checkHappyNumber3(num):
+  result = num
+  while(result != 1 and result == 4):   #<--- FIX while(result != 1 and result != 4):
+      result = isHappyNumber2(result)    
+      
+  #Happy number always ends with 1    
+  if(result == 1):    
+      return 1
+  #Unhappy number ends in a cycle of repeating numbers which contain 4    
+  elif(result == 4):    
+      return 0
