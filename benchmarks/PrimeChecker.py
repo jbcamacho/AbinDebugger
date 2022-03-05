@@ -59,7 +59,7 @@ def PrimeChecker2(a) -> bool:
         return True # <---- FIX return False
 
 def PrimeChecker3(a) -> bool:   
-    if a > 1:  # <---- FIX if a > 1:
+    if a >= 1:  # <---- FIX if a > 1:
         for j in range(2, int(a/2) + 1):  
             if (a % j) == 0:  
                 return False  
