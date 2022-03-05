@@ -10,6 +10,12 @@
     <height>721</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>971</width>
+    <height>721</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>StackedWidget</string>
   </property>
@@ -318,6 +324,18 @@
     </item>
     <item row="1" column="0" rowspan="8">
      <widget class="QPlainTextEdit" name="txtLogging">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>256</width>
+        <height>614</height>
+       </size>
+      </property>
       <property name="font">
        <font>
         <pointsize>11</pointsize>
@@ -336,6 +354,12 @@
     </item>
     <item row="4" column="3">
      <widget class="QListWidget" name="lstModel">
+      <property name="minimumSize">
+       <size>
+        <width>586</width>
+        <height>192</height>
+       </size>
+      </property>
       <property name="font">
        <font>
         <pointsize>11</pointsize>
@@ -359,6 +383,12 @@
         <horstretch>1</horstretch>
         <verstretch>1</verstretch>
        </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>586</width>
+        <height>298</height>
+       </size>
       </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(243, 243, 243);</string>
