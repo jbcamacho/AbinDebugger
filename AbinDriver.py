@@ -308,10 +308,8 @@ class AbinDriver(AbinView):
                 msgText = 'The provided program was successfully repaired.'
                 self.debugged_program = model_src_code
                 if candidate and bugfixing_hyphotesis:
-                    self.AbductionPage.findChild(QListWidget, 'lstModel').clear()
-                    self.AbductionPage.findChild(QListWidget, 'lstModel').addItems(model_src_code)
-                    self.AbductionPage.findChild(QListWidget, 'lstModel').setCurrentRow(candidate - 1)
-                    # self.AbductionPage.findChild(QListWidget, 'lstModel').currentItem().setText(str(bugfixing_hyphotesis))
+                    self.AbductionPage.findChild(QListWidget, 'lstModel').setCurrentRow(candidate)
+                    self.AbductionPage.findChild(QListWidget, 'lstModel').currentItem().setText(str(bugfixing_hyphotesis))
             AbinLogging.debugging_logger.info(f"{msgTitle}")
             msgResult.information(self, msgTitle, msgText)    
 

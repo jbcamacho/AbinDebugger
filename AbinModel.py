@@ -68,7 +68,7 @@ class AbinModel():
             for i, hypothesis in enumerate(hypotheses_generator):
                 AbinLogging.debugging_logger.info(f"""
                     Testing Hypothesis {i}.
-                    Hypothesis: {hypothesis}
+                    Hypothesis: {hypothesis[0]}
                     """
                 )
                 (new_model_src_code, behavior, new_observation) = self.hyphotesis_testing(prev_observation, model_src_code[:], hypothesis)
