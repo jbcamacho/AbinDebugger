@@ -18,7 +18,7 @@ from pymongo import MongoClient
 
 MatchingPattern = NodeAbstraction
 MatchingPatterns = Iterator[MatchingPattern]
-Hypothesis = str
+Hypothesis = Tuple[str, int, int]
 Hypotheses = List[Hypothesis]
 class HypothesisGenerator():
     """ This class is used to automatically generate a set of hypotheses """
@@ -27,7 +27,8 @@ class HypothesisGenerator():
     complexity: int
     candidate: int
     bug_candidates: Iterator
-    remaining_LLOCs: List[int]
+    hypotheses_set_position: int
+    hypotheses_set_complexity: int
     abductor: HypothesisAbductor
     node_abstractor: NodeAbstractor
     bugged_LOC: PythonLLOC
@@ -36,17 +37,21 @@ class HypothesisGenerator():
     max_complexity: int
     nested_node: str
 
-    def __init__(self, influence_path: list, max_complexity: int = 3) -> None:
+    def __init__(self, influence_path: list,
+        model_src: Union[List[str], str], max_complexity: int = 3) -> None:
         """ Constructor Method """
+        AbinLogging.debugging_logger.debug('Init HypothesisGenerator')
         self.abduction_depth = 0
         self.abduction_breadth = 0
         self.complexity = 0
         self.max_complexity = max_complexity
         self.candidate = 0
         self.bug_candidates = map(lambda candidate: candidate[1], influence_path)
+        self.model_src = model_src
         self.matching_patterns = iter([])
         self.hypotheses_set = iter([])
-        self.remaining_LLOCs = []
+        self.hypotheses_set_complexity = 0
+        self.hypotheses_set_position = 0
         self.LogicalLOC = PythonLLOC
         self.abductor = HypothesisAbductor
         self.node_abstractor = NodeAbstractor
@@ -176,10 +181,9 @@ class HypothesisGenerator():
                             raise StopIteration(msg_)
                         else:
                             self.abduction_depth = 0
-                            self.abduction_breadth += 1
-                            model = self.get_current_model()
-                            logical_loc = self.LogicalLOC(self.candidate, ''.join(model))
-                            
+                            # self.abduction_breadth += 1
+                            model = self.model_src
+                            logical_loc = self.LogicalLOC(self.candidate, '\n'.join(model))
                             ast_bug_candidate = deepcopy(logical_loc.ast_node)
                             ast_hexdigest = self.abstract_bug_candidate(ast_bug_candidate)
                             
@@ -192,19 +196,26 @@ class HypothesisGenerator():
                             """
                             )
                 
-                model = self.get_current_model()
-                logical_loc = self.LogicalLOC(self.candidate, ''.join(model))
+                model = self.model_src
+                logical_loc = self.LogicalLOC(self.candidate, '\n'.join(model))
+                # print(f'MODEL:\n {model}')
+                # print(f'CANDIDATE:\n {self.candidate}')
+                # print(f'LLOC:\n {logical_loc.logical_LOC}')
                 self.nested_node = logical_loc.get_nested_node()
                 ast_bug_candidate = deepcopy(logical_loc.ast_node)
                 available_identifiers = logical_loc.get_available_identifiers()
                 self.hypotheses_set = self.apply_bugfix_pattern(ast_bug_candidate, pattern, available_identifiers)
-        hypothesis = self.build_hypothesis_model(hypothesis)
+                self.hypotheses_set_complexity = pattern['complexity']
+                self.hypotheses_set_position = self.candidate
+        # hypothesis = self.build_hypothesis_model(hypothesis)
         self.abduction_breadth += 1
 
-        return ('model1.py', hypothesis)
+        # return ('model1.py', hypothesis)
+        return (hypothesis, self.hypotheses_set_position, self.hypotheses_set_complexity)
 
     def __enter__(self):
         """ Context manager method """
+        AbinLogging.debugging_logger.debug('Entering HypothesisGenerator')
         return self
 
     def __exit__(self, exc_tp: Type, exc_value: BaseException,
@@ -222,6 +233,7 @@ class HypothesisGenerator():
         :type  exc_traceback: TracebackType
         :rtype: bool
         """
+        AbinLogging.debugging_logger.debug('Exiting HypothesisGenerator')
         AbinLogging.debugging_logger.info(f"""
             <=== Exit Process Data ===>
             Current Candidate: {self.candidate}
@@ -233,12 +245,18 @@ class HypothesisGenerator():
             """
         )
         if exc_tp is not None:
+            from traceback import format_exc
             AbinLogging.debugging_logger.warning(f"""
                 An error ocurred during the hypotheses generation.
                 {exc_tp}: {exc_value}
-                Unable to continue the test of hypothesis model: {self.model_name}
+                Unable to continue the hypotheses generation process.
                 """
             )
+            AbinLogging.debugging_logger.debug(f"""
+                <== Exception Traceback ==>
+                """
+            )
+            AbinLogging.debugging_logger.debug(f"{format_exc()}")
         return True  # Ignore exception, if any
 
     def get_current_model(self) -> List[str]:
@@ -261,6 +279,12 @@ class HypothesisGenerator():
     def model_name(self):
         """ This property represent the current model name"""
         return f"model{str(self.abduction_depth)}.py"
+
+    @property
+    def model_path(self):
+        curr_dir = Path(__file__).parent.parent.resolve()
+        curr_model_path = curr_dir.joinpath('temp', self.model_name)
+        return curr_model_path
 
     @staticmethod
     def mongodb_connection() -> MongoClient:

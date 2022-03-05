@@ -3,9 +3,13 @@ This module contains global variables necesary for the threaded execution of
 the program. Also contains the settings used across the modules.
 """
 import sys
+from pathlib import Path
 from typing import Dict
 this = sys.modules[__name__]
 this.TIMEOUT_SIGNAL_RECEIVED = 0
+
+MAIN_DIR = Path(__file__).parent.resolve()
+WORKING_DIR = MAIN_DIR.joinpath('temp')
 
 from enum import Enum
 class ConnectionStatus(Enum):

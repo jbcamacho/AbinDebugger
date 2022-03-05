@@ -262,16 +262,11 @@ class AbinDriver(AbinView):
                 "Unable to perform action",
                 "<p>There are not debugged programs in the current session.</p>"
             )
-        from pathlib import Path
-        curr_dir = Path(__file__).parent.resolve()
-        newest_debugged_path = curr_dir.joinpath("temp", self.debugged_program)
-        with open(newest_debugged_path, 'r') as f:
-            newest_debugged_model = f.read()
         save_path = QFileDialog.getSaveFileName(self, 'Save Python - Repaired Program', 'repaired_program.py')
         if not save_path[0]:
             return 0
         with open(save_path[0], 'w') as f:
-            f.write(newest_debugged_model)
+            f.write('\n'.join(self.debugged_program))
         return 1
 
     def runAutoDebug(self):
@@ -303,18 +298,18 @@ class AbinDriver(AbinView):
         self._stopDebugTimer()
         if self.debug_result is not None:
             msgResult = QMessageBox()
-            (model_name, candidate, bugfixing_hyphotesis, *_) = self.debug_result
+            (model_src_code, candidate, bugfixing_hyphotesis, *_) = self.debug_result
 
-            if model_name == '':
+            if model_src_code == '':
                 msgTitle = 'UNABLE TO REPAIR!'
                 msgText = 'AbinDebugger was unable to repair the provided program.'
             else:
                 msgTitle = 'SUCCESSFUL REPAIR!'
                 msgText = 'The provided program was successfully repaired.'
-                self.debugged_program = model_name
+                self.debugged_program = model_src_code
                 if candidate and bugfixing_hyphotesis:
-                    self.AbductionPage.findChild(QListWidget, 'lstModel').setCurrentRow(candidate - 3)
-                    self.AbductionPage.findChild(QListWidget, 'lstModel').currentItem().setText(bugfixing_hyphotesis)
+                    self.AbductionPage.findChild(QListWidget, 'lstModel').setCurrentRow(candidate)
+                    self.AbductionPage.findChild(QListWidget, 'lstModel').currentItem().setText(str(bugfixing_hyphotesis))
             AbinLogging.debugging_logger.info(f"{msgTitle}")
             msgResult.information(self, msgTitle, msgText)    
 

@@ -3,11 +3,12 @@ This module is the model of the system.
 This is the model representation of the MVC software pattern.
 """
 import sys
-from typing import List, Type, Optional, Tuple
+from typing import List, Type, Optional, Tuple, Union
 from types import TracebackType
-from model.FaultLocalizator import FaultLocalizator, TestCase, Observation, InfluencePath
+from model.core.ModelTester import TestCase, Observation, InfluencePath
+from model.FaultLocalizator import FaultLocalizator
 from model.HyphotesisTester import Behavior, HyphotesisTester
-from model.HypothesisGenerator import HypothesisGenerator
+from model.HypothesisGenerator import Hypothesis, HypothesisGenerator
 import pandas as pd
 import controller.AbinLogging as AbinLogging
 
@@ -50,7 +51,7 @@ class AbinModel():
         """ This method encapsulates the whole debugging process.
         :rtype: Tuple[str, Behavior, Observation, Observation]
         """
-        (model_name, behavior, prev_observation, influence_path) = self.fault_localization()
+        (model_src_code, behavior, prev_observation, influence_path) = self.fault_localization()
         AbinLogging.debugging_logger.info(f"""
             Observations:
             {prev_observation}
@@ -61,17 +62,16 @@ class AbinModel():
         new_observation = []
         if behavior == Behavior.Correct:
             AbinLogging.debugging_logger.debug(f"\nSUCCESSFUL REPAIR!")
-            return (model_name, behavior, prev_observation, [])
-        hypotheses_generator = self.hypotheses_generation(influence_path, self.max_complexity)
+            return (model_src_code, behavior, prev_observation, [])
+        hypotheses_generator = self.hypotheses_generation(influence_path, model_src_code[:], self.max_complexity)
         with hypotheses_generator:
-            for i, (model_name, hypothesis) in enumerate(hypotheses_generator):
+            for i, hypothesis in enumerate(hypotheses_generator):
                 AbinLogging.debugging_logger.info(f"""
                     Testing Hypothesis {i}.
-                    Model {model_name}.
-                    Hypothesis: {hypothesis}
+                    Hypothesis: {hypothesis[0]}
                     """
                 )
-                (behavior, new_observation) = self.hyphotesis_testing(prev_observation, model_name)
+                (new_model_src_code, behavior, new_observation) = self.hyphotesis_testing(prev_observation, model_src_code[:], hypothesis)
                 AbinLogging.debugging_logger.info(f""" 
                     New Observations:
                     {new_observation}
@@ -90,7 +90,7 @@ class AbinModel():
                     )
                     self.candidate = hypotheses_generator.candidate
                     self.bugfixing_hyphotesis = hypothesis
-                    return (model_name, behavior, prev_observation, new_observation)
+                    return (new_model_src_code, behavior, prev_observation, new_observation)
         AbinLogging.debugging_logger.debug(f"\nUNABLE TO REPAIR!")
         return ('', behavior, prev_observation, new_observation)
         
@@ -98,20 +98,21 @@ class AbinModel():
         """ This method encapsulates the fault localization process.
         : rtype: Tuple[str, Behavior, Observation, InfluencePath]
         """
-        model_name = ''
         behavior = Behavior.Undefined
-        prev_observation = []
+        observation = []
         influence_path = []
-        with self.fault_localizator(self.function_name,
-            self.bugged_file_path, self.test_suite) as localizator:
-            (prev_observation, influence_path) = localizator.automatic_test(check_consistency=False)
-            model_name = localizator.model_name
+        model_src_code = []
+        with self.fault_localizator(self.bugged_file_path,
+            self.function_name, self.test_suite) as localizator:
+            (observation, influence_path) = localizator.model_testing(check_consistency=False)
+            model_src_code = localizator.model_src
             if localizator.are_all_test_pass():
                 behavior = Behavior.Correct
-        return (model_name, behavior, prev_observation, influence_path)
+        return (model_src_code, behavior, observation, influence_path)
 
     def hypotheses_generation(self, 
         influence_path: InfluencePath, 
+        src_code: Union[List[str], str],
         max_complexity: int = 3) -> Generator:
         """ This method encapsulates the hypotheses generation process.
 
@@ -121,11 +122,12 @@ class AbinModel():
         :type  max_complexity: int
         :rtype : Tuple[Behavior, Observation]
         """
-        return self.hypotheses_generator(influence_path, max_complexity)
+        return self.hypotheses_generator(influence_path, src_code, max_complexity)
 
     def hyphotesis_testing(self, 
         prev_observation: Observation, 
-        model_name: str) -> Tuple[Behavior, Observation]:
+        src_code: Union[List[str], str],
+        hypothesis: Hypothesis) -> Tuple[Behavior, Observation]:
         """ This method encapsulates the hypothesis testing process.
         
         :param prev_observation: The previous observation.
@@ -135,14 +137,15 @@ class AbinModel():
         :rtype : Tuple[Behavior, Observation]
         """
         behavior = Behavior.Undefined
-        new_observation = []
+        observation = []
         influence_path = []
-        with self.hyphotesis_tester(prev_observation, 
-            self.function_name, model_name, self.test_suite) as hypo_test:
-            (prev_observation, influence_path) = hypo_test.automatic_test(check_consistency=True)
+        new_model_src_code = []
+        with self.hyphotesis_tester(prev_observation, src_code,
+            self.function_name, self.test_suite, hypothesis) as hypo_test:
+            (observation, influence_path) = hypo_test.model_testing(check_consistency=True)
             behavior = hypo_test.compare_observations()
-            new_observation = hypo_test.observation
-        return (behavior, new_observation)
+            new_model_src_code = hypo_test.model_src
+        return (new_model_src_code, behavior, observation)
 
     def hyphotesis_refinement(self):
         pass

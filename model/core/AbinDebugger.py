@@ -6,7 +6,7 @@ The statements are ordered by the ochiai metric and the statistical ranking
 provided by the bug patterns in the database.
 """
 from model.debugger.AbinCollector import AbinCollector
-from model.debugger.StatisticalDebugger import OchiaiDebugger, Debugger
+from model.debugger.StatisticalDebugger import OchiaiDebugger
 from typing import Union, Tuple, Type, List, Dict, Optional
 from types import TracebackType, ModuleType
 from model.abstractor.NodeMapper import ASTNode
@@ -192,4 +192,4 @@ class AbinDebugger(OchiaiDebugger):
         self.add_collector(outcome, self.collector)
         return True  # Ignore exception, if any
 
-Debugger = Union[AbinDebugger, Debugger]
+Debugger = AbinDebugger

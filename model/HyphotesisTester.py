@@ -3,12 +3,13 @@ This module contains the HypothesisTester class.
 This class in charge of testing the generated hypotheses.
 This is one of the core modules used to automatically repair a defect.
 """
-from model.debugger.AbinDebugger import Debugger, AbinDebugger
-from model.FaultLocalizator import FaultLocalizator
-from model.FaultLocalizator import Observation, TestCase, PassedTest, FailedTest
-from typing import Type, List
+from model.core.AbinDebugger import Debugger, AbinDebugger
+from model.core.ModelTester import ModelTester, TestSuite, Observation, PassedTest, FailedTest
+from model.HypothesisGenerator import Hypothesis
+from typing import Union, List
 from importlib import import_module, reload
 import controller.AbinLogging as AbinLogging
+import re
 
 from enum import Enum
 class Behavior(Enum):
@@ -18,28 +19,26 @@ class Behavior(Enum):
     Correct = 4
     Undefined = 5
 
-class HyphotesisTester(FaultLocalizator):
+class HyphotesisTester(ModelTester):
     """ This class is used to automatically test a hypothesis """
-    def __init__(self, prev_observation: Observation,
-                func_name: str,
-                model_name: str,
-                test_cases: List[TestCase], 
-                debugger: Debugger = AbinDebugger) -> None:
+    def __init__(self, prev_observation: Observation, 
+        src_code: Union[List[str], str], target_function: str, 
+        test_suite: TestSuite, hypothesis: Hypothesis) -> None:
         """ Constructor Method """
         AbinLogging.debugging_logger.debug('Init HyphotesisTester')
-        super().__init__(func_name, '', test_cases, debugger)
+
+        new_model_code = self.build_hypothesis_model(hypothesis, src_code)
+
+        super().__init__(new_model_code, target_function, test_suite)
         self.prev_observation = prev_observation
-        self.model_name = model_name[:-3] # [:-3] to remove the '.py' extension from the model_name
-        
-        
 
     def compare_observations(self) -> Behavior:
-        """ This method compares two observations 
+        """ This method compares two observations.
         
         The two observations are compared in order to obtain a behavior,
         the behavior indicates the degree of utility the new tested hypothesis have.
 
-        : type: Behavior
+        :type: Behavior
         """
         if self.is_consistent:
             prev_explanatory_power = self.get_explanatory_power(self.prev_observation)
@@ -106,20 +105,27 @@ class HyphotesisTester(FaultLocalizator):
         """ Abstract Method """
         pass
 
-    def __enter__(self):
-        """ Context manager method used to initialize the defective model/program """
-        AbinLogging.debugging_logger.debug('Entering HyphotesisTester')
-        try:
-            self.model = import_module(
-                name=f'..{self.model_name}',
-                package='temp.subpkg'
-            )
-            self.model = reload(self.model)
-            self.func = getattr(self.model, self.func_name, lambda : None)
-        except Exception as e:
-            AbinLogging.debugging_logger.exception(
-                "An error ocurred while importing the model."
-            )
-            self.model = None
-            self.func = None
-        return self 
+    def build_hypothesis_model(self, hypothesis: Hypothesis, 
+        src_code: Union[List[str], str]) -> Union[str, None]:
+        """ This methos create a new model to test the given hypothesis.
+        
+        :param hypothesis: The hypothesis that need a model.
+        :type  hypothesis: Hypothesis
+        :rtype: Union[str, None]
+        """
+        # print(f'HYPOTHESIS:\n {hypothesis}')
+        (hypothesis_str, position, *_) = hypothesis
+        if isinstance(src_code, str):
+            src_code = src_code.splitlines()
+        new_model_src = src_code
+        """if self.nested_node == 'elif' and re.search('if.*', hypothesis):
+            hypothesis = 'el' + hypothesis"""
+
+        indent = re.split('\w', new_model_src[position - 1])
+        hypothesis_str = indent[0] + hypothesis_str
+        new_model_src[position - 1] = hypothesis_str
+        
+        #self.abduction_depth += 1
+        # print(new_model_src)
+
+        return '\n'.join(new_model_src)

@@ -18,6 +18,7 @@ Given two dictionaries, this benchmark calculates the sum of all values in them.
 }
 """
 def get_profit(sales_today: dict, sales_yesterday: dict) -> int:
+    '''Given two dictionaries, this benchmark calculates the sum of all values in them.'''
     accom: int = 0
     for cost in sales_yesterday.values():
         accom += cost
