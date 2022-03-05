@@ -167,6 +167,9 @@ class HypothesisGenerator():
         while hypothesis is None:
             try:
                 hypothesis = next(self.hypotheses_set)
+                if self.nested_node == 'elif' and re.search('if.*', hypothesis):
+                    # Check if the hypothesis is part of an elif nested structure
+                    hypothesis = 'el' + hypothesis
             except StopIteration:
                 pattern: Union[MatchingPattern, None] = None
                 while pattern is None:
