@@ -167,6 +167,9 @@ class HypothesisGenerator():
         while hypothesis is None:
             try:
                 hypothesis = next(self.hypotheses_set)
+                if self.nested_node == 'elif' and re.search('if.*', hypothesis):
+                    # Check if the hypothesis is part of an elif nested structure
+                    hypothesis = 'el' + hypothesis
             except StopIteration:
                 pattern: Union[MatchingPattern, None] = None
                 while pattern is None:
@@ -186,7 +189,7 @@ class HypothesisGenerator():
                             logical_loc = self.LogicalLOC(self.candidate, '\n'.join(model))
                             ast_bug_candidate = deepcopy(logical_loc.ast_node)
                             ast_hexdigest = self.abstract_bug_candidate(ast_bug_candidate)
-                            
+                            self.nested_node = logical_loc.get_nested_node()
                             ast_bug_candidate = deepcopy(logical_loc.ast_node)
                             available_identifiers = logical_loc.get_available_identifiers()
                             patterns = self.get_matching_patterns(ast_hexdigest)
