@@ -19,7 +19,27 @@ class Behavior(Enum):
     Correct = 4
     Undefined = 5
 
-class HyphotesisTester(ModelTester):
+class ModelConstructor():
+    """ This class contains the method to build an hypothesis model"""
+    def build_hypothesis_model(self, hypothesis: Hypothesis, 
+        src_code: Union[List[str], str]) -> Union[str, None]:
+        """ This method create a new model to test the given hypothesis.
+        
+        :param hypothesis: The hypothesis that need a model.
+        :type  hypothesis: Hypothesis
+        :rtype: Union[str, None]
+        """
+        (hypothesis_str, position, *_) = hypothesis
+        if isinstance(src_code, str):
+            src_code = src_code.splitlines()
+        new_model_src = src_code
+
+        indent = re.split('\w', new_model_src[position - 1])
+        hypothesis_str = indent[0] + hypothesis_str
+        new_model_src[position - 1] = hypothesis_str
+
+        return '\n'.join(new_model_src)
+class HyphotesisTester(ModelTester, ModelConstructor):
     """ This class is used to automatically test a hypothesis """
     def __init__(self, prev_observation: Observation, 
         src_code: Union[List[str], str], target_function: str, 
@@ -28,8 +48,8 @@ class HyphotesisTester(ModelTester):
         AbinLogging.debugging_logger.debug('Init HyphotesisTester')
 
         new_model_code = self.build_hypothesis_model(hypothesis, src_code)
-
         super().__init__(new_model_code, target_function, test_suite)
+        
         self.prev_observation = prev_observation
 
     def compare_observations(self) -> Behavior:
@@ -104,28 +124,3 @@ class HyphotesisTester(ModelTester):
     def __repr__(self) -> str:
         """ Abstract Method """
         pass
-
-    def build_hypothesis_model(self, hypothesis: Hypothesis, 
-        src_code: Union[List[str], str]) -> Union[str, None]:
-        """ This methos create a new model to test the given hypothesis.
-        
-        :param hypothesis: The hypothesis that need a model.
-        :type  hypothesis: Hypothesis
-        :rtype: Union[str, None]
-        """
-        # print(f'HYPOTHESIS:\n {hypothesis}')
-        (hypothesis_str, position, *_) = hypothesis
-        if isinstance(src_code, str):
-            src_code = src_code.splitlines()
-        new_model_src = src_code
-        """if self.nested_node == 'elif' and re.search('if.*', hypothesis):
-            hypothesis = 'el' + hypothesis"""
-
-        indent = re.split('\w', new_model_src[position - 1])
-        hypothesis_str = indent[0] + hypothesis_str
-        new_model_src[position - 1] = hypothesis_str
-        
-        #self.abduction_depth += 1
-        # print(new_model_src)
-
-        return '\n'.join(new_model_src)
