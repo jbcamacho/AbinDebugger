@@ -1,6 +1,6 @@
 """
 This module contains the HypothesisGenerator class.
-This class in charge of generating new hypotheses to repaor a defect.
+This class in charge of generating new hypotheses to repair a defect.
 This is one of the core modules used to automatically repair a defect.
 """
 from copy import deepcopy

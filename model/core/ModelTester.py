@@ -1,18 +1,11 @@
 """
-
+This module contains the ModelLoader and ModelTester classes.
+The ModelLoader class in charge of converting the models into ModuleType objects.
+The ModelTester class in charge of automatically test a model.
 """
 from model.core.AbinDebugger import Debugger, AbinDebugger, InfluencePath
 from types import FunctionType, ModuleType, TracebackType
 from typing import Tuple, TypeVar, Type, Union, Optional, Any, List
-from importlib import import_module, reload
-# from importlib.util import spec_from_file_location, module_from_spec
-# from importlib import reload
-from os.path import basename
-from pathlib import Path
-from shutil import rmtree as remove_dir
-import ast
-import astunparse
-# from importlib.abc import SourceLoader
 import controller.AbinLogging as AbinLogging
 import controller.DebugController as DebugController
 import signal
@@ -32,19 +25,46 @@ Observation = List[TestResult]
 from importlib.abc import SourceLoader
 from importlib.util import module_from_spec, spec_from_loader
 class ModelLoader(SourceLoader):
-
+    """ This class instances a ModuleType object given the source code. 
+    This class is a helper class to convert the models into ModuleType objects
+    in order test them.
+    """
     def __init__(self, src_code) -> None:
+        """ Constructor Method """
         super().__init__()
         self.src_code = ''.join(src_code)
 
     def get_data(self, path) -> bytes:
+        """ Abstract method implementation.
+
+        This method is the implementation of the abstract method get_data
+        needed to instantiate the SourceLoader class.  This method will instantiate
+        the ModuleType object given a src code.
+
+        :param src_code: The source code of the ModuleType object.
+        :type  src_code: str
+        :rtype: bytes
+        """
         return bytes(self.src_code, 'utf-8')
     
     def get_filename(self, fullname: str) -> str:
+        """ Abstract method implementation.
+
+        This method is the implementation of the abstract method get_filename
+        needed to instantiate the SourceLoader class. This method will name
+        the ModuleType object given a fullname.
+
+        :param fullname: The name of the ModuleType object.
+        :type  fullname: str
+        :rtype: str
+        """
         self.fullname = fullname
         return self.fullname
     
     def get_source(self) -> str:
+        """ This method will return the source code of the ModuleType object.
+        :rtype: str
+        """
         return super().get_source(self.fullname)
 
 
@@ -227,8 +247,13 @@ class ModelTester(ModelLoader):
         return FailedTest not in map(lambda x: x[1], self.observation)
 
     @property
-    def model_src(self):
-      return self.get_source().splitlines()
+    def model_src(self) -> List[str]:
+        """ This property represents the src code of the model.
+        The model is represented in a List where each element of sai list
+        is a statement of the model in cuestion.
+        :rtype: List[str]
+        """
+        return self.get_source().splitlines()
 
 
 
