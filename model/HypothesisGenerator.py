@@ -213,8 +213,8 @@ class HypothesisGenerator():
         # hypothesis = self.build_hypothesis_model(hypothesis)
         self.abduction_breadth += 1
 
-        # return ('model1.py', hypothesis)
-        return (hypothesis, self.hypotheses_set_position, self.hypotheses_set_complexity)
+        # The explanatory power is set to 0 for untested hypotheses.
+        return (hypothesis, self.hypotheses_set_position, 0)
 
     def __enter__(self):
         """ Context manager method """

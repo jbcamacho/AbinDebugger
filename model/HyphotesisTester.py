@@ -67,6 +67,7 @@ class HyphotesisTester(ModelTester, ModelConstructor):
             AbinLogging.debugging_logger.info(f'Previous Explanatory Power: {prev_explanatory_power}')
             curr_explanatory_power = self.get_explanatory_power(self.observation)
             AbinLogging.debugging_logger.info(f'Current Explanatory Power: {curr_explanatory_power}')
+            # The explanatory power is the third argument of a hypothesis.
             self.hypothesis = (*self.hypothesis[:2], curr_explanatory_power)
             if curr_explanatory_power == 1:
                 return Behavior.Correct
