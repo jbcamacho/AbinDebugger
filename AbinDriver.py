@@ -16,9 +16,10 @@ from PyQt5.QtWidgets import (
     QApplication, QMessageBox, QFileDialog,
     QTableWidgetItem, QTableWidget, QPushButton,
     QComboBox, QSpinBox, QListWidget, QPlainTextEdit,
-    QDoubleSpinBox, QLineEdit
+    QDoubleSpinBox, QLineEdit, QRadioButton, QGroupBox
 )
 import controller.DebugController as DebugController
+from model.HypothesisRefinement import AbductionSchema
 from controller.AbinLogging import Worker
 from model.misc.test_db_connection import test_db_connection
 import model.misc.bug_mining as bug_mining
@@ -47,6 +48,7 @@ class AbinDriver(AbinView):
         self._debug_elapsed_time = 0
         self.csvTestSuite = None
         self.lstRepos = None
+        self.abduction_schema = None
           
     def _connectActions(self):
         """ This method connect all the signals to a QWidget object"""
@@ -84,6 +86,12 @@ class AbinDriver(AbinView):
         self.miningPage.findChild(QPushButton, 'btnGetRepos').clicked.connect(self.downloadRepos)
         self.miningPage.findChild(QPushButton, 'btnLoadRepos').clicked.connect(lambda: self.loadRepos(''))
         self.miningPage.findChild(QPushButton, 'btnMineRepos').clicked.connect(self.mineRepos)
+
+        ## Connect radiobuttons to onchange.
+        gpbSchema = self.AbductionPage.findChild(QGroupBox, 'gpbSchema')
+        gpbSchema.findChild(QRadioButton, 'rdbDFS').toggled.connect(self.schemaOnChange)
+        gpbSchema.findChild(QRadioButton, 'rdbBFS').toggled.connect(self.schemaOnChange)
+        gpbSchema.findChild(QRadioButton, 'rdbAStar').toggled.connect(self.schemaOnChange)
 
         ## Connect Logger to txtLogging and AutoDebugTask to a thread
         self.AutoDebug = Worker(self.AutoDebugTask, ())
@@ -493,6 +501,19 @@ class AbinDriver(AbinView):
     def stopMineRepos(self):
         """ Abstract Method """
         pass
+
+    def schemaOnChange(self):
+        """ This method serves as the toggle event for the radio buttons.
+        The value of abduction schema will be changed depending of the selection.
+        """
+        radioBtn = self.sender()
+        if radioBtn.isChecked():
+            if radioBtn.text() == 'DFS':
+                self.abduction_schema = AbductionSchema.DFS
+            elif radioBtn.text() == 'BFS':
+                self.abduction_schema = AbductionSchema.BFS
+            else:
+                self.abduction_schema = AbductionSchema.A_star
 
 
 

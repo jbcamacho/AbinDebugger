@@ -9,6 +9,7 @@ from model.core.ModelTester import TestCase, Observation, InfluencePath
 from model.FaultLocalizator import FaultLocalizator
 from model.HyphotesisTester import Behavior, HyphotesisTester
 from model.HypothesisGenerator import Hypothesis, HypothesisGenerator
+from model.HypothesisRefinement import AbductionSchema
 import pandas as pd
 import controller.AbinLogging as AbinLogging
 
@@ -32,7 +33,7 @@ class AbinModel():
     bugfixing_hyphotesis: str
 
     def __init__(self, function_name: str, bugged_file_path: str, test_suite: List[TestCase],
-                max_complexity: int = 3,
+                max_complexity: int, abduction_schema: AbductionSchema = AbductionSchema.DFS,
                 localizator: Localizator = FaultLocalizator,
                 tester: Tester = HyphotesisTester,
                 generator: Generator = HypothesisGenerator) -> None:
@@ -41,6 +42,7 @@ class AbinModel():
         self.bugged_file_path = bugged_file_path
         self.test_suite = test_suite
         self.max_complexity = max_complexity
+        self.abduction_schema = abduction_schema
         self.candidate = None
         self.bugfixing_hyphotesis = None
         self.fault_localizator = localizator
@@ -59,10 +61,10 @@ class AbinModel():
             {influence_path}
             """
         )
-        new_observation = []
         if behavior == Behavior.Correct:
             AbinLogging.debugging_logger.debug(f"\nSUCCESSFUL REPAIR!")
             return (model_src_code, behavior, prev_observation, [])
+        new_observation = []
         hypotheses_generator = self.hypotheses_generation(influence_path, model_src_code[:], self.max_complexity)
         with hypotheses_generator:
             for i, hypothesis in enumerate(hypotheses_generator):
@@ -79,7 +81,7 @@ class AbinModel():
                     {behavior}
                     """
                 )
-                if behavior == Behavior.Correct:# or behavior == Behavior.Improvement:
+                if behavior == Behavior.Correct:
                     AbinLogging.debugging_logger.debug(f""" 
                         Previous Observations:
                         {prev_observation}
@@ -91,6 +93,14 @@ class AbinModel():
                     self.candidate = hypotheses_generator.candidate
                     self.bugfixing_hyphotesis = hypothesis[0]
                     return (new_model_src_code, behavior, prev_observation, new_observation)
+                elif behavior == Behavior.Improvement:
+
+                    if self.abduction_schema == AbductionSchema.DFS:
+                        pass
+                    elif self.abduction_schema == AbductionSchema.BFS:
+                        pass
+                    elif self.abduction_schema == AbductionSchema.A_star:
+                        pass
         AbinLogging.debugging_logger.debug(f"\nUNABLE TO REPAIR!")
         return ('', behavior, prev_observation, new_observation)
         
