@@ -1,4 +1,9 @@
-from typing import List, Tuple, Union
+"""
+This module contains the HypothesisRefinement class.
+This class in charge of refining hypotheses to repair a defect.
+This is one of the core modules used to automatically repair a defect.
+"""
+from typing import List, Union
 import controller.AbinLogging as AbinLogging
 from model.HyphotesisTester import ModelConstructor, TestSuite
 from model.core.ModelTester import ModelTester
@@ -13,6 +18,7 @@ class AbductionSchema(Enum):
     A_star = 3
 
 class HypothesisRefinement(ModelTester, ModelConstructor):
+    """ This class is used to automatically refine an hypothesis """
     improvement_candidates: ImprovementCadidates
     
     def __init__(self, improvement_candidates: ImprovementCadidates,
