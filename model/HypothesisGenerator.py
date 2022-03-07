@@ -18,7 +18,7 @@ from pymongo import MongoClient
 
 MatchingPattern = NodeAbstraction
 MatchingPatterns = Iterator[MatchingPattern]
-Hypothesis = Tuple[str, int, int]
+Hypothesis = Tuple[str, int, float]
 Hypotheses = List[Hypothesis]
 class HypothesisGenerator():
     """ This class is used to automatically generate a set of hypotheses """
