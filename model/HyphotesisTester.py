@@ -40,6 +40,8 @@ class ModelConstructor():
         return '\n'.join(new_model_src)
 class HyphotesisTester(ModelTester, ModelConstructor):
     """ This class is used to automatically test a hypothesis """
+    prev_observation: Observation
+    hypothesis: Hypothesis
     def __init__(self, prev_observation: Observation, 
         src_code: Union[List[str], str], target_function: str, 
         test_suite: TestSuite, hypothesis: Hypothesis) -> None:
@@ -48,7 +50,7 @@ class HyphotesisTester(ModelTester, ModelConstructor):
 
         new_model_code = self.build_hypothesis_model(hypothesis, src_code)
         super().__init__(new_model_code, target_function, test_suite)
-
+        self.hypothesis = hypothesis
         self.prev_observation = prev_observation
 
     def compare_observations(self) -> Behavior:
@@ -56,14 +58,16 @@ class HyphotesisTester(ModelTester, ModelConstructor):
         
         The two observations are compared in order to obtain a behavior,
         the behavior indicates the degree of utility the new tested hypothesis have.
+        Also, this method sets the explanatory power to the given hypothesis.
 
         :type: Behavior
         """
         if self.is_consistent:
             prev_explanatory_power = self.get_explanatory_power(self.prev_observation)
-            AbinLogging.debugging_logger.info(f'prev_explanatory_power: {prev_explanatory_power}')
+            AbinLogging.debugging_logger.info(f'Previous Explanatory Power: {prev_explanatory_power}')
             curr_explanatory_power = self.get_explanatory_power(self.observation)
-            AbinLogging.debugging_logger.info(f'curr_explanatory_power: {curr_explanatory_power}')
+            AbinLogging.debugging_logger.info(f'Current Explanatory Power: {curr_explanatory_power}')
+            self.hypothesis = (*self.hypothesis[:2], curr_explanatory_power)
             if curr_explanatory_power == 1:
                 return Behavior.Correct
             elif prev_explanatory_power < curr_explanatory_power:
