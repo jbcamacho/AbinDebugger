@@ -1,13 +1,12 @@
 """
-This module contains the HypothesisTester class.
-This class in charge of testing the generated hypotheses.
+This module contains the HypothesisTester and ModelConstructor class.
+The HypothesisTester class in charge of testing the generated hypotheses.
 This is one of the core modules used to automatically repair a defect.
+The ModelConstructor class in charge of constructing a proper model to the an hypothesis.
 """
-from model.core.AbinDebugger import Debugger, AbinDebugger
 from model.core.ModelTester import ModelTester, TestSuite, Observation, PassedTest, FailedTest
 from model.HypothesisGenerator import Hypothesis
 from typing import Union, List
-from importlib import import_module, reload
 import controller.AbinLogging as AbinLogging
 import re
 
@@ -49,7 +48,7 @@ class HyphotesisTester(ModelTester, ModelConstructor):
 
         new_model_code = self.build_hypothesis_model(hypothesis, src_code)
         super().__init__(new_model_code, target_function, test_suite)
-        
+
         self.prev_observation = prev_observation
 
     def compare_observations(self) -> Behavior:
@@ -74,7 +73,7 @@ class HyphotesisTester(ModelTester, ModelConstructor):
         return Behavior.Worsened
     
     @staticmethod
-    def get_explanatory_power(observation: Observation) -> int:
+    def get_explanatory_power(observation: Observation) -> float:
         """ This method calculates the explanatory power.
 
         The explanatory power is the ratio of no. paseed test cases
@@ -83,7 +82,7 @@ class HyphotesisTester(ModelTester, ModelConstructor):
         :param observation: The list of TestResults obtained
         from testing the hypothesis.
         :type  observation: Observation
-        : rtype: int
+        :rtype: float
         """
         explanatory_power = 0
         no_test_cases = len(observation)

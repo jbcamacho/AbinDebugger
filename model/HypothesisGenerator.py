@@ -59,13 +59,13 @@ class HypothesisGenerator():
 
     def get_bug_candidate(self) -> int:
         """ This method return the next bug candidate in the iterator.
-        : rtype: int
+        :rtype: int
         """
         return next(self.bug_candidates)
 
     def abstract_bug_candidate(self, ast_bug_candidate: ASTNode) -> str:
         """ This method return hexdigest of the abstracted node.
-        : rtype: str
+        :rtype: str
         """
         bugged_node_abstract = self.node_abstractor(ast_bug_candidate)
         hexdigest = bugged_node_abstract.ast_hexdigest
@@ -79,7 +79,7 @@ class HypothesisGenerator():
 
         :param ast_node_hexdigest: the hexdigest of the abstracted node.
         :type  ast_node_hexdigest: str
-        : rtype: Tuple[MatchingPatterns, int]
+        :rtype: Tuple[MatchingPatterns, int]
         """
         config = DebugController.DATABASE_SETTINGS
         db_connection = self.mongodb_connection()
@@ -119,7 +119,7 @@ class HypothesisGenerator():
         :type  pattern: MatchingPattern
         :param available_identifiers: the hexdigest of the abstracted node.
         :type  available_identifiers: IDTokens
-        : rtype: Iterator[Hypotheses]
+        :rtype: Iterator[Hypotheses]
         """
         hypotheses = HypothesisAbductor(bugged_node, pattern, available_identifiers)
         return iter(hypotheses)
@@ -161,7 +161,7 @@ class HypothesisGenerator():
         This method will iterate over all bug candidates and generate a hypothesis
         until the iterator `self.bug_candidates` is exhausted.
         
-        : rtype: str
+        :rtype: str
         """
         hypothesis: Hypothesis = None
         while hypothesis is None:
@@ -264,7 +264,7 @@ class HypothesisGenerator():
 
     def get_current_model(self) -> List[str]:
         """ This method return the model source code.
-        : rtype: List[str]
+        :rtype: List[str]
         """
         curr_dir = Path(__file__).parent.parent.resolve()
         curr_model_path = curr_dir.joinpath('temp', self.model_name)
@@ -292,7 +292,7 @@ class HypothesisGenerator():
     @staticmethod
     def mongodb_connection() -> MongoClient:
         """ This method return a connection to the database
-        : rtype: MongoClient
+        :rtype: MongoClient
         """
         config = DebugController.DATABASE_SETTINGS
         MONGO_URI = f"{config['URI']}://{config['HOST']}:{config['PORT']}"
