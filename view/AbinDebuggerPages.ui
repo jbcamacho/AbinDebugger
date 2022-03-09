@@ -523,7 +523,7 @@ Test Timeout</string>
      </widget>
     </item>
     <item row="6" column="3">
-     <widget class="QListWidget" name="listWidget">
+     <widget class="QListWidget" name="lstModel">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>1</horstretch>
