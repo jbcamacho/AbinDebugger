@@ -7,8 +7,9 @@ This is one of the core modules used to automatically repair a defect.
 from model.abstractor.NodeMapper import ASTNode
 from model.core.AbinDebugger import Debugger, AbinDebugger, InfluencePath
 from model.core.ModelTester import ModelTester, TestSuite
-from typing import Tuple, Type, List, Any, Union, Optional, TypeVar
-from types import TracebackType
+from model.HypothesisGenerator import Hypothesis
+from model.HypothesisRefinement import HypothesisRefinement, ImprovementCadidates, AbductionSchema
+from typing import Union, List
 from pathlib import Path
 from shutil import rmtree as remove_dir
 import ast
@@ -19,15 +20,39 @@ import controller.DebugController as DebugController
 import signal
 signal.signal(signal.SIGALRM, DebugController.test_timeout_handler)
 
-class FaultLocalizator(ModelTester):
+class FaultLocalizator(ModelTester, HypothesisRefinement):
     """ This class is used to automatically locate a defective LOC """
     def __init__(self,
-        model_path: str, target_function: str, 
-        test_suite: TestSuite) -> None:
+        target_function: str, test_suite: TestSuite, 
+        model_path: str = '', src_code: Union[List[str], str] = [],
+        improvement_cadidates_set: ImprovementCadidates = iter([]),
+        schema: AbductionSchema = AbductionSchema.DFS) -> None:
         """ Constructor Method """
         AbinLogging.debugging_logger.debug('Init FaultLocalizator')
-        src_code = self.prepare_model(model_path)
-        super().__init__(src_code, target_function, test_suite)
+        if improvement_cadidates_set:
+            self.is_refinement = False
+            new_model_code = self.prepare_model(model_path)
+        else:
+            self.is_refinement = True
+            # src_code[:] instances a new variable
+            HypothesisRefinement.__init__(src_code[:], improvement_cadidates_set, schema)
+            hypothesis = self.select_imprv_candidate()
+            new_model_code = self.build_hypothesis_model(hypothesis, src_code[:]) 
+        self._init_ModelTester(new_model_code, target_function, test_suite)
+    
+    def _init_ModelTester(self, src_code, target_function, test_suite):
+        ModelTester.__init__(src_code, target_function, test_suite)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        hypothesis = self.select_imprv_candidate()
+        if hypothesis is not None:
+            new_model_code = self.build_hypothesis_model(hypothesis, self.model_src)
+            self._init_ModelTester(new_model_code, self.target_function, self.test_suite)
+            return True
+        return False
 
     @staticmethod
     def clean_temporal_files(curr_dir: Path) -> None:
