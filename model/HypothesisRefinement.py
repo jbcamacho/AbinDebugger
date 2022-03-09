@@ -3,11 +3,11 @@ This module contains the HypothesisRefinement class.
 This class in charge of refining hypotheses to repair a defect.
 This is one of the core modules used to automatically repair a defect.
 """
-from typing import List, Union
+from msilib import schema
+from typing import List, Union, Iterator
 import controller.AbinLogging as AbinLogging
-from model.HyphotesisTester import ModelConstructor, TestSuite
-from model.core.ModelTester import ModelTester
-from model.HypothesisGenerator import Hypothesis, Hypotheses, Iterator
+from model.HyphotesisTester import ModelConstructor
+from model.HypothesisGenerator import Hypothesis, Hypotheses
 
 ImprovementCadidates = Iterator[Hypotheses]
 
@@ -17,35 +17,38 @@ class AbductionSchema(Enum):
     BFS = 2
     A_star = 3
 
-class HypothesisRefinement(ModelTester, ModelConstructor):
+class HypothesisRefinement(ModelConstructor):
     """ This class is used to automatically refine an hypothesis """
-    improvement_candidates: ImprovementCadidates
+    improvement_cadidates_set: ImprovementCadidates
     
-    def __init__(self, improvement_candidates: ImprovementCadidates,
-        src_code: Union[List[str], str], target_function: str, 
-        test_suite: TestSuite, hypothesis: Hypothesis) -> None:
+    def __init__(self, improvement_cadidates_set: ImprovementCadidates,
+        schema: AbductionSchema = AbductionSchema.DFS) -> None:
         """ Constructor Method """
         AbinLogging.debugging_logger.debug('Init HypothesisRefinement')
-        self.improvement_candidates = self.sort_imprv_candidates(improvement_candidates)
-
-        # src_code[:] instances a new variable
-        new_model_code = self.build_hypothesis_model(hypothesis, src_code[:]) 
-        super().__init__(new_model_code, target_function, test_suite)
+        self.improvement_cadidates_set = self.sort_imprv_candidates(improvement_cadidates_set, schema)
 
     def select_imprv_candidate(self) -> Hypothesis:
         """ This method return the next improvement candidate in the iterator.
         :rtype: int
         """
-        return next(self.improvement_candidates)
+        return next(self.improvement_cadidates_set, None)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self.select_imprv_candidate()
 
     @staticmethod
-    def sort_imprv_candidates(hypotheses: Hypotheses) -> ImprovementCadidates:
+    def sort_imprv_candidates(hypotheses: Hypotheses, 
+        schema: AbductionSchema = AbductionSchema.DFS) -> ImprovementCadidates:
         """ This method sorts the given hypotheses.
         
         The hypotheses will be sorted out by explanatory power
         and turned into a Iterator.
         :rtype: ImprovementCadidates
         """
-        # The explanatory power is the third argument of a hypothesis
-        improvement_candidates = sorted(hypotheses, key=lambda x: x[2])
-        return iter(improvement_candidates)
+        if schema == AbductionSchema.A_star:
+            # The explanatory power is the third argument of a hypothesis
+            improvement_cadidates_set = sorted(hypotheses, key=lambda x: x[2])
+        return iter(improvement_cadidates_set)
