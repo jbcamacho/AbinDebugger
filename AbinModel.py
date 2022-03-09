@@ -42,6 +42,7 @@ class AbinModel():
         self.bugged_file_path = bugged_file_path
         self.test_suite = test_suite
         self.max_complexity = max_complexity
+        self.abduction_level = 0
         self.abduction_schema = abduction_schema
         self.candidate = None
         self.bugfixing_hyphotesis = None
@@ -49,76 +50,138 @@ class AbinModel():
         self.hyphotesis_tester = tester
         self.hypotheses_generator = generator
     
-    def start_auto_debugging(self) -> Tuple[str, Behavior, Observation, Observation]:
+    def start_auto_debugging(self, model_src_code = None,
+        improvement_cadidates_set = None) -> Tuple[str, Behavior, Observation, Observation]:
         """ This method encapsulates the whole debugging process.
         :rtype: Tuple[str, Behavior, Observation, Observation]
         """
-        (model_src_code, behavior, prev_observation, influence_path) = self.fault_localization()
+        localizator = self.fault_localization(model_src_code, improvement_cadidates_set)
+        behavior = Behavior.Undefined
+        with localizator:
+            (prev_observation, influence_path) = localizator.model_testing(check_consistency=False)
+            model_src_code = localizator.model_src
+            if localizator.are_all_test_pass():
+                behavior = Behavior.Correct
         AbinLogging.debugging_logger.info(f"""
-            Observations:
-            {prev_observation}
-            Influence Path by Suspiciousness Ranking:
-            {influence_path}
-            """
+                Observations:
+                {prev_observation}
+                Influence Path by Suspiciousness Ranking:
+                {influence_path}
+                """
         )
         if behavior == Behavior.Correct:
-            AbinLogging.debugging_logger.debug(f"\nSUCCESSFUL REPAIR!")
+            AbinLogging.debugging_logger.info(f"AbinDebugger did not detect any defects in the program.")
             return (model_src_code, behavior, prev_observation, [])
-        new_observation = []
-        hypotheses_generator = self.hypotheses_generation(influence_path, model_src_code[:], self.max_complexity)
-        with hypotheses_generator:
-            for i, hypothesis in enumerate(hypotheses_generator):
-                AbinLogging.debugging_logger.info(f"""
-                    Testing Hypothesis {i}.
-                    Hypothesis: {hypothesis}
-                    """
-                )
-                (new_model_src_code, behavior, new_observation) = self.hyphotesis_testing(prev_observation, model_src_code[:], hypothesis)
-                AbinLogging.debugging_logger.info(f""" 
-                    New Observations:
-                    {new_observation}
-                    Behavior Type:
-                    {behavior}
-                    """
-                )
-                if behavior == Behavior.Correct:
-                    AbinLogging.debugging_logger.debug(f""" 
-                        Previous Observations:
-                        {prev_observation}
-                        New Observations:
-                        {new_observation}
-                        \nSUCCESSFUL REPAIR!
+
+        imprv_candidates = []
+        while True:
+            new_observation = []
+            hypotheses_generator = self.hypotheses_generation(influence_path, model_src_code[:], self.max_complexity)
+            
+            with hypotheses_generator:
+                for i, hypothesis in enumerate(hypotheses_generator):
+                    AbinLogging.debugging_logger.info(f"""
+                        Testing Hypothesis {i}.
+                        Hypothesis: {hypothesis}
                         """
                     )
-                    self.candidate = hypotheses_generator.candidate
-                    self.bugfixing_hyphotesis = hypothesis[0]
-                    return (new_model_src_code, behavior, prev_observation, new_observation)
-                elif behavior == Behavior.Improvement:
+                    (new_model_src_code, behavior, new_observation) = self.hyphotesis_testing(prev_observation, model_src_code[:], hypothesis)
+                    AbinLogging.debugging_logger.info(f""" 
+                        New Observations:
+                        {new_observation}
+                        Behavior Type:
+                        {behavior}
+                        """
+                    )
+                    
+                    if behavior == Behavior.Improvement:
+                        imprv_candidates.append(hypothesis)
+                        if self.abduction_schema == AbductionSchema.DFS:
+                            # recursion here
+                            self.abduction_level += 1
+                            # result = self.start_auto_debugging(new_model_src_code[:], imprv_candidates)
+                            # (new_model_src_code, behavior, prev_observation, new_observation) = result
+                            # imprv_candidates.clear()
+                        elif self.abduction_schema == AbductionSchema.BFS:
+                            # save hypothesis here
+                            pass
+                        elif self.abduction_schema == AbductionSchema.A_star:
+                            # insertion sort and save hypothesis here
+                            # already implemented in refinement class
+                            pass
+                        
 
-                    if self.abduction_schema == AbductionSchema.DFS:
-                        pass
-                    elif self.abduction_schema == AbductionSchema.BFS:
-                        pass
-                    elif self.abduction_schema == AbductionSchema.A_star:
-                        pass
-        AbinLogging.debugging_logger.debug(f"\nUNABLE TO REPAIR!")
+                    if behavior == Behavior.Correct:
+                        break
+            
+            if (imprv_candidates
+                and (self.abduction_schema == AbductionSchema.BFS
+                or self.abduction_schema == AbductionSchema.A_star) ):
+                # recursion here
+                self.abduction_level += 1
+                # result = self.start_auto_debugging(new_model_src_code[:], imprv_candidates)
+                # (new_model_src_code, behavior, prev_observation, new_observation) = result
+                # imprv_candidates.clear()
+
+            if behavior == Behavior.Correct:
+                AbinLogging.debugging_logger.debug(f""" 
+                    Previous Observations:
+                    {prev_observation}
+                    New Observations:
+                    {new_observation}
+                    \nSUCCESSFUL REPAIR!
+                    """
+                )
+                self.candidate = hypotheses_generator.candidate
+                self.bugfixing_hyphotesis = hypothesis[0]
+                return (new_model_src_code, behavior, prev_observation, new_observation)
+
+            if localizator.is_refinement:
+                AbinLogging.debugging_logger.debug(f"\nImprovement Candidate Rejected...")
+                self.abduction_level -= 1
+                has_imprv_cand = next(localizator)
+                if not has_imprv_cand:
+                    AbinLogging.debugging_logger.debug(f"\nFailed Refinement...")
+                    return ('', behavior, prev_observation, new_observation)
+                behavior = Behavior.Undefined
+                with localizator:
+                    (prev_observation, influence_path) = localizator.model_testing(check_consistency=False)
+                    model_src_code = localizator.model_src
+            else:
+                break
+                
+
+        if self.abduction_level == 0:
+            AbinLogging.debugging_logger.debug(f"\nUNABLE TO REPAIR!")
         return ('', behavior, prev_observation, new_observation)
-        
-    def fault_localization(self) -> Tuple[str, Behavior, Observation, InfluencePath]:
+    
+    def fault_localization(self, model_src_code = None, 
+        improvement_cadidates_set = None) -> Localizator:
         """ This method encapsulates the fault localization process.
         : rtype: Tuple[str, Behavior, Observation, InfluencePath]
         """
-        behavior = Behavior.Undefined
+        """behavior = Behavior.Undefined
         observation = []
-        influence_path = []
+        influence_path = []"""
         model_src_code = []
-        with self.fault_localizator(self.bugged_file_path,
-            self.function_name, self.test_suite) as localizator:
+        if improvement_cadidates_set is None:
+            localizator = self.fault_localizator(model_path = self.bugged_file_path,
+                target_function = self.function_name, 
+                test_suite = self.test_suite,
+                schema=self.abduction_schema)
+        else:
+            localizator = self.fault_localizator(src_code = model_src_code,
+                improvement_cadidates_set = improvement_cadidates_set, 
+                target_function = self.function_name,
+                test_suite = self.test_suite,
+                schema=self.abduction_schema)
+        return localizator
+        """with localizator:
             (observation, influence_path) = localizator.model_testing(check_consistency=False)
             model_src_code = localizator.model_src
             if localizator.are_all_test_pass():
                 behavior = Behavior.Correct
-        return (model_src_code, behavior, observation, influence_path)
+        return (model_src_code, behavior, observation, influence_path)"""
 
     def hypotheses_generation(self, 
         influence_path: InfluencePath, 
