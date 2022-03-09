@@ -3,7 +3,6 @@ This module contains the HypothesisRefinement class.
 This class in charge of refining hypotheses to repair a defect.
 This is one of the core modules used to automatically repair a defect.
 """
-from msilib import schema
 from typing import List, Union, Iterator
 import controller.AbinLogging as AbinLogging
 from model.HyphotesisTester import ModelConstructor
@@ -48,6 +47,7 @@ class HypothesisRefinement(ModelConstructor):
         and turned into a Iterator.
         :rtype: ImprovementCadidates
         """
+        improvement_cadidates_set = hypotheses
         if schema == AbductionSchema.A_star:
             # The explanatory power is the third argument of a hypothesis
             improvement_cadidates_set = sorted(hypotheses, key=lambda x: x[2])

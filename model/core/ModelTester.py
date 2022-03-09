@@ -31,7 +31,7 @@ class ModelLoader(SourceLoader):
     """
     def __init__(self, src_code) -> None:
         """ Constructor Method """
-        super().__init__()
+        SourceLoader.__init__(self)
         self.src_code = ''.join(src_code)
 
     def get_data(self, path) -> bytes:
