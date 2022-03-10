@@ -341,7 +341,7 @@
        <item>
         <widget class="QRadioButton" name="rdbAStar">
          <property name="text">
-          <string>A star</string>
+          <string>A*</string>
          </property>
         </widget>
        </item>
