@@ -9,18 +9,20 @@ Given a string representing a password, this benchmark checks the password stren
     "benchmark_metadata": [
         {
             "Function": ["check_password_strength"],
-            "Bug": [ {"Position": 38, "LOC": "whitespace_count = 1"} ],
-            "Fix": [ {"Position": 38, "LOC": "whitespace_count += 1"} ]
+            "Bug": [ {"Position": 51, "LOC": "whitespace_count = 1"} ],
+            "Fix": [ {"Position": 51, "LOC": "whitespace_count += 1"} ]
         },
         {
             "Function": ["check_password_strength2"],
             "Bug": [
-                {"Position": 90, "LOC": "whitespace_count = 1"},
-                {"Position": 92, "LOC": "special_char_count = 1"}
+                {"Position": 92, "LOC": "whitespace_count = 1"},
+                {"Position": 94, "LOC": "special_char_count = 1"}
+                {"Position": 98, "LOC": "if lower_alpha_count == 1:"}
             ],
             "Fix": [
-                {"Position": 90, "LOC": "whitespace_count += 1"},
-                {"Position": 92, "LOC": "special_char_count += 1"}
+                {"Position": 92, "LOC": "whitespace_count += 1"},
+                {"Position": 94, "LOC": "special_char_count += 1"}
+                {"Position": 98, "LOC": "if lower_alpha_count >= 1:"}
             ]
         }
     ]
@@ -93,7 +95,7 @@ def check_password_strength2(password):
     strength = 0
     remarks = ''
 
-    if lower_alpha_count >= 1:
+    if lower_alpha_count == 1: # <-- FIX if lower_alpha_count >= 1:
         strength += 1
     if upper_alpha_count >= 1:
         strength += 1
