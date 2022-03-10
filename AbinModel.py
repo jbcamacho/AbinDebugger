@@ -42,7 +42,8 @@ class AbinModel():
         self.bugged_file_path = bugged_file_path
         self.test_suite = test_suite
         self.max_complexity = max_complexity
-        self.abduction_level = 0
+        self.abduction_depth = 0
+        self.abduction_breadth = 0
         self.abduction_schema = abduction_schema
         self.candidate = None
         self.bugfixing_hyphotesis = None
@@ -79,12 +80,13 @@ class AbinModel():
             hypotheses_generator = self.hypotheses_generation(influence_path, model_src_code[:], self.max_complexity)
             
             with hypotheses_generator:
-                for i, hypothesis in enumerate(hypotheses_generator):
+                for hypothesis in hypotheses_generator:
                     AbinLogging.debugging_logger.info(f"""
-                        Testing Hypothesis {i}.
+                        Testing Hypothesis {self.abduction_breadth}.
                         Hypothesis: {hypothesis}
                         """
                     )
+                    self.abduction_breadth += 1
                     (new_model_src_code, behavior, new_observation) = self.hyphotesis_testing(prev_observation, model_src_code[:], hypothesis)
                     AbinLogging.debugging_logger.info(f""" 
                         New Observations:
@@ -98,8 +100,8 @@ class AbinModel():
                         imprv_candidates.append(hypothesis)
                         if self.abduction_schema == AbductionSchema.DFS:
                             # recursion here
-                            self.abduction_level += 1
-                            AbinLogging.debugging_logger.info(f"ABDUCTION LEVEL: {self.abduction_level}")
+                            self.abduction_depth += 1
+                            AbinLogging.debugging_logger.info(f"ABDUCTION DEPTH: {self.abduction_depth}")
                             result = self.start_auto_debugging(model_src_code[:], imprv_candidates)
                             (new_model_src_code, behavior, prev_observation, new_observation) = result
                             imprv_candidates.clear()
@@ -119,7 +121,8 @@ class AbinModel():
                 and (self.abduction_schema == AbductionSchema.BFS
                 or self.abduction_schema == AbductionSchema.A_star) ):
                 # recursion here
-                self.abduction_level += 1
+                self.abduction_depth += 1
+                AbinLogging.debugging_logger.info(f"ABDUCTION DEPTH: {self.abduction_depth}")
                 # result = self.start_auto_debugging(new_model_src_code[:], imprv_candidates)
                 # (new_model_src_code, behavior, prev_observation, new_observation) = result
                 # imprv_candidates.clear()
@@ -138,12 +141,12 @@ class AbinModel():
                 return (new_model_src_code, behavior, prev_observation, new_observation)
 
             if localizator.is_refinement:
-                AbinLogging.debugging_logger.debug(f"\nImprovement Candidate Rejected...")
-                self.abduction_level -= 1
+                AbinLogging.debugging_logger.info(f"\nImprovement Candidate Rejected...")
+                self.abduction_depth -= 1
                 has_imprv_cand = next(localizator)
                 if not has_imprv_cand:
-                    AbinLogging.debugging_logger.debug(f"\nFailed Refinement...")
-                    AbinLogging.debugging_logger.info(f"ABDUCTION LEVEL: {self.abduction_level}")
+                    AbinLogging.debugging_logger.info(f"Failed Refinement...")
+                    AbinLogging.debugging_logger.info(f"ABDUCTION DEPTH: {self.abduction_depth}")
                     return ('', behavior, prev_observation, new_observation)
                 behavior = Behavior.Undefined
                 with localizator:
@@ -153,7 +156,7 @@ class AbinModel():
                 break
                 
 
-        if self.abduction_level == 0:
+        if self.abduction_depth == 0:
             AbinLogging.debugging_logger.debug(f"\nUNABLE TO REPAIR!")
         return ('', behavior, prev_observation, new_observation)
     
@@ -172,7 +175,7 @@ class AbinModel():
                 test_suite = self.test_suite,
                 schema=self.abduction_schema)
         else:
-            AbinLogging.debugging_logger.info(f"Improvement Candidates: {improvement_cadidates_set}")
+            AbinLogging.debugging_logger.info(f"Improvement Candidates: {improvement_cadidates_set}\n")
             AbinLogging.debugging_logger.debug(f"New Model: {model_src_code}")
             localizator = self.fault_localizator(src_code = model_src_code,
                 improvement_cadidates_set = improvement_cadidates_set, 
