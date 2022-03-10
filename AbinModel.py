@@ -99,9 +99,10 @@ class AbinModel():
                         if self.abduction_schema == AbductionSchema.DFS:
                             # recursion here
                             self.abduction_level += 1
-                            # result = self.start_auto_debugging(new_model_src_code[:], imprv_candidates)
-                            # (new_model_src_code, behavior, prev_observation, new_observation) = result
-                            # imprv_candidates.clear()
+                            AbinLogging.debugging_logger.info(f"ABDUCTION LEVEL: {self.abduction_level}")
+                            result = self.start_auto_debugging(model_src_code[:], imprv_candidates)
+                            (new_model_src_code, behavior, prev_observation, new_observation) = result
+                            imprv_candidates.clear()
                         elif self.abduction_schema == AbductionSchema.BFS:
                             # save hypothesis here
                             pass
@@ -142,6 +143,7 @@ class AbinModel():
                 has_imprv_cand = next(localizator)
                 if not has_imprv_cand:
                     AbinLogging.debugging_logger.debug(f"\nFailed Refinement...")
+                    AbinLogging.debugging_logger.info(f"ABDUCTION LEVEL: {self.abduction_level}")
                     return ('', behavior, prev_observation, new_observation)
                 behavior = Behavior.Undefined
                 with localizator:
@@ -162,14 +164,16 @@ class AbinModel():
         """
         """behavior = Behavior.Undefined
         observation = []
-        influence_path = []"""
-        model_src_code = []
+        influence_path = []
+        model_src_code = []"""
         if improvement_cadidates_set is None:
             localizator = self.fault_localizator(model_path = self.bugged_file_path,
                 target_function = self.function_name, 
                 test_suite = self.test_suite,
                 schema=self.abduction_schema)
         else:
+            AbinLogging.debugging_logger.info(f"Improvement Candidates: {improvement_cadidates_set}")
+            AbinLogging.debugging_logger.debug(f"New Model: {model_src_code}")
             localizator = self.fault_localizator(src_code = model_src_code,
                 improvement_cadidates_set = improvement_cadidates_set, 
                 target_function = self.function_name,
