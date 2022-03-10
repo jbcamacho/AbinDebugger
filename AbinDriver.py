@@ -328,7 +328,11 @@ class AbinDriver(AbinView):
         self.txtLogging.clear()
         self.debug_result = None
         AbinLogging.debugging_logger.info('Initializing Debugger...')
-        abinDebugger = self.abinDebugger(self.function_name, self.bugged_file_path, self.csvTestSuite, self.max_complexity)
+        abinDebugger = self.abinDebugger(self.function_name, 
+                                        self.bugged_file_path, 
+                                        self.csvTestSuite, 
+                                        self.max_complexity, 
+                                        self.abduction_schema)
         AbinLogging.debugging_logger.info('Starting Debugging Process...')
         result = abinDebugger.start_auto_debugging()
         AbinLogging.debugging_logger.info('Debugging Process Finalized.')
