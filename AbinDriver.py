@@ -48,7 +48,7 @@ class AbinDriver(AbinView):
         self._debug_elapsed_time = 0
         self.csvTestSuite = None
         self.lstRepos = None
-        self.abduction_schema = None
+        self.abduction_schema = AbductionSchema.DFS
           
     def _connectActions(self):
         """ This method connect all the signals to a QWidget object"""

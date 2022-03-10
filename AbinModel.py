@@ -92,7 +92,7 @@ class AbinModel():
                         """
                     )
                     self.abduction_breadth += 1
-                    (new_model_src_code, behavior, new_observation) = self.hyphotesis_testing(prev_observation, model_src_code[:], hypothesis)
+                    (new_model_src_code, behavior, new_observation, hypothesis) = self.hyphotesis_testing(prev_observation, model_src_code[:], hypothesis)
                     AbinLogging.debugging_logger.info(f""" 
                         New Observations:
                         {new_observation}
@@ -224,7 +224,8 @@ class AbinModel():
             (observation, influence_path) = hypo_test.model_testing(check_consistency=True)
             behavior = hypo_test.compare_observations()
             new_model_src_code = hypo_test.model_src
-        return (new_model_src_code, behavior, observation)
+            hypothesis = hypo_test.hypothesis
+        return (new_model_src_code, behavior, observation, hypothesis)
 
     def hyphotesis_refinement(self):
         pass

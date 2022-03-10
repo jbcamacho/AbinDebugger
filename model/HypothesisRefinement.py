@@ -25,7 +25,7 @@ class HypothesisRefinement(ModelConstructor):
         """ Constructor Method """
         AbinLogging.debugging_logger.debug('Init HypothesisRefinement')
         self.improvement_cadidates_set, copy_imprv_cand = self.sort_imprv_candidates(improvement_cadidates_set, schema)
-        AbinLogging.debugging_logger.info(f'Improvement Cadidates Set:\n{list(copy_imprv_cand)}')
+        AbinLogging.debugging_logger.info(f'Schema: {schema}\nImprovement Cadidates Set:\n{list(copy_imprv_cand)}')
 
     def select_imprv_candidate(self) -> Hypothesis:
         """ This method return the next improvement candidate in the iterator.
@@ -51,5 +51,5 @@ class HypothesisRefinement(ModelConstructor):
         improvement_cadidates_set = hypotheses
         if schema == AbductionSchema.A_star:
             # The explanatory power is the third argument of a hypothesis
-            improvement_cadidates_set = sorted(hypotheses, key=lambda x: x[2])
+            improvement_cadidates_set = sorted(hypotheses, key=lambda x: x[2], reverse=True)
         return n_plicate_iterator(improvement_cadidates_set, 2)
