@@ -101,6 +101,8 @@ class AbinModel():
                         if self.abduction_schema == AbductionSchema.DFS:
                             # recursion here
                             self.abduction_depth += 1
+                            # We need to save the prev_observation in case of failed refinement
+                            prev_observation_holder = prev_observation[:]
                             AbinLogging.debugging_logger.info(f"ABDUCTION DEPTH: {self.abduction_depth}")
                             result = self.start_auto_debugging(model_src_code[:], imprv_candidates)
                             (new_model_src_code, behavior, prev_observation, new_observation) = result
@@ -145,6 +147,9 @@ class AbinModel():
                 self.abduction_depth -= 1
                 has_imprv_cand = next(localizator)
                 if not has_imprv_cand:
+                    # We need to return the prev_observation that was saved
+                    prev_observation = prev_observation_holder[:]
+                    behavior = Behavior.Undefined
                     AbinLogging.debugging_logger.info(f"Failed Refinement...")
                     AbinLogging.debugging_logger.info(f"ABDUCTION DEPTH: {self.abduction_depth}")
                     return ('', behavior, prev_observation, new_observation)
