@@ -25,17 +25,17 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
     def __init__(self,
         target_function: str, test_suite: TestSuite, 
         model_path: str = '', src_code: Union[List[str], str] = [],
-        improvement_cadidates_set: ImprovementCadidates = None,
+        improvement_candidates_set: ImprovementCadidates = None,
         schema: AbductionSchema = AbductionSchema.DFS) -> None:
         """ Constructor Method """
         AbinLogging.debugging_logger.debug('Init FaultLocalizator')
-        if improvement_cadidates_set is None:
+        if improvement_candidates_set is None:
             self.is_refinement = False
             new_model_code = self.prepare_model(model_path)
         else:
             self.is_refinement = True
             # src_code[:] instances a new variable
-            HypothesisRefinement.__init__(self, improvement_cadidates_set=improvement_cadidates_set, schema=schema)
+            HypothesisRefinement.__init__(self, improvement_candidates_set=improvement_candidates_set, schema=schema)
             hypothesis = self.select_imprv_candidate()
             new_model_code = self.build_hypothesis_model(hypothesis, src_code[:]) 
         self._init_ModelTester(new_model_code, target_function, test_suite)

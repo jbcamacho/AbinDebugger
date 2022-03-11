@@ -52,7 +52,7 @@ class AbinModel():
         self.hypotheses_generator = generator
     
     def start_auto_debugging(self, model_src_code = None,
-        improvement_cadidates_set = None) -> Tuple[str, Behavior, Observation, Observation]:
+        improvement_candidates_set = None) -> Tuple[str, Behavior, Observation, Observation]:
         """ This method encapsulates the whole debugging process.
         :rtype: Tuple[str, Behavior, Observation, Observation]
         """
@@ -60,7 +60,7 @@ class AbinModel():
         Schema: {self.abduction_schema}
         Abduction Depth: {self.abduction_depth}
         Abduction Breadth: {self.abduction_breadth}""")
-        localizator = self.fault_localization(model_src_code, improvement_cadidates_set)
+        localizator = self.fault_localization(model_src_code, improvement_candidates_set)
         behavior = Behavior.Undefined
         with localizator:
             (prev_observation, influence_path) = localizator.model_testing(check_consistency=False)
@@ -170,20 +170,20 @@ class AbinModel():
         return ('', behavior, prev_observation, new_observation)
     
     def fault_localization(self, model_src_code = None, 
-        improvement_cadidates_set = None) -> Localizator:
+        improvement_candidates_set = None) -> Localizator:
         """ This method encapsulates the fault localization process.
         : rtype: Tuple[str, Behavior, Observation, InfluencePath]
         """
-        if improvement_cadidates_set is None:
+        if improvement_candidates_set is None:
             localizator = self.fault_localizator(model_path = self.bugged_file_path,
                 target_function = self.function_name, 
                 test_suite = self.test_suite,
                 schema=self.abduction_schema)
         else:
-            AbinLogging.debugging_logger.debug(f"Improvement Candidates: {improvement_cadidates_set}\n")
+            AbinLogging.debugging_logger.debug(f"Improvement Candidates: {improvement_candidates_set}\n")
             AbinLogging.debugging_logger.debug(f"New Model: {model_src_code}")
             localizator = self.fault_localizator(src_code = model_src_code,
-                improvement_cadidates_set = improvement_cadidates_set, 
+                improvement_candidates_set = improvement_candidates_set, 
                 target_function = self.function_name,
                 test_suite = self.test_suite,
                 schema=self.abduction_schema)
