@@ -66,7 +66,7 @@ class AbinModel():
             (prev_observation, influence_path) = localizator.model_testing(check_consistency=False)
             model_src_code = localizator.model_src
             if localizator.are_all_test_pass():
-                behavior = Behavior.Correct
+                behavior = Behavior.Valid
         AbinLogging.debugging_logger.info(f"""
                 Observations:
                 {prev_observation}
@@ -74,7 +74,7 @@ class AbinModel():
                 {influence_path}
                 """
         )
-        if behavior == Behavior.Correct:
+        if behavior == Behavior.Valid:
             AbinLogging.debugging_logger.info(f"AbinDebugger did not detect any defects in the program.")
             return (model_src_code, behavior, prev_observation, [])
         # We need to save the prev_observation in case of failed refinement

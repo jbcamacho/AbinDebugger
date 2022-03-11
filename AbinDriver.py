@@ -4,8 +4,6 @@ This is the controller representation of the MVC software pattern.
 """
 import sys
 import builtins
-
-from numpy import double
 from AbinView import AbinView
 from AbinModel import AbinModel
 from typing import Tuple, Type
@@ -19,6 +17,7 @@ from PyQt5.QtWidgets import (
     QDoubleSpinBox, QLineEdit, QRadioButton, QGroupBox
 )
 import controller.DebugController as DebugController
+from model.HyphotesisTester import Behavior
 from model.HypothesisRefinement import AbductionSchema
 from controller.AbinLogging import Worker
 from model.misc.test_db_connection import test_db_connection
@@ -306,11 +305,14 @@ class AbinDriver(AbinView):
         self._stopDebugTimer()
         if self.debug_result is not None:
             msgResult = QMessageBox()
-            (model_src_code, candidate, bugfixing_hyphotesis, *_) = self.debug_result
+            (model_src_code, candidate, bugfixing_hyphotesis, behavior, *_) = self.debug_result
 
             if model_src_code == '':
                 msgTitle = 'UNABLE TO REPAIR!'
                 msgText = 'AbinDebugger was unable to repair the provided program.'
+            elif behavior == Behavior.Valid:
+                msgTitle = 'NO DEFECT FOUND!'
+                msgText = 'AbinDebugger did not detect any defects in the provided program.'
             else:
                 msgTitle = 'SUCCESSFUL REPAIR!'
                 msgText = 'The provided program was successfully repaired.'

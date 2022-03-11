@@ -17,6 +17,7 @@ class Behavior(Enum):
     Same = 3
     Correct = 4
     Undefined = 5
+    Valid = 6
 
 class ModelConstructor():
     """ This class contains the method to build an hypothesis model"""
