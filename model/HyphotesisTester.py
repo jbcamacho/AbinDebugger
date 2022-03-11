@@ -12,6 +12,8 @@ import re
 
 from enum import Enum
 class Behavior(Enum):
+    """ This class reprements an enumeration of the currently
+    avaiable behaviors of a model. """
     Improvement = 1
     Worsened = 2
     Same = 3

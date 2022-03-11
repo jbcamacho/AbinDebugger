@@ -131,11 +131,13 @@ class AbinModel():
                 imprv_candidates.clear()
 
             if behavior == Behavior.Correct:
-                AbinLogging.debugging_logger.debug(f""" 
+                AbinLogging.debugging_logger.info(f""" 
                     Previous Observations:
                     {prev_observation}
                     New Observations:
                     {new_observation}
+                    Abduction Depth: {self.abduction_depth}
+                    Abduction Breadth: {self.abduction_breadth}
                     \nSUCCESSFUL REPAIR!
                     """
                 )

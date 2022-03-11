@@ -279,12 +279,13 @@ class HypothesisGenerator():
         return model_src
 
     @property
-    def model_name(self):
+    def model_name(self) -> str:
         """ This property represent the current model name"""
         return f"model{str(self.abduction_depth)}.py"
 
     @property
-    def model_path(self):
+    def model_path(self) -> str:
+        """ This property represent the current model path"""
         curr_dir = Path(__file__).parent.parent.resolve()
         curr_model_path = curr_dir.joinpath('temp', self.model_name)
         return curr_model_path

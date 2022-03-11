@@ -29,12 +29,12 @@ class ModelLoader(SourceLoader):
     This class is a helper class to convert the models into ModuleType objects
     in order test them.
     """
-    def __init__(self, src_code) -> None:
+    def __init__(self, src_code: Union[List[str], str]) -> None:
         """ Constructor Method """
         SourceLoader.__init__(self)
         self.src_code = ''.join(src_code)
 
-    def get_data(self, path) -> bytes:
+    def get_data(self, path: str = None) -> bytes:
         """ Abstract method implementation.
 
         This method is the implementation of the abstract method get_data

@@ -12,6 +12,8 @@ ImprovementCadidates = Iterator[Hypotheses]
 
 from enum import Enum
 class AbductionSchema(Enum):
+    """ This class reprements an enumeration of the currently
+    avaiable abduction schemas. """
     DFS = 1
     BFS = 2
     A_star = 3

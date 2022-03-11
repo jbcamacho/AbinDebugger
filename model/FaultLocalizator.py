@@ -5,9 +5,7 @@ that may hold a defect.
 This is one of the core modules used to automatically repair a defect.
 """
 from model.abstractor.NodeMapper import ASTNode
-from model.core.AbinDebugger import Debugger, AbinDebugger, InfluencePath
 from model.core.ModelTester import ModelTester, TestSuite
-from model.HypothesisGenerator import Hypothesis
 from model.HypothesisRefinement import HypothesisRefinement, ImprovementCadidates, AbductionSchema
 from typing import Union, List
 from pathlib import Path
@@ -22,6 +20,8 @@ signal.signal(signal.SIGALRM, DebugController.test_timeout_handler)
 
 class FaultLocalizator(ModelTester, HypothesisRefinement):
     """ This class is used to automatically locate a defective LOC """
+    is_refinement: bool
+
     def __init__(self,
         target_function: str, test_suite: TestSuite, 
         model_path: str = '', src_code: Union[List[str], str] = [],
@@ -40,13 +40,33 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
             new_model_code = self.build_hypothesis_model(hypothesis, src_code[:]) 
         self._init_ModelTester(new_model_code, target_function, test_suite)
     
-    def _init_ModelTester(self, src_code, target_function, test_suite):
+    def _init_ModelTester(self, 
+                src_code: Union[List[str], str],
+                target_function: str, 
+                test_suite: TestSuite) -> None:
+        """ This private method initializes the super class ModelTester.
+        :param src_code: The source code of the model.
+        :type  src_code: Union[List[str], str]
+        :param target_function: The target function in the model.
+        :type  target_function: str
+        :param test_suite: The testsuite associated to the model.
+        :type  test_suite: TestSuite
+        """
         ModelTester.__init__(self, src_code=src_code, target_function=target_function, test_suite=test_suite)
 
-    def __iter__(self):
+    def __iter__(self) -> None:
+        """ Class Iterator Constructor """
         return self
 
-    def __next__(self):
+    def __next__(self) -> bool:
+        """ Class Iterator Next Constructor
+
+        This method will iterate over all improvement candidates
+        and build an apropiated model for it, until the iterator 
+        `self.improvement_candidates_set` is exhausted.
+        
+        :rtype: bool
+        """
         hypothesis = self.select_imprv_candidate()
         if hypothesis is not None:
             new_model_code = self.build_hypothesis_model(hypothesis, self.model_src)
@@ -56,7 +76,10 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
 
     @staticmethod
     def clean_temporal_files(curr_dir: Path) -> None:
-        """ This method cleans up the temporal folder """
+        """ This method cleans up the temporal folder.
+        :param curr_dir: The path object to the temporal foler.
+        :type  curr_dir: Path
+        """
         with curr_dir.joinpath('temp') as temp_dir:
             if temp_dir.exists():
                 remove_dir(temp_dir)
@@ -81,13 +104,14 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
             return parsed_source
 
     @staticmethod
-    def parse_model(src) -> ASTNode:
+    def parse_model(src: str) -> ASTNode:
         """This method refactor the model for the debugging process.
         
         This method removes unnecesary components like docstrings
         and refactor multiple lines' statements into one line statements.
-
-        :rtype: str
+        :param src: The models' source code to be parsed.
+        :type  src: str
+        :rtype: ASTNode
         """
         try:
             parsed = ast.parse(src)
