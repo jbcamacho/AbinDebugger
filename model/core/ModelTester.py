@@ -78,10 +78,12 @@ class ModelTester(ModelLoader):
     influence_path: InfluencePath
     observation: Observation
     debugger: Debugger
+    susp_threshold: int
 
     def __init__(self, src_code: Union[List[str], str], 
                 target_function: str,
-                test_suite: TestSuite, 
+                test_suite: TestSuite,
+                susp_threshold: int = 0,
                 debugger: Debugger = AbinDebugger) -> None:
         """ Constructor Method """
         AbinLogging.debugging_logger.debug('Init ModelTester')
@@ -94,6 +96,7 @@ class ModelTester(ModelLoader):
         self.observation = []
         self.prev_observation = None
         self.debugger = debugger
+        self.susp_threshold = susp_threshold
 
     def __enter__(self) -> Any:
         """ Context manager method used to initialize the defective model/program """
@@ -163,7 +166,7 @@ class ModelTester(ModelLoader):
         """
         new_observation: Observation = [('UndefinedTest', FailedTest) for i in range(len(self.test_suite))]
         test_result: ExpectedOutput
-        debugger: Debugger = self.debugger()
+        debugger: Debugger = self.debugger(susp_threshold=self.susp_threshold)
         AbinLogging.debugging_logger.info(f"Starting Model Test...")
         for i, test_case, expected_output, *input_args in self.test_suite.itertuples():
             AbinLogging.debugging_logger.info(f"Testing {test_case}...")

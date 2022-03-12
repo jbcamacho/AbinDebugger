@@ -25,6 +25,7 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
     def __init__(self,
         target_function: str, test_suite: TestSuite, 
         model_path: str = '', src_code: Union[List[str], str] = [],
+        susp_threshold: int = 0,
         improvement_candidates_set: ImprovementCadidates = None,
         schema: AbductionSchema = AbductionSchema.DFS) -> None:
         """ Constructor Method """
@@ -38,12 +39,13 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
             HypothesisRefinement.__init__(self, improvement_candidates_set=improvement_candidates_set, schema=schema)
             hypothesis = self.select_imprv_candidate()
             new_model_code = self.build_hypothesis_model(hypothesis, src_code[:]) 
-        self._init_ModelTester(new_model_code, target_function, test_suite)
+        self._init_ModelTester(new_model_code, target_function, test_suite, susp_threshold)
     
     def _init_ModelTester(self, 
                 src_code: Union[List[str], str],
                 target_function: str, 
-                test_suite: TestSuite) -> None:
+                test_suite: TestSuite,
+                susp_threshold: int = 0) -> None:
         """ This private method initializes the super class ModelTester.
         :param src_code: The source code of the model.
         :type  src_code: Union[List[str], str]
@@ -51,8 +53,14 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
         :type  target_function: str
         :param test_suite: The testsuite associated to the model.
         :type  test_suite: TestSuite
+        :param susp_threshold: The suspiciousness threshold value.
+        :type  susp_threshold: int
         """
-        ModelTester.__init__(self, src_code=src_code, target_function=target_function, test_suite=test_suite)
+        ModelTester.__init__(self, 
+            src_code=src_code, 
+            target_function=target_function, 
+            test_suite=test_suite,
+            susp_threshold=susp_threshold)
 
     def __iter__(self) -> None:
         """ Class Iterator Constructor """
