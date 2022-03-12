@@ -179,7 +179,7 @@ class HypothesisGenerator():
                         try:
                             self.candidate = self.get_bug_candidate()
                         except StopIteration:
-                            msg_ = 'No more bug candidates to abstract. Automatic Program Repair Failed!'
+                            msg_ = 'No more bug candidates to abstract in the current model.'
                             AbinLogging.debugging_logger.info(msg_)
                             raise StopIteration(msg_)
                         else:
