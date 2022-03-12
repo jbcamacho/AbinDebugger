@@ -70,34 +70,20 @@ class AbinDebugger(OchiaiDebugger):
         func_names = self.get_all_func_names(model)
         ranked_events = list(filter(lambda x: x[0] in func_names, self.rank()))
         first_ranked_lineno = ranked_events[0][1]
-        # print('first_ranked_lineno', first_ranked_lineno)
-        self.influence_path = ranked_events
-        # print(ranked_events)
-        # print('=====================')
+
         bug_candidates = list(map(lambda x: (x + (self.suspiciousness(x),)), ranked_events))
-        # print(bug_candidates)
-        # print('=====================')
+
         unique_suspiciousness_values = set(map(lambda x:x[2], bug_candidates))
         unique_suspiciousness_sorted = sorted(unique_suspiciousness_values, reverse=True)
         group_by_suspiciousness = [[y[:2] for y in bug_candidates if y[2]==x] for x in unique_suspiciousness_sorted]
-        # print(group_by_suspiciousness)
-        # print('+++++++++++++++++++++')
+
         new_path = []
         for elem in group_by_suspiciousness:
             sorted_group = sorted(elem, key=lambda i: abs(first_ranked_lineno - i[1]))
             new_path.extend(sorted_group)
-        # print(new_path)
-        # print('***********************')
+
         self.influence_path = new_path
         return self.influence_path
-        # self.influence_path = list(filter(lambda x: x[0] not in ['debug', 'isEnabledFor', 'run_test'], self.rank()))
-        # if self.influence_path:
-        #     return self.influence_path
-        # rank = self.get_statistical_ranking()
-        # ast_tree = self.get_model_ast(model)
-        # candidates = self.get_ranked_candidates(target_func, rank, ast_tree)
-        # self.influence_path = list(map(lambda x: (x[1], x[0]), candidates))
-        # return self.influence_path
     
     def get_ranked_candidates(target_func: str, rank: Dict[str, int], ast_tree: ASTNode):
         """Return a list of failure candidates.
