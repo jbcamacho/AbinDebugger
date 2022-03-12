@@ -103,7 +103,7 @@ class HyphotesisTester(ModelTester, ModelConstructor):
                 "The given observation do not have any test case."
             )
         finally:
-            return explanatory_power
+            return round(explanatory_power, 4)
     
     def is_consistent(self) -> bool:
         """ This method checks the consistency of two observations.
