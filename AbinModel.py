@@ -131,7 +131,7 @@ class AbinModel():
                 imprv_candidates.clear()
 
             if behavior == Behavior.Correct:
-                AbinLogging.debugging_logger.info(f""" 
+                AbinLogging.debugging_logger.debug(f""" 
                     Previous Observations:
                     {prev_observation}
                     New Observations:

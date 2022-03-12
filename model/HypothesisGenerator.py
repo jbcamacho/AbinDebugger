@@ -43,7 +43,6 @@ class HypothesisGenerator():
         AbinLogging.debugging_logger.debug('Init HypothesisGenerator')
         self.abduction_depth = 0
         self.abduction_breadth = 0
-        self.complexity = 0
         self.max_complexity = max_complexity
         self.candidate = 0
         self.bug_candidates = map(lambda candidate: candidate[1], influence_path)
@@ -148,7 +147,6 @@ class HypothesisGenerator():
         except Exception as e:
             AbinLogging.debugging_logger.exception(f"Unable to parse the new model {new_model_filename}.")
             return None
-        #self.abduction_depth += 1
         return hypothesis
 
     def __iter__(self) -> None:
@@ -183,8 +181,6 @@ class HypothesisGenerator():
                             AbinLogging.debugging_logger.info(msg_)
                             raise StopIteration(msg_)
                         else:
-                            self.abduction_depth = 0
-                            # self.abduction_breadth += 1
                             model = self.model_src
                             logical_loc = self.LogicalLOC(self.candidate, '\n'.join(model))
                             ast_bug_candidate = deepcopy(logical_loc.ast_node)
@@ -201,18 +197,14 @@ class HypothesisGenerator():
                 
                 model = self.model_src
                 logical_loc = self.LogicalLOC(self.candidate, '\n'.join(model))
-                # print(f'MODEL:\n {model}')
-                # print(f'CANDIDATE:\n {self.candidate}')
-                # print(f'LLOC:\n {logical_loc.logical_LOC}')
                 self.nested_node = logical_loc.get_nested_node()
                 ast_bug_candidate = deepcopy(logical_loc.ast_node)
                 available_identifiers = logical_loc.get_available_identifiers()
                 self.hypotheses_set = self.apply_bugfix_pattern(ast_bug_candidate, pattern, available_identifiers)
                 self.hypotheses_set_complexity = pattern['complexity']
                 self.hypotheses_set_position = self.candidate
-        # hypothesis = self.build_hypothesis_model(hypothesis)
-        self.abduction_breadth += 1
 
+        self.abduction_breadth += 1
         # The explanatory power is set to 0 for untested hypotheses.
         return (hypothesis, self.hypotheses_set_position, 0)
 
@@ -238,13 +230,11 @@ class HypothesisGenerator():
         """
         AbinLogging.debugging_logger.debug('Exiting HypothesisGenerator')
         AbinLogging.debugging_logger.info(f"""
-            <=== Exit Process Data ===>
+            <=== Hypothesis Generator Process Summary ===>
             Current Candidate: {self.candidate}
             Remaining Candidates: {list(self.bug_candidates)}
-            Abduction Depth: {self.abduction_depth}
-            Abduction Breadth: {self.abduction_breadth}
-            Abduction Complexity: {self.complexity}
-            Total Number of Abductions Performed: {self.abduction_depth*self.complexity}
+            Abduction Maximum Complexity: {self.hypotheses_set_complexity}
+            Total Number of Hypotheses Generated: {self.abduction_breadth}
             """
         )
         if exc_tp is not None:
