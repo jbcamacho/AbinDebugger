@@ -49,10 +49,12 @@ class AbinDebugger(OchiaiDebugger):
         'AsyncFor':29
     }
     influence_path: InfluencePath
-    def __init__(self, collector_class: Type = AbinCollector, log: bool = False) -> None:
+    susp_threshold: int
+    def __init__(self, susp_threshold: int = 0, collector_class: Type = AbinCollector, log: bool = False) -> None:
         """Constructor Method"""
         super().__init__(collector_class, log)
         self.influence_path: List = []
+        self.susp_threshold = susp_threshold
 
     def get_influence_path(self, model: ModuleType, target_func: str) -> InfluencePath:
         """Return a list of failure candidates.
@@ -67,15 +69,17 @@ class AbinDebugger(OchiaiDebugger):
         :rtype: InfluencePath
         """
         if model is None: return []
+        
         func_names = self.get_all_func_names(model)
         ranked_events = list(filter(lambda x: x[0] in func_names, self.rank()))
         first_ranked_lineno = ranked_events[0][1]
 
-        bug_candidates = list(map(lambda x: (x + (self.suspiciousness(x),)), ranked_events))
+        ranked_events_susp = list(map(lambda x: (x + (self.suspiciousness(x),)), ranked_events))
+        ranked_events_filtered = self.susp_threshold_filter(ranked_events_susp)
 
-        unique_suspiciousness_values = set(map(lambda x:x[2], bug_candidates))
+        unique_suspiciousness_values = set(map(lambda x:x[2], ranked_events_filtered))
         unique_suspiciousness_sorted = sorted(unique_suspiciousness_values, reverse=True)
-        group_by_suspiciousness = [[y[:2] for y in bug_candidates if y[2]==x] for x in unique_suspiciousness_sorted]
+        group_by_suspiciousness = [[y[:2] for y in ranked_events_filtered if y[2]==x] for x in unique_suspiciousness_sorted]
 
         new_path = []
         for elem in group_by_suspiciousness:
@@ -85,6 +89,10 @@ class AbinDebugger(OchiaiDebugger):
         self.influence_path = new_path
         return self.influence_path
     
+    def susp_threshold_filter(self, 
+        events_susp: List[Tuple[str, int, float]]) -> List[Tuple[str, int, float]]:
+        return [x for x in events_susp if x[2] >= self.susp_threshold]
+
     def get_ranked_candidates(target_func: str, rank: Dict[str, int], ast_tree: ASTNode):
         """Return a list of failure candidates.
         
