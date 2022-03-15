@@ -68,7 +68,9 @@ class AbinDriver(AbinView):
         # Connect Help actions
         self.helpContentAction.triggered.connect(self.contactInfo)
         self.aboutAction.triggered.connect(self.about)
-        self.githubAction.triggered.connect(lambda: linkOpen("https://github.com/jbcamacho/abin_debugger.git"))
+        self.githubAction.triggered.connect(
+            lambda: linkOpen("https://github.com/jbcamacho/abin_debugger.git")
+        )
 
         # Connect Left SideBar Actions
         self.homeAction.triggered.connect(self.toHomePage)
@@ -76,6 +78,7 @@ class AbinDriver(AbinView):
         self.abductionAction.triggered.connect(self.toDebuggerPage)
         self.miningAction.triggered.connect(self.toMiningPage)
         self.databaseAction.triggered.connect(self.toDatabasePage)
+        self.configAction.triggered.connect(self.toConfigPage)
 
         # Connect Debugger Page Events
         self.btnRunAutoDebug = self.AbductionPage.findChild(QPushButton, 'btnStartDebug')
@@ -134,24 +137,29 @@ class AbinDriver(AbinView):
         self.statusLabel.setText(f"  Home  ")
 
     def toTestSuitePage(self) -> None:
-        """ This method set the QStackedWidget to the QWidget toTestSuitePage """
+        """ This method set the QStackedWidget to the QWidget testSuitePage """
         self.allPages.setCurrentWidget(self.testSuitePage)
         self.statusLabel.setText(f"  Test Suite  ")
 
     def toDebuggerPage(self) -> None:
-        """ This method set the QStackedWidget to the QWidget toDebuggerPage """
+        """ This method set the QStackedWidget to the QWidget debuggerPage """
         self.allPages.setCurrentWidget(self.AbductionPage)
         self.statusLabel.setText(f"  Debugger  ")
     
     def toMiningPage(self) -> None:
-        """ This method set the QStackedWidget to the QWidget toMiningPage """
+        """ This method set the QStackedWidget to the QWidget miningPage """
         self.allPages.setCurrentWidget(self.miningPage)
         self.statusLabel.setText(f"  Mining  ")
 
     def toDatabasePage(self) -> None:
-        """ This method set the QStackedWidget to the QWidget toDatabasePage """
+        """ This method set the QStackedWidget to the QWidget databasePage """
         self.allPages.setCurrentWidget(self.databasePage)
         self.statusLabel.setText(f"  Database  ")
+
+    def toConfigPage(self) -> None:
+        """ This method set the QStackedWidget to the QWidget configPage """
+        self.allPages.setCurrentWidget(self.configPage)
+        self.statusLabel.setText(f"  Settings  ")
 
     def contactInfo(self):
         """ This method shows up a messagebox showing the contact info"""
@@ -521,7 +529,8 @@ class AbinDriver(AbinView):
             else:
                 self.abduction_schema = AbductionSchema.A_star
 
-
+    def loadConfigFile(self):
+        pass
 
 def debugger_is_active() -> bool:
     """ This method return if the debugger is currently active """

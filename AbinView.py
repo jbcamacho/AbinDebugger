@@ -49,6 +49,8 @@ class AbinView(QMainWindow):
         self.AbductionPage = self.allPages.findChild(QWidget, 'abductionPage')
         self.miningPage = self.allPages.findChild(QWidget, 'miningPage')
         self.databasePage = self.allPages.findChild(QWidget, 'databasePage')
+        self.configPage = self.allPages.findChild(QWidget, 'configPage')
+        self.configTable = self.configPage.findChild(QWidget, 'tableProgramConf')
         self.allPages.findChild(QTableWidget, 'tableTestSuite').horizontalHeader().setVisible(True)
         self.allPages.findChild(QTableWidget, 'tableTypes').horizontalHeader().setVisible(True)
 
@@ -144,7 +146,7 @@ class AbinView(QMainWindow):
         SideToolBar.addSeparator()
         SideToolBar.addAction(self.databaseAction)
         SideToolBar.addSeparator()
-        SideToolBar.addAction(self.settingsAction)
+        SideToolBar.addAction(self.configAction)
         SideToolBar.setIconSize(QSize(50, 50))
         SideToolBar.setMovable(False)
 
@@ -178,7 +180,7 @@ class AbinView(QMainWindow):
         self.barChartAction     =   QAction(QIcon(":bar-chart.svg") , "BarChar")
         self.miningAction       =   QAction(QIcon(":layers.svg")    , "Mining")
         self.databaseAction     =   QAction(QIcon(":database.svg")  , "Database")
-        self.settingsAction     =   QAction(QIcon(":settings.svg")  , "Settings")
+        self.configAction     =   QAction(QIcon(":settings.svg")  , "Settings")
         
         self.logoutAction       =   QAction(QIcon(":log-out.svg")   , "Logout")
 
