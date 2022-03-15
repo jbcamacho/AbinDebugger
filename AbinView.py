@@ -50,7 +50,7 @@ class AbinView(QMainWindow):
         self.miningPage = self.allPages.findChild(QWidget, 'miningPage')
         self.databasePage = self.allPages.findChild(QWidget, 'databasePage')
         self.configPage = self.allPages.findChild(QWidget, 'configPage')
-        self.configTable = self.configPage.findChild(QWidget, 'tableProgramConf')
+        self.configTable = self.configPage.findChild(QTableWidget, 'tableProgramConf')
         self.allPages.findChild(QTableWidget, 'tableTestSuite').horizontalHeader().setVisible(True)
         self.allPages.findChild(QTableWidget, 'tableTypes').horizontalHeader().setVisible(True)
 
