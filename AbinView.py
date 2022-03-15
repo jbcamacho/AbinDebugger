@@ -54,7 +54,6 @@ class AbinView(QMainWindow):
         self.miningPage = self.allPages.findChild(QWidget, 'miningPage')
         self.databasePage = self.allPages.findChild(QWidget, 'databasePage')
         self.configPage = self.allPages.findChild(QWidget, 'configPage')
-        self.configTable = self.configPage.findChild(QTableWidget, 'tableProgramConf')
         self.allPages.findChild(QTableWidget, 'tableTestSuite').horizontalHeader().setVisible(True)
         self.allPages.findChild(QTableWidget, 'tableTypes').horizontalHeader().setVisible(True)
 
@@ -63,6 +62,7 @@ class AbinView(QMainWindow):
         self._createToolBars()
         self._createStatusBar()
 
+        self.configTable = self.configPage.findChild(QTableWidget, 'tableProgramConf')
         self.configTable.sortItems(0, Qt.AscendingOrder)
         self.default_config = self._readConfigData()
         self._loadConfig()
@@ -220,8 +220,9 @@ class AbinView(QMainWindow):
         if config_file_path.exists():
             with open(config_file_path, 'r') as config_file:
                 config_data = yaml.full_load(config_file)
+                self._setConfigData(config_data)
         else:
-            config_data = self._readConfigData()
+            config_data = self.default_config
         return config_data
 
     def _readConfigData(self) -> Dict[str, str]:
