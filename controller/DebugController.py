@@ -17,6 +17,8 @@ class ConnectionStatus(Enum):
     Secured = 1
     Established = 2
 
+APP_SETTINGS: Dict[str, str] = {}
+
 DATABASE_SETTINGS: Dict[str, str] = {
     'URI': '',
     'HOST': '',

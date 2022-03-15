@@ -965,6 +965,11 @@ Test Timeout</string>
         <string>CONF_FILE_PATH</string>
        </property>
       </item>
+      <item row="0" column="1">
+       <property name="text">
+        <string>controller/config.yml</string>
+       </property>
+      </item>
       <item row="1" column="0">
        <property name="text">
         <string>MAXIMUM_TEST_TIMEOUT</string>
@@ -1080,7 +1085,7 @@ Test Timeout</string>
     <item row="2" column="2" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignTop">
      <widget class="QPushButton" name="btnConfDefault">
       <property name="text">
-       <string>Reset Setting</string>
+       <string>Reset Settings</string>
       </property>
      </widget>
     </item>

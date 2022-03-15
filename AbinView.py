@@ -3,6 +3,7 @@ This module is the view of the system.
 This is the view representation of the MVC software pattern.
 """
 import sys
+from typing import Dict
 import resources.qrc_resources as qrc_resources
 from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5 import sip, uic
@@ -10,10 +11,13 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QApplication, QLabel, QMainWindow, 
     QToolBar, QAction, QVBoxLayout, QFrame,
-    QStackedWidget, QWidget, QTableWidget
+    QStackedWidget, QWidget, QTableWidget,
+    QTableWidgetItem
 )
 from controller.DebugController import ConnectionStatus
-
+import controller.DebugController as DebugController
+from pathlib import Path
+import yaml
 class AbinDebuggerPages(QStackedWidget):
     """ This class loads the pages' UI """
     def __init__(self, parent = None):
@@ -58,6 +62,10 @@ class AbinView(QMainWindow):
         self._createMenuBar()
         self._createToolBars()
         self._createStatusBar()
+
+        self.configTable.sortItems(0, Qt.AscendingOrder)
+        self.default_config = self._readConfigData()
+        self._loadConfig()
 
     def _createMenuBar(self):
         """ This method creates the UI's menu bar"""
@@ -201,6 +209,43 @@ class AbinView(QMainWindow):
         self.mainLayout.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.centralWidget.setLayout(self.mainLayout)
         
+    def _loadConfig(self) -> Dict[str, str]:
+        """ The method loads the configuration data.
+        
+        If the configuration file exist then the data will be loaded,
+        else the dedault data will be loaded.
+        :rtype: Dict[str, str]
+        """
+        config_file_path = Path('controller/config.yml')
+        if config_file_path.exists():
+            with open(config_file_path, 'r') as config_file:
+                config_data = yaml.full_load(config_file)
+        else:
+            config_data = self._readConfigData()
+        return config_data
+
+    def _readConfigData(self) -> Dict[str, str]:
+        
+        config_data = {}
+        rowCount = self.configTable.rowCount()
+        for i in range(rowCount):
+            qItemCol = self.configTable.item(i,0)
+            qItemCol.setFlags(qItemCol.flags() ^ Qt.ItemIsEditable)
+            key = qItemCol.text()
+            value = self.configTable.item(i,1).text()
+            config_data[key] = value
+        DebugController.APP_SETTINGS = config_data
+        return config_data
+
+    def _setConfigData(self, config_data: Dict[str, str]):
+        
+        for i, (key, value) in enumerate(config_data.items()):
+            qItemCol = QTableWidgetItem(key)
+            qItemCol.setFlags(qItemCol.flags() ^ Qt.ItemIsEditable)
+            self.configTable.setItem(i, 0, qItemCol)
+            self.configTable.setItem(i, 1, QTableWidgetItem(value))
+        self.configTable.sortItems(0, Qt.AscendingOrder)
+        self._readConfigData
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -2,14 +2,18 @@
 This module is the controller of the system.
 This is the controller representation of the MVC software pattern.
 """
+from logging import exception
 import sys
 import builtins
 from AbinView import AbinView
 from AbinModel import AbinModel
 from typing import Tuple, Type
+from pathlib import Path
+import yaml
 import pandas as pd
 from pandas import DataFrame
 from webbrowser import open as linkOpen
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QApplication, QMessageBox, QFileDialog,
     QTableWidgetItem, QTableWidget, QPushButton,
@@ -88,6 +92,10 @@ class AbinDriver(AbinView):
         self.miningPage.findChild(QPushButton, 'btnGetRepos').clicked.connect(self.downloadRepos)
         self.miningPage.findChild(QPushButton, 'btnLoadRepos').clicked.connect(lambda: self.loadRepos(''))
         self.miningPage.findChild(QPushButton, 'btnMineRepos').clicked.connect(self.mineRepos)
+        self.configPage.findChild(QPushButton, 'btnConfLoad').clicked.connect(self.loadConfigFile)
+        self.configPage.findChild(QPushButton, 'btnConfSave').clicked.connect(self.saveConfigFile)
+        self.configPage.findChild(QPushButton, 'btnConfDefault').clicked.connect(self.resetConfigFile)
+        self.allPages.currentChanged.connect(self._readConfigData)
 
         ## Connect radiobuttons to onchange.
         gpbSchema = self.AbductionPage.findChild(QGroupBox, 'gpbSchema')
@@ -530,7 +538,34 @@ class AbinDriver(AbinView):
                 self.abduction_schema = AbductionSchema.A_star
 
     def loadConfigFile(self):
-        pass
+        config_file_path = QFileDialog.getOpenFileName(
+            self, 'Load YAML - Configuration File', '', 'YAML(*.yaml *.yml)')
+        if config_file_path[0]:
+            with open(config_file_path[0], 'r') as config_file:
+                config_data = yaml.full_load(config_file)
+            self._setConfigData(config_data)
+    
+    def saveConfigFile(self) -> bool:        
+        config_data = self._readConfigData()
+        save_path = QFileDialog.getSaveFileName(
+            self, 'Save YAML - Configuration File', 'config.yml')
+        if save_path[0]:
+            save_path = save_path[0]
+        else:
+            save_path = 'controller/config.yml'
+        try:
+            with open(save_path, 'w') as config_file:
+                yaml.dump(config_data, config_file)   
+        except Exception as e:
+            print(e)
+        else:
+            return 1
+        return 0
+
+    def resetConfigFile(self):
+        self._setConfigData(self.default_config)
+
+
 
 def debugger_is_active() -> bool:
     """ This method return if the debugger is currently active """
