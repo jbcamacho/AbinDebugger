@@ -294,9 +294,9 @@ class AbinDriver(AbinView):
 
     def runAutoDebug(self):
         """ This method execute the AutoDebugTask in a Qthread """
-        if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Undefined:
+        if DebugController.DB_STATUS == DebugController.ConnectionStatus.Undefined:
             return QMessageBox.warning(self, "Warning!", "<p>Please connect a Database.</p>")
-        if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Established:
+        if DebugController.DB_STATUS == DebugController.ConnectionStatus.Established:
             return QMessageBox.warning(self, "Warning!", "<p>Please make sure to connect a Database with patterns.</p>")
         if self.csvTestSuite is None:
             return QMessageBox.warning(self, "Warning!", "<p>Please provide a test suite!.</p>")
@@ -397,16 +397,8 @@ class AbinDriver(AbinView):
         
         uri = self.databasePage.findChild(QComboBox, 'cmbURI').currentText()
 
-        DebugController.DATABASE_SETTINGS = {
-            'URI': uri,
-            'HOST': host,
-            'PORT': port,
-            'DATABASE': db_name,
-            'COLLECTION': collection_name,
-            'STATUS':  False
-        }
         conn_status = test_db_connection(uri, host, port, db_name, collection_name)
-        DebugController.DATABASE_SETTINGS['STATUS'] = conn_status
+        DebugController.DB_STATUS = conn_status
         self.statusDatabase.setText(f"  DataBase Connection: {conn_status.name}  ")
         
     def downloadRepos(self) -> bool:
@@ -456,7 +448,7 @@ class AbinDriver(AbinView):
         
     def mineRepos(self):
         """ This method execute the miningTask in a Qthread """
-        if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Undefined:
+        if DebugController.DB_STATUS == DebugController.ConnectionStatus.Undefined:
             return QMessageBox.warning(self, "Warning!", "<p>Please connect a Database.</p>")
         if self.lstRepos is None:
             return QMessageBox.warning(self, "Warning!", "<p>Please load the repositories data.</p>")
@@ -484,7 +476,6 @@ class AbinDriver(AbinView):
             namePatternsCollection = txtPatternsCollection.placeholderText()
 
         from model.HypothesisGenerator import HypothesisGenerator as CONN
-        config = DebugController.DATABASE_SETTINGS
         db_connection = CONN.mongodb_connection()
         collection_RepoData = db_connection[nameReposCollection]
         collection_BugPatterns = db_connection[namePatternsCollection]

@@ -54,7 +54,11 @@ class AbinDebugger(OchiaiDebugger):
         """Constructor Method"""
         super().__init__(collector_class, log)
         self.influence_path: List = []
-        self.susp_threshold = susp_threshold
+        if susp_threshold:
+            self.susp_threshold = susp_threshold
+        else:
+            self.susp_threshold = float(DebugController.APP_SETTINGS['SUSPICIOUSNESS_THRESHOLD'])
+            
 
     def get_influence_path(self, model: ModuleType, target_func: str) -> InfluencePath:
         """Return a list of failure candidates.

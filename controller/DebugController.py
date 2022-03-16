@@ -19,14 +19,7 @@ class ConnectionStatus(Enum):
 
 APP_SETTINGS: Dict[str, str] = {}
 
-DATABASE_SETTINGS: Dict[str, str] = {
-    'URI': '',
-    'HOST': '',
-    'PORT': '',
-    'DATABASE': '',
-    'COLLECTION': '',
-    'STATUS': ConnectionStatus.Undefined
-}
+DB_STATUS = ConnectionStatus.Undefined
 
 TEST_TIMEOUT: int = int(1)
 

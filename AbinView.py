@@ -12,7 +12,8 @@ from PyQt5.QtWidgets import (
     QApplication, QLabel, QMainWindow, 
     QToolBar, QAction, QVBoxLayout, QFrame,
     QStackedWidget, QWidget, QTableWidget,
-    QTableWidgetItem
+    QTableWidgetItem, QDoubleSpinBox, QLineEdit,
+    QComboBox
 )
 from controller.DebugController import ConnectionStatus
 import controller.DebugController as DebugController
@@ -239,7 +240,29 @@ class AbinView(QMainWindow):
         return config_data
 
     def _setConfigData(self, config_data: Dict[str, str]):
-        
+
+        # Database Page
+        txtHost = self.databasePage.findChild(QLineEdit, 'txtHost')
+        txtHost.setText(config_data['DB_HOST'])
+        txtPort = self.databasePage.findChild(QLineEdit, 'txtPort')
+        txtPort.setText(config_data['DB_PORT'])
+        cmbURI = self.databasePage.findChild(QComboBox, 'cmbURI')
+        cmbURI.setCurrentText(config_data['DB_URI'])
+        txtDatabase = self.databasePage.findChild(QLineEdit, 'txtDatabase')
+        txtDatabase.setText(config_data['DEBUG_DB_NAME'])
+        txtCollection = self.databasePage.findChild(QLineEdit, 'txtCollection')
+        txtCollection.setText(config_data['DEBUG_DB_PATTERNS_COLLECTION'])
+        # Debugging Page
+        snbTimeout = self.AbductionPage.findChild(QDoubleSpinBox, 'snbTimeout')
+        snbTimeout.setValue(float(config_data['MAXIMUM_TEST_TIMEOUT']))
+        # Mining Page
+        txtReposDatabase = self.miningPage.findChild(QLineEdit, 'txtReposDatabase')
+        txtReposDatabase.setText(config_data['MINING_DB_NAME'])
+        txtPatternsCollection = self.miningPage.findChild(QLineEdit, 'txtPatternsCollection')
+        txtPatternsCollection.setText(config_data['MINING_DB_PATTERNS_COLLECTION'])
+        txtReposCollection = self.miningPage.findChild(QLineEdit, 'txtReposCollection')
+        txtReposCollection.setText(config_data['MINING_DB_REPO_COLLECTION'])
+        # Setting Page
         for i, (key, value) in enumerate(config_data.items()):
             qItemCol = QTableWidgetItem(key)
             qItemCol.setFlags(qItemCol.flags() ^ Qt.ItemIsEditable)

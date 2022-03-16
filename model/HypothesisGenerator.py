@@ -80,9 +80,9 @@ class HypothesisGenerator():
         :type  ast_node_hexdigest: str
         :rtype: Tuple[MatchingPatterns, int]
         """
-        config = DebugController.DATABASE_SETTINGS
+        config = DebugController.APP_SETTINGS
         db_connection = self.mongodb_connection()
-        collection_BugPatterns = db_connection[config['COLLECTION']]
+        collection_BugPatterns = db_connection[config['DEBUG_DB_PATTERNS_COLLECTION']]
         QUERY = [
             { '$match': { 'bug_metadata.hexdigest': ast_node_hexdigest } },
             { '$group': { '_id': '$fix_metadata.hexdigest',
@@ -285,9 +285,9 @@ class HypothesisGenerator():
         """ This method return a connection to the database
         :rtype: MongoClient
         """
-        config = DebugController.DATABASE_SETTINGS
-        MONGO_URI = f"{config['URI']}://{config['HOST']}:{config['PORT']}"
+        config = DebugController.APP_SETTINGS
+        MONGO_URI = f"{config['DB_URI']}://{config['DB_HOST']}:{config['DB_PORT']}"
         client = MongoClient(MONGO_URI)
-        db_connection = client[config['DATABASE']]
+        db_connection = client[config['DEBUG_DB_NAME']]
         return db_connection
 
