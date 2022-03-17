@@ -83,6 +83,7 @@ class AbinDriver(AbinView):
         self.miningAction.triggered.connect(self.toMiningPage)
         self.databaseAction.triggered.connect(self.toDatabasePage)
         self.configAction.triggered.connect(self.toConfigPage)
+        self.statsAction.triggered.connect(self.toStatsPage)
 
         # Connect Debugger Page Events
         self.btnRunAutoDebug = self.AbductionPage.findChild(QPushButton, 'btnStartDebug')
@@ -168,6 +169,11 @@ class AbinDriver(AbinView):
         """ This method set the QStackedWidget to the QWidget configPage """
         self.allPages.setCurrentWidget(self.configPage)
         self.statusLabel.setText(f"  Settings  ")
+
+    def toStatsPage(self) -> None:
+        """ This method set the QStackedWidget to the QWidget statsPage """
+        self.allPages.setCurrentWidget(self.statsPage)
+        self.statusLabel.setText(f"  Database Statistics  ")
 
     def contactInfo(self):
         """ This method shows up a messagebox showing the contact info"""
