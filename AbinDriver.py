@@ -96,6 +96,7 @@ class AbinDriver(AbinView):
         self.configPage.findChild(QPushButton, 'btnConfLoad').clicked.connect(self.loadConfigFile)
         self.configPage.findChild(QPushButton, 'btnConfSave').clicked.connect(self.saveConfigFile)
         self.configPage.findChild(QPushButton, 'btnConfDefault').clicked.connect(self.resetConfigFile)
+        self.statsPage.findChild(QPushButton, 'btnGetStats').clicked.connect(self.getStats)
         self.allPages.currentChanged.connect(self._readConfigData)
 
         ## Connect radiobuttons to onchange.
@@ -562,7 +563,16 @@ class AbinDriver(AbinView):
     def resetConfigFile(self):
         self._setConfigData(self.default_config)
 
-
+    def getStats(self):
+        btnGetStats = self.statsPage.findChild(QPushButton, 'btnGetStats')
+        btnGetStats.setEnabled(False)
+        try:
+            self._setupStats()
+        except Exception as e:
+            print(e)
+            return QMessageBox.warning(self, "Warning!", "<p>Unable to retrieve the stats from the db. </p>")
+        finally:
+            btnGetStats.setEnabled(True)
 
 def debugger_is_active() -> bool:
     """ This method return if the debugger is currently active """

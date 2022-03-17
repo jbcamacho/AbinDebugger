@@ -884,9 +884,19 @@ Test Timeout</string>
         <string>Total Bugfixes</string>
        </property>
       </item>
+      <item row="0" column="1">
+       <property name="text">
+        <string>'No Stats'</string>
+       </property>
+      </item>
       <item row="1" column="0">
        <property name="text">
         <string>Unique Bugfixes</string>
+       </property>
+      </item>
+      <item row="1" column="1">
+       <property name="text">
+        <string>'No Stats'</string>
        </property>
       </item>
       <item row="2" column="0">
@@ -894,9 +904,19 @@ Test Timeout</string>
         <string>Unique Fixes</string>
        </property>
       </item>
+      <item row="2" column="1">
+       <property name="text">
+        <string>'No Stats'</string>
+       </property>
+      </item>
       <item row="3" column="0">
        <property name="text">
         <string>Unique Bugs</string>
+       </property>
+      </item>
+      <item row="3" column="1">
+       <property name="text">
+        <string>'No Stats'</string>
        </property>
       </item>
       <item row="4" column="0">

@@ -13,13 +13,14 @@ from PyQt5.QtWidgets import (
     QToolBar, QAction, QVBoxLayout, QFrame,
     QStackedWidget, QWidget, QTableWidget,
     QTableWidgetItem, QDoubleSpinBox, QLineEdit,
-    QComboBox
+    QComboBox, QAbstractItemView, QMessageBox
 )
 from controller.DebugController import ConnectionStatus
 import controller.DebugController as DebugController
 from pathlib import Path
 import yaml
 
+from model.misc.stats_data import get_stats
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
@@ -76,6 +77,9 @@ class AbinView(QMainWindow):
         self.default_config = self._readConfigData()
         self._loadConfig()
 
+        self.tableStats = self.statsPage.findChild(QTableWidget, 'tableStats')
+        self.tableStats.sortItems(0, Qt.AscendingOrder)
+
     def _createCharts(self):
         """ This method creates the UI's charts"""
         widgetChartAbduction = self.AbductionPage.findChild(QWidget, 'widgetChartAbduction')
@@ -101,6 +105,33 @@ class AbinView(QMainWindow):
         chartStatsLayout = widgetChartStats.layout()
         chartStatsLayout.addWidget(self.canvasStatsToolbar)
         chartStatsLayout.addWidget(self.canvasStats)
+
+    def _setupStats(self):
+        """ This method get shows all the stats
+        and draw the charts for the statsPage """
+        if DebugController.DB_STATUS == DebugController.ConnectionStatus.Undefined:
+            return QMessageBox.warning(self, "Warning!", "<p>Please connect a Database.</p>")
+        if DebugController.DB_STATUS == DebugController.ConnectionStatus.Established:
+            return QMessageBox.warning(self, "Warning!", "<p>Please make sure to connect a Database with patterns.</p>")
+        curr_stats_data = get_stats()
+        for i, (key, value) in enumerate(curr_stats_data.items()):
+            self.tableStats.setItem(i, 0, QTableWidgetItem(key))
+            self.tableStats.setItem(i, 1, QTableWidgetItem(str(value)))
+        self.tableStats.sortItems(0, Qt.AscendingOrder)
+        self.tableStats.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        
+        self.axBugs.cla()
+        self.axBugs.title.set_text('Statistical Ranking of Bugs')
+        self.axBugs.bar(*curr_stats_data['ranking_bugs'])
+        self.axBugs.tick_params(axis="x", labelrotation=90)
+
+        self.axFixes.cla()
+        self.axFixes.title.set_text('Statistical Ranking of Fixes')
+        self.axFixes.bar(*curr_stats_data['ranking_fixes'])
+        self.axFixes.tick_params(axis="x", labelrotation=90)
+        self.figureStats.tight_layout()
+        self.canvasStats.draw()
+
 
     def _createMenuBar(self):
         """ This method creates the UI's menu bar"""
