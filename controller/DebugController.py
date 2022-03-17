@@ -23,6 +23,8 @@ DB_STATUS = ConnectionStatus.Undefined
 
 TEST_TIMEOUT: int = int(1)
 
+from controller.pyqtSignalQueue import pyqtSignalQueueHandler
+QT_QUEUE = pyqtSignalQueueHandler()
 
 import controller.AbinLogging as AbinLogging
 

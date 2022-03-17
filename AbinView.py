@@ -24,6 +24,7 @@ from model.misc.stats_data import get_stats
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 class AbinDebuggerPages(QStackedWidget):
     """ This class loads the pages' UI """
     def __init__(self, parent = None):
@@ -84,7 +85,15 @@ class AbinView(QMainWindow):
         """ This method creates the UI's charts"""
         widgetChartAbduction = self.AbductionPage.findChild(QWidget, 'widgetChartAbduction')
         self.figureAbduction, self.axAbduction = plt.subplots(1, 1)
+        self._abduction_plot_ref = None
         # self.axAbduction.plot([],[])
+        self.axAbduction.cla()
+        self.axAbduction.set_ylim(bottom=0)
+        self.axAbduction.yaxis.set_major_locator(MaxNLocator(integer=True))
+        self.axAbduction.title.set_text('Abduction Process')
+        self.axAbduction.set_xlabel('Abduction Breadth')
+        self.axAbduction.set_ylabel('Abduction Depth')
+        self.figureAbduction.tight_layout()
         self.canvasAbduction = FigureCanvas(self.figureAbduction)
         self.canvasAbductionToolbar = NavigationToolbar(self.canvasAbduction, widgetChartAbduction)
 
@@ -99,6 +108,7 @@ class AbinView(QMainWindow):
         self.axFixes = axStats[1]
         # self.axBugs.plot([],[])
         # self.axFixes.plot([],[])
+        self.figureStats.tight_layout()
         self.canvasStats = FigureCanvas(self.figureStats)
         self.canvasStatsToolbar = NavigationToolbar(self.canvasStats, widgetChartStats)
 

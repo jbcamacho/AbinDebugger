@@ -12,7 +12,7 @@ from model.HypothesisGenerator import Hypothesis, HypothesisGenerator
 from model.HypothesisRefinement import AbductionSchema
 import pandas as pd
 import controller.AbinLogging as AbinLogging
-
+import controller.DebugController as DebugController
 
 Localizator = FaultLocalizator
 Tester = HyphotesisTester
@@ -50,6 +50,7 @@ class AbinModel():
         self.fault_localizator = localizator
         self.hyphotesis_tester = tester
         self.hypotheses_generator = generator
+        DebugController.QT_QUEUE.enqueue(self.abduction_breadth, self.abduction_depth)
     
     def start_auto_debugging(self, model_src_code = None,
         improvement_candidates_set = None) -> Tuple[str, Behavior, Observation, Observation]:
@@ -92,6 +93,7 @@ class AbinModel():
                         """
                     )
                     self.abduction_breadth += 1
+                    DebugController.QT_QUEUE.enqueue(self.abduction_breadth, self.abduction_depth)
                     (new_model_src_code, behavior, new_observation, hypothesis) = self.hyphotesis_testing(prev_observation, model_src_code[:], hypothesis)
                     AbinLogging.debugging_logger.info(f""" 
                         New Observations:

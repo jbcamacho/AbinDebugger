@@ -2,7 +2,6 @@
 This module is the controller of the system.
 This is the controller representation of the MVC software pattern.
 """
-from logging import exception
 import sys
 import builtins
 from AbinView import AbinView
@@ -27,6 +26,7 @@ from controller.AbinLogging import Worker
 from model.misc.test_db_connection import test_db_connection
 import model.misc.bug_mining as bug_mining
 import controller.AbinLogging as AbinLogging
+from matplotlib.ticker import MaxNLocator
 
 #Pattern Model-View-Controller
 AbInModel = Type[AbinModel]
@@ -126,10 +126,28 @@ class AbinDriver(AbinView):
         # Connect Timer for debugging elapsed time
         self.timer.timeout.connect(self._showDebugTime)
 
+        # Connect pyqtSignalQueueHandler
+        # DebugController.QT_QUEUE.sigEnqueue.connect(self.update_abduction_plot)
+        self.updatePlotThread = Worker(self.update_abduction_plot, ())
+        self.updatePlotThread.terminate()
+
+
+    def update_abduction_plot(self):
+        self.axAbduction.cla()
+        self.axAbduction.title.set_text('Abduction Process')
+        self.axAbduction.set_xlabel('Abduction Breadth')
+        self.axAbduction.set_ylabel('Abduction Depth')
+        self.axAbduction.plot(DebugController.QT_QUEUE.x_data, 
+        DebugController.QT_QUEUE.y_data, 'r', color="tab:blue")
+        self.axAbduction.yaxis.set_major_locator(MaxNLocator(integer=True))
+        self.axAbduction.autoscale()
+        self.canvasAbduction.draw()
+
     def _showDebugTime(self):
         """ This method show the debug elapsed time in the status bar """
         self._debug_elapsed_time += 1
         self.statusDebugging.setText(f"  Debug in progress... elapsed time: {self._debug_elapsed_time/10} sec(s)  ")
+        self.updatePlotThread.start()
 
     def _resetDebugTimer(self):
         """ This method resets the debug QTimer """
@@ -326,6 +344,9 @@ class AbinDriver(AbinView):
         """ This method is executed when AutoDebugTask finishes """
         self.btnRunAutoDebug.setEnabled(True)
         self._stopDebugTimer()
+        self._abduction_plot_ref = None #reset plot reference
+        self.update_abduction_plot()
+        DebugController.QT_QUEUE.dequeue_all()
         if self.debug_result is not None:
             msgResult = QMessageBox()
             (model_src_code, candidate, bugfixing_hyphotesis, behavior, *_) = self.debug_result
