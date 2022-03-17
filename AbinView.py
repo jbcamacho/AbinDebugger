@@ -19,6 +19,12 @@ from controller.DebugController import ConnectionStatus
 import controller.DebugController as DebugController
 from pathlib import Path
 import yaml
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
+import random
 class AbinDebuggerPages(QStackedWidget):
     """ This class loads the pages' UI """
     def __init__(self, parent = None):
@@ -55,18 +61,42 @@ class AbinView(QMainWindow):
         self.miningPage = self.allPages.findChild(QWidget, 'miningPage')
         self.databasePage = self.allPages.findChild(QWidget, 'databasePage')
         self.configPage = self.allPages.findChild(QWidget, 'configPage')
-        self.allPages.findChild(QTableWidget, 'tableTestSuite').horizontalHeader().setVisible(True)
-        self.allPages.findChild(QTableWidget, 'tableTypes').horizontalHeader().setVisible(True)
-
+        self.statsPage = self.allPages.findChild(QWidget, 'statsPage')
+        self.testSuitePage.findChild(QTableWidget, 'tableTestSuite').horizontalHeader().setVisible(True)
+        self.testSuitePage.findChild(QTableWidget, 'tableTypes').horizontalHeader().setVisible(True)
+        
+        
         self._createActions()
         self._createMenuBar()
         self._createToolBars()
         self._createStatusBar()
+        self._createCharts()
 
         self.configTable = self.configPage.findChild(QTableWidget, 'tableProgramConf')
         self.configTable.sortItems(0, Qt.AscendingOrder)
         self.default_config = self._readConfigData()
         self._loadConfig()
+
+    def _createCharts(self):
+        
+        widgetChartAbduction = self.AbductionPage.findChild(QWidget, 'widgetChartAbduction')
+        self.figureAbduction, self.axAbduction = plt.subplots(1, 1)
+        self.canvasAbduction = FigureCanvas(self.figureAbduction)
+        self.canvasAbductionToolbar = NavigationToolbar(self.canvasAbduction, widgetChartAbduction)
+
+        chartAbductionLayout = widgetChartAbduction.layout()
+        chartAbductionLayout.addWidget(self.canvasAbductionToolbar)
+        chartAbductionLayout.addWidget(self.canvasAbduction)
+
+
+        widgetChartStats = self.statsPage.findChild(QWidget, 'widgetChartStats')
+        self.figureStats, self.axStats = plt.subplots(1, 2)
+        self.canvasStats = FigureCanvas(self.figureStats)
+        self.canvasStatsToolbar = NavigationToolbar(self.canvasStats, widgetChartStats)
+
+        chartStatsLayout = widgetChartStats.layout()
+        chartStatsLayout.addWidget(self.canvasStatsToolbar)
+        chartStatsLayout.addWidget(self.canvasStats)
 
     def _createMenuBar(self):
         """ This method creates the UI's menu bar"""
@@ -149,7 +179,7 @@ class AbinView(QMainWindow):
         SideToolBar.addSeparator()
         SideToolBar.addAction(self.abductionAction)
         SideToolBar.addSeparator()
-        SideToolBar.addAction(self.barChartAction)
+        SideToolBar.addAction(self.statsAction)
         SideToolBar.addSeparator()
         SideToolBar.addAction(self.miningAction)
         SideToolBar.addSeparator()
@@ -186,10 +216,10 @@ class AbinView(QMainWindow):
         self.homeAction         =   QAction(QIcon(":home.svg")      , "Home")
         self.commandAction      =   QAction(QIcon(":command.svg")   , "Command")
         self.abductionAction    =   QAction(QIcon(":compass.svg")   , "Abduction")
-        self.barChartAction     =   QAction(QIcon(":bar-chart.svg") , "BarChar")
+        self.statsAction        =   QAction(QIcon(":bar-chart.svg") , "BarChar")
         self.miningAction       =   QAction(QIcon(":layers.svg")    , "Mining")
         self.databaseAction     =   QAction(QIcon(":database.svg")  , "Database")
-        self.configAction     =   QAction(QIcon(":settings.svg")  , "Settings")
+        self.configAction       =   QAction(QIcon(":settings.svg")  , "Settings")
         
         self.logoutAction       =   QAction(QIcon(":log-out.svg")   , "Logout")
 
