@@ -22,9 +22,7 @@ import yaml
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-import random
 class AbinDebuggerPages(QStackedWidget):
     """ This class loads the pages' UI """
     def __init__(self, parent = None):
@@ -49,6 +47,7 @@ class AbinView(QMainWindow):
         self._setupUI()
     
     def _setupUI(self):
+        """ This method set-ups the UI"""
         self.centralWidget = QFrame()
         self.setCentralWidget(self.centralWidget)
         self._resetLayout()
@@ -78,9 +77,10 @@ class AbinView(QMainWindow):
         self._loadConfig()
 
     def _createCharts(self):
-        
+        """ This method creates the UI's charts"""
         widgetChartAbduction = self.AbductionPage.findChild(QWidget, 'widgetChartAbduction')
         self.figureAbduction, self.axAbduction = plt.subplots(1, 1)
+        # self.axAbduction.plot([],[])
         self.canvasAbduction = FigureCanvas(self.figureAbduction)
         self.canvasAbductionToolbar = NavigationToolbar(self.canvasAbduction, widgetChartAbduction)
 
@@ -90,7 +90,11 @@ class AbinView(QMainWindow):
 
 
         widgetChartStats = self.statsPage.findChild(QWidget, 'widgetChartStats')
-        self.figureStats, self.axStats = plt.subplots(1, 2)
+        self.figureStats, axStats = plt.subplots(1, 2)
+        self.axBugs = axStats[0]
+        self.axFixes = axStats[1]
+        # self.axBugs.plot([],[])
+        # self.axFixes.plot([],[])
         self.canvasStats = FigureCanvas(self.figureStats)
         self.canvasStatsToolbar = NavigationToolbar(self.canvasStats, widgetChartStats)
 
@@ -241,7 +245,7 @@ class AbinView(QMainWindow):
         self.centralWidget.setLayout(self.mainLayout)
         
     def _loadConfig(self) -> Dict[str, str]:
-        """ The method loads the configuration data.
+        """ This method loads the configuration data.
         
         If the configuration file exist then the data will be loaded,
         else the dedault data will be loaded.
@@ -257,7 +261,12 @@ class AbinView(QMainWindow):
         return config_data
 
     def _readConfigData(self) -> Dict[str, str]:
+        """ This method reads the configuration data from the configTable.
         
+        The global variable APP_SETTINGS will be updated
+        with the read configuration.
+        :rtype: Dict[str, str]
+        """
         config_data = {}
         rowCount = self.configTable.rowCount()
         for i in range(rowCount):
@@ -269,8 +278,11 @@ class AbinView(QMainWindow):
         DebugController.APP_SETTINGS = config_data
         return config_data
 
-    def _setConfigData(self, config_data: Dict[str, str]):
+    def _setConfigData(self, config_data: Dict[str, str]) -> None:
+        """ This method sets the configuration into the UI.
 
+        All of the UI's elements will be updated given the configuration.
+        """
         # Database Page
         txtHost = self.databasePage.findChild(QLineEdit, 'txtHost')
         txtHost.setText(config_data['DB_HOST'])
