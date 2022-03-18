@@ -14,7 +14,6 @@ The content of this file can be found in geeksforgeeks.
 	 journal={GeeksforGeeks}, author={GeeksforGeeks}, year={2022}, month={Jan}
 } 
 """
-
 # Python program for Bitonic Sort. Note that this program
 # works only when size of input is a power of 2.
 
@@ -42,22 +41,13 @@ def bitonicMerge(a, low, cnt, dire):
 # calls bitonicMerge to make them in the same order
 def bitonicSort(a, low, cnt,dire):
 	if cnt > 1:
-		k = cnt//2
+		k = cnt/2
 		bitonicSort(a, low, k, 1)
 		bitonicSort(a, low+k, k, 0)
 		bitonicMerge(a, low, cnt, dire)
 
 # Caller of bitonicSort for sorting the entire array of length N
 # in ASCENDING order
-def sort(a,N, up):
-	bitonicSort(a,0, N, up)
-
-# Driver code to test above
-a = [3, 7, 4, 8, 6, 2, 1, 5]
-n = len(a)
-up = 1
-
-sort(a, n, up)
-print ("Sorted array is")
-for i in range(n):
-	print("%d" %a[i],end=" ")
+def sort(a, N, up):
+  bitonicSort(a, 0, N, up)
+  return a

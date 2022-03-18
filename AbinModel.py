@@ -63,6 +63,8 @@ class AbinModel():
         Abduction Breadth: {self.abduction_breadth}""")
         localizator = self.fault_localization(model_src_code, improvement_candidates_set)
         behavior = Behavior.Undefined
+        prev_observation = []
+        influence_path = []
         with localizator:
             (prev_observation, influence_path) = localizator.model_testing(check_consistency=False)
             model_src_code = localizator.model_src
