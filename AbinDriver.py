@@ -211,7 +211,7 @@ class AbinDriver(AbinView):
             "<center>This software was developed as part of a Master's Thesis.</center>",
         )
 
-    def loadTestSuite(self) -> Tuple[DataFrame, DataFrame]:
+    def loadTestSuite(self):
         """ This method loads the test suite.
         
         This method will popup a window for the user to select a .csv file
@@ -219,7 +219,7 @@ class AbinDriver(AbinView):
 
         : rtype: Tuple[DataFrame, DataFrame]
         """
-        def parse_csv_data(data):
+        def parse_csv_data(data) -> Tuple[DataFrame, DataFrame]:
             """ This method parses the .csv file into a pandas dataframe """
             from json import loads
             parsed_data = pd.DataFrame()
