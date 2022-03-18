@@ -47,6 +47,7 @@ class AbinView(QMainWindow):
         self.setWindowIcon(QIcon(":radar.png"))
         self.resize(1000, 800)
         self._setupUI()
+        self.showMaximized()
     
     def _setupUI(self):
         """ This method set-ups the UI"""
