@@ -138,7 +138,7 @@ class AbinDriver(AbinView):
         self.axAbduction.set_xlabel('Abduction Breadth')
         self.axAbduction.set_ylabel('Abduction Depth')
         self.axAbduction.plot(DebugController.QT_QUEUE.x_data, 
-        DebugController.QT_QUEUE.y_data, 'r', color="tab:blue")
+        DebugController.QT_QUEUE.y_data, color="tab:blue")
         self.axAbduction.yaxis.set_major_locator(MaxNLocator(integer=True))
         self.axAbduction.autoscale()
         self.canvasAbduction.draw()
