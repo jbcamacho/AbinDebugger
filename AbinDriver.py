@@ -222,6 +222,7 @@ class AbinDriver(AbinView):
         def parse_csv_data(data) -> Tuple[DataFrame, DataFrame]:
             """ This method parses the .csv file into a pandas dataframe """
             from json import loads
+            from re import split
             parsed_data = pd.DataFrame()
             parsed_types = []
             columnsNames = list(data.columns)
@@ -235,8 +236,10 @@ class AbinDriver(AbinView):
                     parsed_data[newColName] = data[colName].map(getattr(builtins, castType))
                 elif castType in ['dict', 'json']:
                     parsed_data[newColName] = data[colName].apply(loads)
-                elif castType == 'list':
-                    parsed_data[newColName] = data[colName].to_list()
+                elif castType.startswith('list'):
+                    _, castSubType, _ = map(str.strip, split('\[|\]', 'list[int]'))
+                    parsed_data[newColName] = data[colName].map(
+                        lambda x: [getattr(builtins, castSubType)(i) for i in eval(x, {}, {})])
                 elif castType == 'tuple':
                     parsed_data[newColName] = tuple(data[colName].to_list())
             return (parsed_data, pd.DataFrame(parsed_types))
