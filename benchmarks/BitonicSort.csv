@@ -1,4 +1,4 @@
-test_cases,expected_output,a: list[int],n: int,up: int
+test_cases,expected_output,a: list[int],N: int,up: int
 test1,"[1, 5, 2, 6, 3, 7, 4, 8]","[3, 7, 4, 8, 6, 2, 1, 5]",8,1
 test2,"[3, 7, 4, 8, 1, 5, 2, 6]","[3, 7, 4, 8, 6, 2, 1, 5]",8,2
 test3,"[17, 31, 44, 78, 52, 71, 55, 86]","[31, 17, 44, 78, 86, 52, 71, 55]",8,1

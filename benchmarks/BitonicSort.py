@@ -41,7 +41,7 @@ def bitonicMerge(a, low, cnt, dire):
 # calls bitonicMerge to make them in the same order
 def bitonicSort(a, low, cnt,dire):
 	if cnt > 1:
-		k = cnt/2
+		k = cnt//2
 		bitonicSort(a, low, k, 1)
 		bitonicSort(a, low+k, k, 0)
 		bitonicMerge(a, low, cnt, dire)
@@ -49,5 +49,5 @@ def bitonicSort(a, low, cnt,dire):
 # Caller of bitonicSort for sorting the entire array of length N
 # in ASCENDING order
 def sort(a, N, up):
-  bitonicSort(a, 0, N, up)
+  bitonicSort(a, 10, N, up)
   return a
