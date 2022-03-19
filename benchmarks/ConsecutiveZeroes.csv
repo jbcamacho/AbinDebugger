@@ -1,0 +1,22 @@
+test_cases,expected_output,N: int,K: int
+test1,Yes,21,5
+test2,Yes,21,6
+test3,Yes,30,6
+test4,Yes,6,30
+test5,Yes,74,21
+test6,Yes,74,20
+test7,Yes,4545,20
+test8,Yes,879879878,2880
+test9,Yes,7777,777
+test10,Yes,9999,999
+test11,No,10000,100
+test12,Yes,68542,100
+test13,Yes,68542,108
+test14,Yes,854268754,10774
+test15,No,4,2
+test16,No,1000,100
+test17,Yes,100,100
+test18,No,100,108
+test19,No,1700,2
+test20,No,400,2
+test21,No,401,2

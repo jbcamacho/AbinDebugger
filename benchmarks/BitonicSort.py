@@ -48,6 +48,6 @@ def bitonicSort(a, low, cnt,dire):
 
 # Caller of bitonicSort for sorting the entire array of length N
 # in ASCENDING order
-def sort(a, N, up):
+def aSort(a, N, up):
   bitonicSort(a, 10, N, up)
   return a

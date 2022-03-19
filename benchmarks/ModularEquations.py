@@ -34,7 +34,7 @@ def calculateDivisors (A, B):
                   
             # checking if a divisor isnt counted twice
             if ((N / i) != i and (N / i) > B):
-                noOfDivisors += 1;
+                noOfDivisors += 1
                   
     return noOfDivisors
       
@@ -59,30 +59,11 @@ def numberOfPossibleWaysUtil (A, B):
     # greater than B    
       
     noOfDivisors = 0
-    noOfDivisors = calculateDivisors;
+    noOfDivisors = calculateDivisors(A, B)
     return noOfDivisors
           
       
 # Wrapper function for numberOfPossibleWaysUtil() 
-def numberOfPossibleWays(A, B):
+def aNumberOfPossibleWays(A, B):
     noOfSolutions = numberOfPossibleWaysUtil(A, B)
-      
-    #if infinitely many solutions available
-    if (noOfSolutions == -1):
-        print ("For A = " , A , " and B = " , B
-                , ", X can take Infinitely many values"
-                , " greater than "  , A)
-      
-    else:
-        print ("For A = " , A , " and B = " , B
-                , ", X can take " , noOfSolutions
-                , " values")
-# main()
-A = 26
-B = 2
-numberOfPossibleWays(A, B)
-  
-  
-A = 21
-B = 5
-numberOfPossibleWays(A, B)
+    return noOfSolutions
