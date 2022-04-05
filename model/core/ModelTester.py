@@ -18,7 +18,7 @@ TestOutcome = Union[PassedTest, FailedTest]
 TestResult = Tuple[Test, TestOutcome]
 InputArgs = Any
 ExpectedOutput = Any
-TestCase = Tuple[Test, InputArgs, ExpectedOutput]
+TestCase = Tuple[Test, ExpectedOutput, InputArgs]
 TestSuite = List[TestCase]
 Observation = List[TestResult]
 

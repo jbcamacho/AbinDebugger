@@ -80,7 +80,7 @@ class AbinDebugger(OchiaiDebugger):
 
         ranked_events_susp = list(map(lambda x: (x + (self.suspiciousness(x),)), ranked_events))
         ranked_events_filtered = self.susp_threshold_filter(ranked_events_susp)
-
+        print(ranked_events_susp)
         unique_suspiciousness_values = set(map(lambda x:x[2], ranked_events_filtered))
         unique_suspiciousness_sorted = sorted(unique_suspiciousness_values, reverse=True)
         group_by_suspiciousness = [[y[:2] for y in ranked_events_filtered if y[2]==x] for x in unique_suspiciousness_sorted]
