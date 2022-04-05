@@ -69,7 +69,7 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
     def __next__(self) -> bool:
         """ Class Iterator Next Constructor
 
-        This method will iterate over all improvement candidates
+        This method will iterate over all of the improvement candidates
         and build an apropiated model for it, until the iterator 
         `self.improvement_candidates_set` is exhausted.
         
