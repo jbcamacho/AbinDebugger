@@ -236,7 +236,7 @@ class AbinView(QMainWindow):
         SideToolBar.setMovable(False)
 
     def _createActions(self):
-        """ This method creates the UI's actions"""
+        """ This method creates the UI's actions """
 
         self.loadModelAction = QAction(QIcon(":load-model.svg"), "&Open Defective Program...", self)
         self.loadModelAction.setToolTip("Load Bugged Program")
@@ -270,6 +270,7 @@ class AbinView(QMainWindow):
         self.logoutAction       =   QAction(QIcon(":log-out.svg")   , "Logout")
 
         self.timer = QTimer()
+        self.timerUpdatePlot = QTimer()
 
     def _resetLayout(self, layout = None, layout_type = QVBoxLayout):
         """ This method reset the UI's layout"""

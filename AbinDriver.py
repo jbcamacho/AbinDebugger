@@ -125,7 +125,7 @@ class AbinDriver(AbinView):
 
         # Connect Timer for debugging elapsed time
         self.timer.timeout.connect(self._showDebugTime)
-
+        self.timerUpdatePlot.timeout.connect(self._updatePlotData)
         # Connect pyqtSignalQueueHandler
         # DebugController.QT_QUEUE.sigEnqueue.connect(self.update_abduction_plot)
         self.updatePlotThread = Worker(self.update_abduction_plot, ())
@@ -147,16 +147,21 @@ class AbinDriver(AbinView):
         """ This method show the debug elapsed time in the status bar """
         self._debug_elapsed_time += 1
         self.statusDebugging.setText(f"  Debug in progress... elapsed time: {self._debug_elapsed_time/10} sec(s)  ")
+        #self.updatePlotThread.start()
+
+    def _updatePlotData(self):
         self.updatePlotThread.start()
 
     def _resetDebugTimer(self):
         """ This method resets the debug QTimer """
         self._debug_elapsed_time = 0
         self.timer.start(100)
+        self.timerUpdatePlot.start(500)
     
     def _stopDebugTimer(self):
         """ This method stops the debug QTimer """
         self.timer.stop()
+        self.timerUpdatePlot.stop()
         self.statusDebugging.setText(f"  Debugging finished total elapsed time: {self._debug_elapsed_time/10} sec(s)  ")
 
     def toHomePage(self) -> None:
