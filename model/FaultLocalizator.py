@@ -115,8 +115,8 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
     def parse_model(src: str) -> ASTNode:
         """This method refactor the model for the debugging process.
         
-        This method removes unnecesary components like docstrings
-        and refactor multiple lines' statements into one line statements.
+        This method removes unnecessary elements like docstrings, comment lines,
+        and refactors multiple-lines statements into one-line statements per statement.
         :param src: The models' source code to be parsed.
         :type  src: str
         :rtype: ASTNode

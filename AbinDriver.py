@@ -7,9 +7,12 @@ import builtins
 from AbinView import AbinView
 from AbinModel import AbinModel
 from typing import Tuple, Type
+from pathlib import Path
+import yaml
 import pandas as pd
 from pandas import DataFrame
 from webbrowser import open as linkOpen
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QApplication, QMessageBox, QFileDialog,
     QTableWidgetItem, QTableWidget, QPushButton,
@@ -23,6 +26,7 @@ from controller.AbinLogging import Worker
 from model.misc.test_db_connection import test_db_connection
 import model.misc.bug_mining as bug_mining
 import controller.AbinLogging as AbinLogging
+from matplotlib.ticker import MaxNLocator
 
 #Pattern Model-View-Controller
 AbInModel = Type[AbinModel]
@@ -68,7 +72,9 @@ class AbinDriver(AbinView):
         # Connect Help actions
         self.helpContentAction.triggered.connect(self.contactInfo)
         self.aboutAction.triggered.connect(self.about)
-        self.githubAction.triggered.connect(lambda: linkOpen("https://github.com/jbcamacho/abin_debugger.git"))
+        self.githubAction.triggered.connect(
+            lambda: linkOpen("https://github.com/jbcamacho/abin_debugger.git")
+        )
 
         # Connect Left SideBar Actions
         self.homeAction.triggered.connect(self.toHomePage)
@@ -76,6 +82,8 @@ class AbinDriver(AbinView):
         self.abductionAction.triggered.connect(self.toDebuggerPage)
         self.miningAction.triggered.connect(self.toMiningPage)
         self.databaseAction.triggered.connect(self.toDatabasePage)
+        self.configAction.triggered.connect(self.toConfigPage)
+        self.statsAction.triggered.connect(self.toStatsPage)
 
         # Connect Debugger Page Events
         self.btnRunAutoDebug = self.AbductionPage.findChild(QPushButton, 'btnStartDebug')
@@ -85,6 +93,11 @@ class AbinDriver(AbinView):
         self.miningPage.findChild(QPushButton, 'btnGetRepos').clicked.connect(self.downloadRepos)
         self.miningPage.findChild(QPushButton, 'btnLoadRepos').clicked.connect(lambda: self.loadRepos(''))
         self.miningPage.findChild(QPushButton, 'btnMineRepos').clicked.connect(self.mineRepos)
+        self.configPage.findChild(QPushButton, 'btnConfLoad').clicked.connect(self.loadConfigFile)
+        self.configPage.findChild(QPushButton, 'btnConfSave').clicked.connect(self.saveConfigFile)
+        self.configPage.findChild(QPushButton, 'btnConfDefault').clicked.connect(self.resetConfigFile)
+        self.statsPage.findChild(QPushButton, 'btnGetStats').clicked.connect(self.getStats)
+        self.allPages.currentChanged.connect(self._readConfigData)
 
         ## Connect radiobuttons to onchange.
         gpbSchema = self.AbductionPage.findChild(QGroupBox, 'gpbSchema')
@@ -113,10 +126,28 @@ class AbinDriver(AbinView):
         # Connect Timer for debugging elapsed time
         self.timer.timeout.connect(self._showDebugTime)
 
+        # Connect pyqtSignalQueueHandler
+        # DebugController.QT_QUEUE.sigEnqueue.connect(self.update_abduction_plot)
+        self.updatePlotThread = Worker(self.update_abduction_plot, ())
+        self.updatePlotThread.terminate()
+
+
+    def update_abduction_plot(self):
+        self.axAbduction.cla()
+        self.axAbduction.title.set_text('Abduction Process')
+        self.axAbduction.set_xlabel('Abduction Breadth')
+        self.axAbduction.set_ylabel('Abduction Depth')
+        self.axAbduction.plot(DebugController.QT_QUEUE.x_data, 
+        DebugController.QT_QUEUE.y_data, color="tab:blue")
+        self.axAbduction.yaxis.set_major_locator(MaxNLocator(integer=True))
+        self.axAbduction.autoscale()
+        self.canvasAbduction.draw()
+
     def _showDebugTime(self):
         """ This method show the debug elapsed time in the status bar """
         self._debug_elapsed_time += 1
         self.statusDebugging.setText(f"  Debug in progress... elapsed time: {self._debug_elapsed_time/10} sec(s)  ")
+        self.updatePlotThread.start()
 
     def _resetDebugTimer(self):
         """ This method resets the debug QTimer """
@@ -134,24 +165,34 @@ class AbinDriver(AbinView):
         self.statusLabel.setText(f"  Home  ")
 
     def toTestSuitePage(self) -> None:
-        """ This method set the QStackedWidget to the QWidget toTestSuitePage """
+        """ This method set the QStackedWidget to the QWidget testSuitePage """
         self.allPages.setCurrentWidget(self.testSuitePage)
         self.statusLabel.setText(f"  Test Suite  ")
 
     def toDebuggerPage(self) -> None:
-        """ This method set the QStackedWidget to the QWidget toDebuggerPage """
+        """ This method set the QStackedWidget to the QWidget debuggerPage """
         self.allPages.setCurrentWidget(self.AbductionPage)
         self.statusLabel.setText(f"  Debugger  ")
     
     def toMiningPage(self) -> None:
-        """ This method set the QStackedWidget to the QWidget toMiningPage """
+        """ This method set the QStackedWidget to the QWidget miningPage """
         self.allPages.setCurrentWidget(self.miningPage)
         self.statusLabel.setText(f"  Mining  ")
 
     def toDatabasePage(self) -> None:
-        """ This method set the QStackedWidget to the QWidget toDatabasePage """
+        """ This method set the QStackedWidget to the QWidget databasePage """
         self.allPages.setCurrentWidget(self.databasePage)
         self.statusLabel.setText(f"  Database  ")
+
+    def toConfigPage(self) -> None:
+        """ This method set the QStackedWidget to the QWidget configPage """
+        self.allPages.setCurrentWidget(self.configPage)
+        self.statusLabel.setText(f"  Settings  ")
+
+    def toStatsPage(self) -> None:
+        """ This method set the QStackedWidget to the QWidget statsPage """
+        self.allPages.setCurrentWidget(self.statsPage)
+        self.statusLabel.setText(f"  Database Statistics  ")
 
     def contactInfo(self):
         """ This method shows up a messagebox showing the contact info"""
@@ -170,7 +211,7 @@ class AbinDriver(AbinView):
             "<center>This software was developed as part of a Master's Thesis.</center>",
         )
 
-    def loadTestSuite(self) -> Tuple[DataFrame, DataFrame]:
+    def loadTestSuite(self):
         """ This method loads the test suite.
         
         This method will popup a window for the user to select a .csv file
@@ -178,9 +219,10 @@ class AbinDriver(AbinView):
 
         : rtype: Tuple[DataFrame, DataFrame]
         """
-        def parse_csv_data(data):
+        def parse_csv_data(data) -> Tuple[DataFrame, DataFrame]:
             """ This method parses the .csv file into a pandas dataframe """
             from json import loads
+            from re import split
             parsed_data = pd.DataFrame()
             parsed_types = []
             columnsNames = list(data.columns)
@@ -194,8 +236,10 @@ class AbinDriver(AbinView):
                     parsed_data[newColName] = data[colName].map(getattr(builtins, castType))
                 elif castType in ['dict', 'json']:
                     parsed_data[newColName] = data[colName].apply(loads)
-                elif castType == 'list':
-                    parsed_data[newColName] = data[colName].to_list()
+                elif castType.startswith('list'):
+                    _, castSubType, _ = map(str.strip, split('\[|\]', 'list[int]'))
+                    parsed_data[newColName] = data[colName].map(
+                        lambda x: [getattr(builtins, castSubType)(i) for i in eval(x, {}, {})])
                 elif castType == 'tuple':
                     parsed_data[newColName] = tuple(data[colName].to_list())
             return (parsed_data, pd.DataFrame(parsed_types))
@@ -278,9 +322,9 @@ class AbinDriver(AbinView):
 
     def runAutoDebug(self):
         """ This method execute the AutoDebugTask in a Qthread """
-        if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Undefined:
+        if DebugController.DB_STATUS == DebugController.ConnectionStatus.Undefined:
             return QMessageBox.warning(self, "Warning!", "<p>Please connect a Database.</p>")
-        if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Established:
+        if DebugController.DB_STATUS == DebugController.ConnectionStatus.Established:
             return QMessageBox.warning(self, "Warning!", "<p>Please make sure to connect a Database with patterns.</p>")
         if self.csvTestSuite is None:
             return QMessageBox.warning(self, "Warning!", "<p>Please provide a test suite!.</p>")
@@ -303,6 +347,9 @@ class AbinDriver(AbinView):
         """ This method is executed when AutoDebugTask finishes """
         self.btnRunAutoDebug.setEnabled(True)
         self._stopDebugTimer()
+        self._abduction_plot_ref = None #reset plot reference
+        self.update_abduction_plot()
+        DebugController.QT_QUEUE.dequeue_all()
         if self.debug_result is not None:
             msgResult = QMessageBox()
             (model_src_code, candidate, bugfixing_hyphotesis, behavior, *_) = self.debug_result
@@ -381,16 +428,8 @@ class AbinDriver(AbinView):
         
         uri = self.databasePage.findChild(QComboBox, 'cmbURI').currentText()
 
-        DebugController.DATABASE_SETTINGS = {
-            'URI': uri,
-            'HOST': host,
-            'PORT': port,
-            'DATABASE': db_name,
-            'COLLECTION': collection_name,
-            'STATUS':  False
-        }
         conn_status = test_db_connection(uri, host, port, db_name, collection_name)
-        DebugController.DATABASE_SETTINGS['STATUS'] = conn_status
+        DebugController.DB_STATUS = conn_status
         self.statusDatabase.setText(f"  DataBase Connection: {conn_status.name}  ")
         
     def downloadRepos(self) -> bool:
@@ -440,7 +479,7 @@ class AbinDriver(AbinView):
         
     def mineRepos(self):
         """ This method execute the miningTask in a Qthread """
-        if DebugController.DATABASE_SETTINGS['STATUS'] == DebugController.ConnectionStatus.Undefined:
+        if DebugController.DB_STATUS == DebugController.ConnectionStatus.Undefined:
             return QMessageBox.warning(self, "Warning!", "<p>Please connect a Database.</p>")
         if self.lstRepos is None:
             return QMessageBox.warning(self, "Warning!", "<p>Please load the repositories data.</p>")
@@ -468,7 +507,6 @@ class AbinDriver(AbinView):
             namePatternsCollection = txtPatternsCollection.placeholderText()
 
         from model.HypothesisGenerator import HypothesisGenerator as CONN
-        config = DebugController.DATABASE_SETTINGS
         db_connection = CONN.mongodb_connection()
         collection_RepoData = db_connection[nameReposCollection]
         collection_BugPatterns = db_connection[namePatternsCollection]
@@ -521,7 +559,44 @@ class AbinDriver(AbinView):
             else:
                 self.abduction_schema = AbductionSchema.A_star
 
+    def loadConfigFile(self):
+        config_file_path = QFileDialog.getOpenFileName(
+            self, 'Load YAML - Configuration File', '', 'YAML(*.yaml *.yml)')
+        if config_file_path[0]:
+            with open(config_file_path[0], 'r') as config_file:
+                config_data = yaml.full_load(config_file)
+            self._setConfigData(config_data)
+    
+    def saveConfigFile(self) -> bool:        
+        config_data = self._readConfigData()
+        save_path = QFileDialog.getSaveFileName(
+            self, 'Save YAML - Configuration File', 'config.yml')
+        if save_path[0]:
+            save_path = save_path[0]
+        else:
+            save_path = 'controller/config.yml'
+        try:
+            with open(save_path, 'w') as config_file:
+                yaml.dump(config_data, config_file)   
+        except Exception as e:
+            print(e)
+        else:
+            return 1
+        return 0
 
+    def resetConfigFile(self):
+        self._setConfigData(self.default_config)
+
+    def getStats(self):
+        btnGetStats = self.statsPage.findChild(QPushButton, 'btnGetStats')
+        btnGetStats.setEnabled(False)
+        try:
+            self._setupStats()
+        except Exception as e:
+            print(e)
+            return QMessageBox.warning(self, "Warning!", "<p>Unable to retrieve the stats from the db. </p>")
+        finally:
+            btnGetStats.setEnabled(True)
 
 def debugger_is_active() -> bool:
     """ This method return if the debugger is currently active """

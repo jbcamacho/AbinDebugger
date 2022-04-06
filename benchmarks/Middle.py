@@ -31,7 +31,7 @@ The content of this file can be found in The Debugging Book.
     urldate = {2021-10-13 13:24:19+02:00}
 }
 """
-def middle(x, y, z):
+def middle1(x, y, z):
     if y < z:
         if x < y:
             return y
@@ -42,4 +42,17 @@ def middle(x, y, z):
             return y
         elif x > z:
             return x
+    return z
+
+def middle2(x, y, z):
+    if y < z:
+        if x < y:
+            return y
+        elif x < z:
+            return y # <-- FIX return x
+    else:
+        if x > y:
+            return y
+        elif x > z:
+            return z # <-- FIX return x
     return z

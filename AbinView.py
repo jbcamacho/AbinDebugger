@@ -3,6 +3,7 @@ This module is the view of the system.
 This is the view representation of the MVC software pattern.
 """
 import sys
+from typing import Dict
 import resources.qrc_resources as qrc_resources
 from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5 import sip, uic
@@ -10,10 +11,20 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QApplication, QLabel, QMainWindow, 
     QToolBar, QAction, QVBoxLayout, QFrame,
-    QStackedWidget, QWidget, QTableWidget
+    QStackedWidget, QWidget, QTableWidget,
+    QTableWidgetItem, QDoubleSpinBox, QLineEdit,
+    QComboBox, QAbstractItemView, QMessageBox
 )
 from controller.DebugController import ConnectionStatus
+import controller.DebugController as DebugController
+from pathlib import Path
+import yaml
 
+from model.misc.stats_data import get_stats
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 class AbinDebuggerPages(QStackedWidget):
     """ This class loads the pages' UI """
     def __init__(self, parent = None):
@@ -36,8 +47,10 @@ class AbinView(QMainWindow):
         self.setWindowIcon(QIcon(":radar.png"))
         self.resize(1000, 800)
         self._setupUI()
+        self.showMaximized()
     
     def _setupUI(self):
+        """ This method set-ups the UI"""
         self.centralWidget = QFrame()
         self.setCentralWidget(self.centralWidget)
         self._resetLayout()
@@ -49,13 +62,87 @@ class AbinView(QMainWindow):
         self.AbductionPage = self.allPages.findChild(QWidget, 'abductionPage')
         self.miningPage = self.allPages.findChild(QWidget, 'miningPage')
         self.databasePage = self.allPages.findChild(QWidget, 'databasePage')
-        self.allPages.findChild(QTableWidget, 'tableTestSuite').horizontalHeader().setVisible(True)
-        self.allPages.findChild(QTableWidget, 'tableTypes').horizontalHeader().setVisible(True)
-
+        self.configPage = self.allPages.findChild(QWidget, 'configPage')
+        self.statsPage = self.allPages.findChild(QWidget, 'statsPage')
+        self.testSuitePage.findChild(QTableWidget, 'tableTestSuite').horizontalHeader().setVisible(True)
+        self.testSuitePage.findChild(QTableWidget, 'tableTypes').horizontalHeader().setVisible(True)
+        
+        
         self._createActions()
         self._createMenuBar()
         self._createToolBars()
         self._createStatusBar()
+        self._createCharts()
+
+        self.configTable = self.configPage.findChild(QTableWidget, 'tableProgramConf')
+        self.configTable.sortItems(0, Qt.AscendingOrder)
+        self.default_config = self._readConfigData()
+        self._loadConfig()
+
+        self.tableStats = self.statsPage.findChild(QTableWidget, 'tableStats')
+        self.tableStats.sortItems(0, Qt.AscendingOrder)
+
+    def _createCharts(self):
+        """ This method creates the UI's charts"""
+        widgetChartAbduction = self.AbductionPage.findChild(QWidget, 'widgetChartAbduction')
+        self.figureAbduction, self.axAbduction = plt.subplots(1, 1)
+        self._abduction_plot_ref = None
+        # self.axAbduction.plot([],[])
+        self.axAbduction.cla()
+        self.axAbduction.set_ylim(bottom=0)
+        self.axAbduction.yaxis.set_major_locator(MaxNLocator(integer=True))
+        self.axAbduction.title.set_text('Abduction Process')
+        self.axAbduction.set_xlabel('Abduction Breadth')
+        self.axAbduction.set_ylabel('Abduction Depth')
+        self.figureAbduction.tight_layout()
+        self.canvasAbduction = FigureCanvas(self.figureAbduction)
+        self.canvasAbductionToolbar = NavigationToolbar(self.canvasAbduction, widgetChartAbduction)
+
+        chartAbductionLayout = widgetChartAbduction.layout()
+        chartAbductionLayout.addWidget(self.canvasAbductionToolbar)
+        chartAbductionLayout.addWidget(self.canvasAbduction)
+
+
+        widgetChartStats = self.statsPage.findChild(QWidget, 'widgetChartStats')
+        self.figureStats, axStats = plt.subplots(1, 2)
+        self.axBugs = axStats[0]
+        self.axFixes = axStats[1]
+        # self.axBugs.plot([],[])
+        # self.axFixes.plot([],[])
+        self.figureStats.tight_layout()
+        self.canvasStats = FigureCanvas(self.figureStats)
+        self.canvasStatsToolbar = NavigationToolbar(self.canvasStats, widgetChartStats)
+
+        chartStatsLayout = widgetChartStats.layout()
+        chartStatsLayout.addWidget(self.canvasStatsToolbar)
+        chartStatsLayout.addWidget(self.canvasStats)
+
+    def _setupStats(self):
+        """ This method get shows all the stats
+        and draw the charts for the statsPage """
+        if DebugController.DB_STATUS == DebugController.ConnectionStatus.Undefined:
+            return QMessageBox.warning(self, "Warning!", "<p>Please connect a Database.</p>")
+        if DebugController.DB_STATUS == DebugController.ConnectionStatus.Established:
+            return QMessageBox.warning(self, "Warning!", "<p>Please make sure to connect a Database with patterns.</p>")
+        curr_stats_data = get_stats()
+        for i, (key, value) in enumerate(curr_stats_data.items()):
+            self.tableStats.setItem(i, 0, QTableWidgetItem(key))
+            self.tableStats.setItem(i, 1, QTableWidgetItem(str(value)))
+        self.tableStats.sortItems(0, Qt.AscendingOrder)
+        self.tableStats.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        
+        self.axBugs.cla()
+        self.axBugs.title.set_text('Statistical Ranking of Bugs')
+        self.axBugs.bar(*curr_stats_data['ranking_bugs'])
+        self.axBugs.tick_params(axis="x", labelrotation=90)
+
+        self.axFixes.cla()
+        self.axFixes.title.set_text('Statistical Ranking of Fixes')
+        self.axFixes.bar(*curr_stats_data['ranking_fixes'])
+        self.axFixes.tick_params(axis="x", labelrotation=90)
+        self.figureStats.tight_layout()
+        self.canvasStats.draw()
+
 
     def _createMenuBar(self):
         """ This method creates the UI's menu bar"""
@@ -138,13 +225,13 @@ class AbinView(QMainWindow):
         SideToolBar.addSeparator()
         SideToolBar.addAction(self.abductionAction)
         SideToolBar.addSeparator()
-        SideToolBar.addAction(self.barChartAction)
+        SideToolBar.addAction(self.statsAction)
         SideToolBar.addSeparator()
         SideToolBar.addAction(self.miningAction)
         SideToolBar.addSeparator()
         SideToolBar.addAction(self.databaseAction)
         SideToolBar.addSeparator()
-        SideToolBar.addAction(self.settingsAction)
+        SideToolBar.addAction(self.configAction)
         SideToolBar.setIconSize(QSize(50, 50))
         SideToolBar.setMovable(False)
 
@@ -175,10 +262,10 @@ class AbinView(QMainWindow):
         self.homeAction         =   QAction(QIcon(":home.svg")      , "Home")
         self.commandAction      =   QAction(QIcon(":command.svg")   , "Command")
         self.abductionAction    =   QAction(QIcon(":compass.svg")   , "Abduction")
-        self.barChartAction     =   QAction(QIcon(":bar-chart.svg") , "BarChar")
+        self.statsAction        =   QAction(QIcon(":bar-chart.svg") , "BarChar")
         self.miningAction       =   QAction(QIcon(":layers.svg")    , "Mining")
         self.databaseAction     =   QAction(QIcon(":database.svg")  , "Database")
-        self.settingsAction     =   QAction(QIcon(":settings.svg")  , "Settings")
+        self.configAction       =   QAction(QIcon(":settings.svg")  , "Settings")
         
         self.logoutAction       =   QAction(QIcon(":log-out.svg")   , "Logout")
 
@@ -199,6 +286,74 @@ class AbinView(QMainWindow):
         self.mainLayout.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.centralWidget.setLayout(self.mainLayout)
         
+    def _loadConfig(self) -> Dict[str, str]:
+        """ This method loads the configuration data.
+        
+        If the configuration file exist then the data will be loaded,
+        else the dedault data will be loaded.
+        :rtype: Dict[str, str]
+        """
+        config_file_path = Path('controller/config.yml')
+        if config_file_path.exists():
+            with open(config_file_path, 'r') as config_file:
+                config_data = yaml.full_load(config_file)
+                self._setConfigData(config_data)
+        else:
+            config_data = self.default_config
+        return config_data
+
+    def _readConfigData(self) -> Dict[str, str]:
+        """ This method reads the configuration data from the configTable.
+        
+        The global variable APP_SETTINGS will be updated
+        with the read configuration.
+        :rtype: Dict[str, str]
+        """
+        config_data = {}
+        rowCount = self.configTable.rowCount()
+        for i in range(rowCount):
+            qItemCol = self.configTable.item(i,0)
+            qItemCol.setFlags(qItemCol.flags() ^ Qt.ItemIsEditable)
+            key = qItemCol.text()
+            value = self.configTable.item(i,1).text()
+            config_data[key] = value
+        DebugController.APP_SETTINGS = config_data
+        return config_data
+
+    def _setConfigData(self, config_data: Dict[str, str]) -> None:
+        """ This method sets the configuration into the UI.
+
+        All of the UI's elements will be updated given the configuration.
+        """
+        # Database Page
+        txtHost = self.databasePage.findChild(QLineEdit, 'txtHost')
+        txtHost.setText(config_data['DB_HOST'])
+        txtPort = self.databasePage.findChild(QLineEdit, 'txtPort')
+        txtPort.setText(config_data['DB_PORT'])
+        cmbURI = self.databasePage.findChild(QComboBox, 'cmbURI')
+        cmbURI.setCurrentText(config_data['DB_URI'])
+        txtDatabase = self.databasePage.findChild(QLineEdit, 'txtDatabase')
+        txtDatabase.setText(config_data['DEBUG_DB_NAME'])
+        txtCollection = self.databasePage.findChild(QLineEdit, 'txtCollection')
+        txtCollection.setText(config_data['DEBUG_DB_PATTERNS_COLLECTION'])
+        # Debugging Page
+        snbTimeout = self.AbductionPage.findChild(QDoubleSpinBox, 'snbTimeout')
+        snbTimeout.setValue(float(config_data['MAXIMUM_TEST_TIMEOUT']))
+        # Mining Page
+        txtReposDatabase = self.miningPage.findChild(QLineEdit, 'txtReposDatabase')
+        txtReposDatabase.setText(config_data['MINING_DB_NAME'])
+        txtPatternsCollection = self.miningPage.findChild(QLineEdit, 'txtPatternsCollection')
+        txtPatternsCollection.setText(config_data['MINING_DB_PATTERNS_COLLECTION'])
+        txtReposCollection = self.miningPage.findChild(QLineEdit, 'txtReposCollection')
+        txtReposCollection.setText(config_data['MINING_DB_REPO_COLLECTION'])
+        # Setting Page
+        for i, (key, value) in enumerate(config_data.items()):
+            qItemCol = QTableWidgetItem(key)
+            qItemCol.setFlags(qItemCol.flags() ^ Qt.ItemIsEditable)
+            self.configTable.setItem(i, 0, qItemCol)
+            self.configTable.setItem(i, 1, QTableWidgetItem(value))
+        self.configTable.sortItems(0, Qt.AscendingOrder)
+        self._readConfigData
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

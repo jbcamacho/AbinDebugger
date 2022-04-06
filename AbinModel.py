@@ -12,7 +12,7 @@ from model.HypothesisGenerator import Hypothesis, HypothesisGenerator
 from model.HypothesisRefinement import AbductionSchema
 import pandas as pd
 import controller.AbinLogging as AbinLogging
-
+import controller.DebugController as DebugController
 
 Localizator = FaultLocalizator
 Tester = HyphotesisTester
@@ -50,6 +50,7 @@ class AbinModel():
         self.fault_localizator = localizator
         self.hyphotesis_tester = tester
         self.hypotheses_generator = generator
+        DebugController.QT_QUEUE.enqueue(self.abduction_breadth, self.abduction_depth)
     
     def start_auto_debugging(self, model_src_code = None,
         improvement_candidates_set = None) -> Tuple[str, Behavior, Observation, Observation]:
@@ -62,6 +63,8 @@ class AbinModel():
         Abduction Breadth: {self.abduction_breadth}""")
         localizator = self.fault_localization(model_src_code, improvement_candidates_set)
         behavior = Behavior.Undefined
+        prev_observation = []
+        influence_path = []
         with localizator:
             (prev_observation, influence_path) = localizator.model_testing(check_consistency=False)
             model_src_code = localizator.model_src
@@ -92,6 +95,7 @@ class AbinModel():
                         """
                     )
                     self.abduction_breadth += 1
+                    DebugController.QT_QUEUE.enqueue(self.abduction_breadth, self.abduction_depth)
                     (new_model_src_code, behavior, new_observation, hypothesis) = self.hyphotesis_testing(prev_observation, model_src_code[:], hypothesis)
                     AbinLogging.debugging_logger.info(f""" 
                         New Observations:
@@ -100,7 +104,6 @@ class AbinModel():
                         {behavior}
                         """
                     )
-                    
                     if behavior == Behavior.Improvement:
                         imprv_candidates.append(hypothesis)
                         if self.abduction_schema == AbductionSchema.DFS:
@@ -116,12 +119,13 @@ class AbinModel():
                             # insertion sort and save hypothesis here
                             # already implemented in refinement class
                             pass
-                        
-
+                    
                     if behavior == Behavior.Correct:
                         break
             
-            if (imprv_candidates
+            if behavior == Behavior.Correct:
+                pass
+            elif (imprv_candidates
                 and (self.abduction_schema == AbductionSchema.BFS
                 or self.abduction_schema == AbductionSchema.A_star) ):
                 # recursion here
@@ -129,7 +133,7 @@ class AbinModel():
                 result = self.start_auto_debugging(model_src_code[:], imprv_candidates)
                 (new_model_src_code, behavior, prev_observation, new_observation) = result
                 imprv_candidates.clear()
-
+            
             if behavior == Behavior.Correct:
                 AbinLogging.debugging_logger.debug(f""" 
                     Previous Observations:
@@ -145,7 +149,7 @@ class AbinModel():
                 self.bugfixing_hyphotesis = hypothesis[0]
                 return (new_model_src_code, behavior, prev_observation, new_observation)
 
-            if localizator.is_refinement:
+            elif localizator.is_refinement:
                 AbinLogging.debugging_logger.info(f"\nImprovement Candidate Rejected...")
                 self.abduction_depth -= 1
                 has_imprv_cand = next(localizator)
