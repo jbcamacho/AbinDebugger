@@ -76,7 +76,7 @@
        </size>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt; font-weight:600; color:#888a85;&quot;&gt;AbinDebugger:&lt;/span&gt;&lt;span style=&quot; font-size:20pt; color:#888a85;&quot;&gt; Automatic Debugging of Semantic Bugs in Python Programs Using Abductive Inference&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt; font-weight:600; color:#888a85;&quot;&gt;AbinDebugger:&lt;/span&gt;&lt;span style=&quot; font-size:20pt; color:#888a85;&quot;&gt; Automatic Debugging of Semantic Bugs in Python Programs Using Abductive and Counterfactual Reasoning&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="textFormat">
        <enum>Qt::AutoText</enum>
