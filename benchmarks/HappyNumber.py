@@ -88,7 +88,7 @@ def isHappyNumber3(num):
     rem = sum = 0    
         
     #Calculates the sum of squares of digits    
-    while(num > 0):    #<--- FIX while(num > 0):
+    while(num > 0):
         rem = num%10    
         sum = sum + (rem*rem) 
         num = num//10   
