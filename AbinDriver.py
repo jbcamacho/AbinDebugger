@@ -134,9 +134,9 @@ class AbinDriver(AbinView):
 
     def update_abduction_plot(self):
         self.axAbduction.cla()
-        self.axAbduction.title.set_text('Abduction Process')
-        self.axAbduction.set_xlabel('Abduction Breadth')
-        self.axAbduction.set_ylabel('Abduction Depth')
+        self.axAbduction.title.set_text('Debugging Process')
+        self.axAbduction.set_xlabel('No. Hypotheses')
+        self.axAbduction.set_ylabel('No. Refinements')
         self.axAbduction.plot(DebugController.QT_QUEUE.x_data, 
         DebugController.QT_QUEUE.y_data, color="tab:blue")
         self.axAbduction.yaxis.set_major_locator(MaxNLocator(integer=True))
