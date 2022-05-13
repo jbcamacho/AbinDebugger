@@ -1,8 +1,10 @@
 """
-This module contains the HypothesisTester and ModelConstructor class.
-The HypothesisTester class in charge of testing the generated hypotheses.
-This is one of the core modules used to automatically repair a defect.
-The ModelConstructor class in charge of constructing a proper model to the an hypothesis.
+This module contains the HypothesisTester and ModelConstructor classes.
+The HypothesisTester class is in charge of testing
+the generated hypotheses. This class is one of the core 
+modules used to automatically repair a defect.
+The ModelConstructor class is in charge of constructing
+a proper model for an hypothesis.
 """
 from model.core.ModelTester import ModelTester, TestSuite, Observation, PassedTest, FailedTest
 from model.HypothesisGenerator import Hypothesis
@@ -12,8 +14,9 @@ import re
 
 from enum import Enum
 class Behavior(Enum):
-    """ This class reprements an enumeration of the currently
-    avaiable behaviors of a model. """
+    """ This class represents an enumeration of the currently
+    available behaviors; it contains all the behaviors that
+    a hypothesis can yield. """
     Improvement = 1
     Worsened = 2
     Same = 3

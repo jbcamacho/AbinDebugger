@@ -1,7 +1,7 @@
 """
-This module is used to collect the events present in a trace of execution
-when the execution is carried out by a theard and a control variable
-(i. e. TIMEOUT_SIGNAL_RECEIVED) is needed to raise a timeout exeption.
+This module is used to collect the events present in a trace of execution.
+The execution is carried out by a thread; a control variable
+(i. e. TIMEOUT_SIGNAL_RECEIVED) is necesary to raise a timeout exception.
 """
 from model.debugger.Collector import CoverageCollector
 from types import FrameType
@@ -14,10 +14,10 @@ class AbinCollector(CoverageCollector):
         """
         Save coverage for an observed event.
 
-        In case that a timeout is triggered by signal.SIGALRM,
-        the event will be detected by the change of value of the
-        control variable TIMEOUT_SIGNAL_RECEIVED. If the value
-        is equal to 1 the function will raise a timeout exeption.
+        In case a timeout is triggered by signal.SIGALRM,
+        the event will be detected by the change in the value
+        of the control variable TIMEOUT_SIGNAL_RECEIVED.
+        If the value is equal to 1 the function will raise a timeout exception.
 
         :param frame: ...
         :type  frame: FrameType

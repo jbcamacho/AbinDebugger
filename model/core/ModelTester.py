@@ -27,7 +27,7 @@ from importlib.util import module_from_spec, spec_from_loader
 class ModelLoader(SourceLoader):
     """ This class instances a ModuleType object given the source code. 
     This class is a helper class to convert the models into ModuleType objects
-    in order test them.
+    in order to test them.
     """
     def __init__(self, src_code: Union[List[str], str]) -> None:
         """ Constructor Method """
@@ -38,8 +38,8 @@ class ModelLoader(SourceLoader):
         """ Abstract method implementation.
 
         This method is the implementation of the abstract method get_data
-        needed to instantiate the SourceLoader class.  This method will instantiate
-        the ModuleType object given a src code.
+        needed to instantiate the SourceLoader class. This method will instantiate
+        the ModuleType object given an src code.
 
         :param src_code: The source code of the ModuleType object.
         :type  src_code: str
@@ -52,7 +52,7 @@ class ModelLoader(SourceLoader):
 
         This method is the implementation of the abstract method get_filename
         needed to instantiate the SourceLoader class. This method will name
-        the ModuleType object given a fullname.
+        the ModuleType object given the 'fullname'.
 
         :param fullname: The name of the ModuleType object.
         :type  fullname: str
@@ -99,7 +99,8 @@ class ModelTester(ModelLoader):
         self.susp_threshold = susp_threshold
 
     def __enter__(self) -> Any:
-        """ Context manager method used to initialize the defective model/program """
+        """ A context manager method is used to initialize
+        the defective model/program. """
         AbinLogging.debugging_logger.debug('Entering ModelTester')
         spec = spec_from_loader(name='model_in_test', loader=self) # The class itself contains the loader
         self.model = module_from_spec(spec)
@@ -152,13 +153,13 @@ class ModelTester(ModelLoader):
         return True  # Ignore exception, if any
 
     def model_testing(self, check_consistency: bool = False) -> Tuple[Observation, InfluencePath]:
-        """ This method returns an observation of the executed test cases and a inflience path.
+        """ This method, returns an observation of the executed test cases and an influence path.
         
         This method test all the test cases against the provided model.
-        Also, it feed a debugger that relies on the statistical analisis 
+        Also, it feeds a debugger that relies on the statistical analysis
         of the observed events during the execution of the test cases
-        to automatically detect the most suspicios LOC that may hold the defect.
-        
+        to automatically detect the most suspicious LOC that may hold the defect.
+
         :param check_consistency: A control variable to enter
         to the check_result_consistency method.
         :type  check_consistency: bool
@@ -211,7 +212,7 @@ class ModelTester(ModelLoader):
         return (self.observation, self.influence_path)
 
     def run_test(self, input_args) -> ExpectedOutput:
-        """ Dummy Method for futher implementations """
+        """ Dummy method for futher implementations """
         return self.func(*input_args)
 
     def check_result_consistency(self, 
@@ -220,7 +221,7 @@ class ModelTester(ModelLoader):
         """ This method checks the consistency of two test cases.
 
         This method checks the consistency of the current test case
-        agaist the same test case observed in a previous observation.
+        against the same test case observed in a previous observation.
 
         :param curr_test_result: Current test case.
         :type  curr_test_result: TestResult
@@ -229,7 +230,7 @@ class ModelTester(ModelLoader):
         :rtype: bool
         """
         if self.prev_observation is None:
-            return True # Cannot check consistency if there are not previous observations
+            return True # It cannot check consistency if there are no previous observations
         prev_test_result = self.prev_observation[test_case_id]
         if (prev_test_result[1] == PassedTest
             and curr_test_result[1] == FailedTest):
@@ -244,7 +245,7 @@ class ModelTester(ModelLoader):
         return True
 
     def are_all_test_pass(self) -> bool:
-        """ This method check if the whole test suite's outcome is PassedTest 
+        """ This method checks if the whole test suite's outcome is PassedTest 
         :rtype: bool
         """
         return FailedTest not in map(lambda x: x[1], self.observation)
@@ -252,8 +253,8 @@ class ModelTester(ModelLoader):
     @property
     def model_src(self) -> List[str]:
         """ This property represents the src code of the model.
-        The model is represented in a List where each element of sai list
-        is a statement of the model in cuestion.
+        The model is represented by a list where each element is
+        a statement of the model in cuestion.
         :rtype: List[str]
         """
         return self.get_source().splitlines()

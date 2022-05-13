@@ -1,8 +1,8 @@
 """
 This module contains the FaultLocalizator class.
-This class in charge of locate the most suspicious lines of code
-that may hold a defect.
-This is one of the core modules used to automatically repair a defect.
+This class is in charge of locating the most
+suspicious lines of code that may hold a defect.
+Also, it is one of the core modules used in the methodology.
 """
 from model.abstractor.NodeMapper import ASTNode
 from model.core.ModelTester import ModelTester, TestSuite

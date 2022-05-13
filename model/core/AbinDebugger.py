@@ -2,7 +2,7 @@
 This module is used to correlate the collected events present
 in a trace of execution in order to determinate/suggest which statement
 of the bugged program holds the defect.
-The statements are ordered by the ochiai metric and the statistical ranking
+The statements are ordered by the Ochiai metric and the statistical ranking
 provided by the bug patterns in the database.
 """
 from model.debugger.AbinCollector import AbinCollector
@@ -165,7 +165,7 @@ class AbinDebugger(OchiaiDebugger):
         """Exit the `with` block.
         
         In case that a timeout is triggered by signal.SIGALRM,
-        the event will be detected by the change of value of the
+        the event will be detected by the change of value in the
         control variable TIMEOUT_SIGNAL_RECEIVED. If the value
         is equal to 2 the process will label the current test as FAIL,
         add it to a collector and 'consume' the timeout exception.
