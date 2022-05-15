@@ -1,10 +1,11 @@
 """
-This module contains the HypothesisTester and ModelConstructor classes.
+This module contains the HypothesisTester, ModelConstructor and Behaviour classes.
 The HypothesisTester class is in charge of testing
 the generated hypotheses. This class is one of the core 
 modules used to automatically repair a defect.
 The ModelConstructor class is in charge of constructing
 a proper model for an hypothesis.
+The Behaviour class is an enumeration of the available behaviors.
 """
 from model.core.ModelTester import ModelTester, TestSuite, Observation, PassedTest, FailedTest
 from model.HypothesisGenerator import Hypothesis
@@ -25,7 +26,8 @@ class Behavior(Enum):
     Valid = 6
 
 class ModelConstructor():
-    """ This class contains the method to build an hypothesis model"""
+    """ This class contains the methods needed to
+    build a hypothesis model."""
     def build_hypothesis_model(self, hypothesis: Hypothesis, 
         src_code: Union[List[str], str]) -> Union[str, None]:
         """ This method create a new model to test the given hypothesis.
@@ -45,7 +47,8 @@ class ModelConstructor():
 
         return '\n'.join(new_model_src)
 class HyphotesisTester(ModelTester, ModelConstructor):
-    """ This class is used to automatically test a hypothesis """
+    """ This class' goal is to test a hypothesis.
+    It inherits from ModelTester and ModelConstructor. """
     prev_observation: Observation
     hypothesis: Hypothesis
     def __init__(self, prev_observation: Observation, 

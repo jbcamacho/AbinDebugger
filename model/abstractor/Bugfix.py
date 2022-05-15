@@ -1,6 +1,7 @@
 """
-This module contains the Bugfix class.
-This class is used to obtain a bugfix's metadata of the abstracted representation.
+This module contains the Bugfix class. It is used to obtain a bugfix's metadata
+of the abstracted representation. Also, it contains the BugfixMetadata class that
+defines the JSON structure of a bugfix's metadata.
 """
 import ast
 import json
@@ -12,14 +13,15 @@ from model.abstractor.NodeAbstractor import NodeAbstractor, NodeMetadata
 
 class BugfixMetadata(TypedDict):
     """ This class defines the JSON structure of
-    the bugfix's metadata"""
+    a bugfix's metadata. """
     commit_sha: str
     available_identifiers: IDTokens
     bug_metadata: NodeMetadata
     fix_metadata: NodeMetadata
 
 class Bugfix():
-  """ This class represent a bugfix obtained from a bugfixing commit"""
+  """ This class is used to extract a bugfix
+  from a bugfixing commit. """
   bugged_LOC: LogicalLOC
   fixed_LOC: LogicalLOC
   bugged_node: ASTNode
@@ -50,7 +52,7 @@ class Bugfix():
       self.fix = NodeAbstractor(fixed_node, nodes_mapping)
 
   def __str__(self):
-    """ Class String representation method """
+    """ Class' string representation method. """
     print_data = json.dumps(self.bugfix_data, indent=4)
     return self._notes + f'\nMetadata: {print_data}'
 
@@ -58,8 +60,8 @@ class Bugfix():
   def bugfix_data(self) -> BugfixMetadata:
     """ This property returns the bugfix's metadata.
 
-      :rtype: BugfixMetadata
-      """
+    :rtype: BugfixMetadata
+    """
     bugfix_metadata: BugfixMetadata = {}
     if self.bug and self.fix:
       bug_metadata = self.bug.ast_node_data
@@ -88,7 +90,7 @@ class Bugfix():
     return bugfix_metadata
 
   def get_bug_node(self) -> ASTNode:
-    """ This method return the ASTNode object corresponding to the bug
+    """ This method returns the ASTNode object corresponding to the bug.
     
     : rtype: ASTNode
     """
@@ -97,7 +99,7 @@ class Bugfix():
     return node
 
   def get_fix_node(self) -> ASTNode:
-    """ This method return the ASTNode object corresponding to the fix 
+    """ This method returns the ASTNode object corresponding to the fix.
     
     : rtype: ASTNode
     """
@@ -106,7 +108,7 @@ class Bugfix():
     return node
   
   def get_available_identifiers(self) -> IDTokens:
-    """ This method return all the available identifiers
+    """ This method returns all the available identifiers.
     
     This method uses two instances of `NodeMapper`,
     in order to obtain both (bug and fix) identifiers

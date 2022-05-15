@@ -1,7 +1,7 @@
 """
 This module contains the HypothesisGenerator class.
-This class in charge of generating new hypotheses to repair a defect.
-This is one of the core modules used to automatically repair a defect.
+This class is in charge of generating new hypotheses to repair a defect.
+Also,it is one of the core modules used in the methodology.
 """
 from copy import deepcopy
 from pathlib import Path
@@ -21,7 +21,8 @@ MatchingPatterns = Iterator[MatchingPattern]
 Hypothesis = Tuple[str, int, float]
 Hypotheses = List[Hypothesis]
 class HypothesisGenerator():
-    """ This class is used to automatically generate a set of hypotheses """
+    """ The class is utilized to generate the hypotheses set,
+    which the hypotheses that may repair the bug. """
     abduction_depth: int
     abduction_breadth: int
     complexity: int
@@ -57,13 +58,13 @@ class HypothesisGenerator():
         self.nested_node = None
 
     def get_bug_candidate(self) -> int:
-        """ This method return the next bug candidate in the iterator.
+        """ This method returns the next bug candidate in the iterator.
         :rtype: int
         """
         return next(self.bug_candidates)
 
     def abstract_bug_candidate(self, ast_bug_candidate: ASTNode) -> str:
-        """ This method return hexdigest of the abstracted node.
+        """ This method returns the hex digest of the abstracted node.
         :rtype: str
         """
         bugged_node_abstract = self.node_abstractor(ast_bug_candidate)
@@ -71,10 +72,10 @@ class HypothesisGenerator():
         return hexdigest
 
     def get_matching_patterns(self, ast_node_hexdigest: str) -> Tuple[MatchingPatterns, int]:
-        """ This method query the database to obtain a list of MatchingPatterns
-        
-        The hex digest of the abstracted node is used to query
-        all identical patterns in the database. The query is an aggregator.
+        """ This method queries the database to obtain a list of MatchingPatterns.
+
+        The hex digest of the abstracted node is needed in the query to obtain
+        all identical patterns in the database. Additionally, the query is an aggregator-type query.
 
         :param ast_node_hexdigest: the hexdigest of the abstracted node.
         :type  ast_node_hexdigest: str
@@ -107,10 +108,10 @@ class HypothesisGenerator():
         bugged_node: NodeAbstractor, 
         pattern: MatchingPattern, 
         available_identifiers: IDTokens) -> Iterator[Hypotheses]:
-        """ This method apply the fix pattern to the abstracted node.
+        """ This method applies the fix-pattern to the abstracted node.
 
-        This method return a iterator of hypotheses generated
-        by the application of the fix pattern.
+        This method returns an iterator of hypotheses generated
+        due to the application of the fix-pattern.
         
         :param bugged_node: The abstracted node object.
         :type  bugged_node: NodeAbstractor
@@ -124,7 +125,7 @@ class HypothesisGenerator():
         return iter(hypotheses)
 
     def build_hypothesis_model(self, hypothesis: Hypothesis) -> Union[str, None]:
-        """ This methos create a new model to test the given hypothesis.
+        """ This method creates a new model to test the given hypothesis.
         
         :param hypothesis: The hypothesis that need a model.
         :type  hypothesis: Hypothesis
@@ -156,8 +157,8 @@ class HypothesisGenerator():
     def __next__(self) -> str:
         """ Class Iterator Next Constructor
 
-        This method will iterate over all bug candidates and generate a hypothesis
-        until the iterator `self.bug_candidates` is exhausted.
+        This method will iterate over all bug candidates and generate
+        a hypothesis until the iterator `self.bug_candidates` is exhausted.
         
         :rtype: str
         """
@@ -209,13 +210,13 @@ class HypothesisGenerator():
         return (hypothesis, self.hypotheses_set_position, 0)
 
     def __enter__(self):
-        """ Context manager method """
+        """ Context manager method. """
         AbinLogging.debugging_logger.debug('Entering HypothesisGenerator')
         return self
 
     def __exit__(self, exc_tp: Type, exc_value: BaseException,
                  exc_traceback: TracebackType) -> Optional[bool]:
-        """ Context manager method to ignore/consume all the exceptions.
+        """ Context manager method is used to ignore/consume all the exceptions.
         
         This method is used to void a raising exception that occurred
         during the execution of the class methods.
@@ -253,7 +254,7 @@ class HypothesisGenerator():
         return True  # Ignore exception, if any
 
     def get_current_model(self) -> List[str]:
-        """ This method return the model source code.
+        """ This method returns the model source code.
         :rtype: List[str]
         """
         curr_dir = Path(__file__).parent.parent.resolve()
@@ -270,19 +271,19 @@ class HypothesisGenerator():
 
     @property
     def model_name(self) -> str:
-        """ This property represent the current model name"""
+        """ This property represents the current model name. """
         return f"model{str(self.abduction_depth)}.py"
 
     @property
     def model_path(self) -> str:
-        """ This property represent the current model path"""
+        """ This property represents the current model path"""
         curr_dir = Path(__file__).parent.parent.resolve()
         curr_model_path = curr_dir.joinpath('temp', self.model_name)
         return curr_model_path
 
     @staticmethod
     def mongodb_connection() -> MongoClient:
-        """ This method return a connection to the database
+        """ This method returns a connection to the database.
         :rtype: MongoClient
         """
         config = DebugController.APP_SETTINGS

@@ -1,6 +1,8 @@
 """
 This module contains the NodeAbstractor class
-that is the core class to abract the ASTs.
+that is the core class to abract the ASTs. Also,
+it containts the NodeMetadata class that defines the JSON structure
+of the abstracted node's metadata.
 """
 import ast
 import hashlib
@@ -15,8 +17,8 @@ IDMapping = Dict[UserIdentifier, NodeAbstraction]
 NodeMapping = Dict[NodeName, int]
 
 class NodeMetadata(TypedDict):
-  """ This class defines the JSON structure of
-  the abstracted node's metadata"""
+  """ This class defines the JSON structure
+  of the abstracted node's metadata. """
   hexdigest: str
   ast_type: str
   abstract_node: str
@@ -49,8 +51,8 @@ class NodeAbstractor(NodeMapper):
     def generic_visit(self, node: ASTNode) -> None:
       """ Method to visit to every node in the `node_to_abstract`.
       
-      This function is called every time a new node is visited
-      and assign a new attribute `abstraction` to the node.
+      This function is called every time a new node is visited.
+      it assigns a new attribute `abstraction` to the node.
 
       :param node: The AST Node.
       :type  node: ASTNode
@@ -66,10 +68,10 @@ class NodeAbstractor(NodeMapper):
 
     
     def abstract_node(self, node: ASTNode) -> NodeAbstraction:
-      """ This method abstracts the given AST.
+      """ This method abstracts the given AST node.
       
-      The abstraction will be mappend into a NodeMapping
-      and it will be returned.
+      The abstraction will be mapped into
+      a NodeMapping and returned.
 
       :param node: The AST Node.
       :type  node: ASTNode
@@ -105,7 +107,7 @@ class NodeAbstractor(NodeMapper):
 
     @property
     def ast_graph(self) -> str:
-      """ This property returns the node ast graph as a JSON string.
+      """ This property returns the node ast graph in a JSON string format.
 
       :rtype: str
       """
@@ -113,7 +115,7 @@ class NodeAbstractor(NodeMapper):
 
     @property
     def ast_hexdigest(self) -> str:
-      """ This property returns the hexdigest of the self.ast_graph property.
+      """ This property returns the hex digest of the self.ast_graph property.
 
       :rtype: str
       """

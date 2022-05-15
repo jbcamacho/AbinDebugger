@@ -14,7 +14,7 @@ from model.abstractor.NodeMapper import ASTIdentifiers, ASTNode, IDTokens
 
 
 class HypothesisAbductor(ast.NodeVisitor):
-  """ This is the core class used to abduct a new hypothesis """
+  """ This is the core class used to abduct a new hypothesis. """
   ast_identifiers: ASTIdentifiers
   abducted_fix: Union[None, NodeAbstractor]
   actual_bug: Union[None, NodeAbstractor]
@@ -54,7 +54,7 @@ class HypothesisAbductor(ast.NodeVisitor):
     """ This method tranforms the given node in a hypothesis
     
     This method will transverse all the abstracted identifiers
-    and replace them by a new node mappping, in order to,
+    and replace them with a new node mapping in order to
     get a whole new hypothesis.
 
     :param node: The abstracted node
@@ -111,10 +111,10 @@ class HypothesisAbductor(ast.NodeVisitor):
     return map_result
 
   def get_possible_ids(self) -> Type[itertools.product]:
-    """ This Method will calculate the product of the missing IDs.
+    """ This method calculates the cross product of the missing IDs.
 
-    The product is a n-tuple of the missing identifiers requiered
-    to fill the abstractions during the `abduct_node` process.
+    The product is a n-tuple of the missing identifiers required
+    to fill-up the missing identifiers during the abduction process.
 
     :rtype: Type[itertools.product]
     """
@@ -130,7 +130,7 @@ class HypothesisAbductor(ast.NodeVisitor):
     return (itertools.product(*n_tuple), n_tuple_ordering)
 
   def next_abductive_mapping(self) -> Tuple[IDMapping, NodeMapping]:
-    """ This method generate a Tuple[IDMapping, NodeMapping].
+    """ This method generates a Tuple[IDMapping, NodeMapping].
     
     : rtype: Tuple[IDMapping, NodeMapping]
     """
@@ -149,7 +149,7 @@ class HypothesisAbductor(ast.NodeVisitor):
 
   @property
   def hypothesis(self) -> str:
-    """ This property represents the abducted hypothesis """
+    """ This property represents the abducted hypothesis. """
     if self.abducted_fix:
       LOC = astunparse.unparse(self.abducted_fix)
       #just keep the unicode str of LOC
@@ -158,13 +158,13 @@ class HypothesisAbductor(ast.NodeVisitor):
     return None
 
   def __iter__(self) -> None:
-    """ Class Iterator Constructor """
+    """ Class Iterator Constructor. """
     return self
 
   def __next__(self) -> str:
-    """ Class Iterator Next Constructor
+    """ Class Iterator Next Constructor.
 
-    This method will iterate over all posible hypothesis
+    This method will iterate over all posible hypotheses
     until the iterator `self.posible_ids` is exhausted.
     
     : rtype: str
@@ -198,7 +198,7 @@ class HypothesisAbductor(ast.NodeVisitor):
 
   @staticmethod
   def is_int(x):
-    """ This method check if a given string is an integer type """
+    """ This method checks if a given string is an integer type """
     try:
         a = int(x)
     except (TypeError, ValueError):
@@ -208,7 +208,7 @@ class HypothesisAbductor(ast.NodeVisitor):
 
   @staticmethod
   def is_float(x):
-    """ This method check if a given string is a float type """
+    """ This method checks if a given string is a float type """
     try:
         a = float(x)
     except (TypeError, ValueError):
@@ -218,7 +218,7 @@ class HypothesisAbductor(ast.NodeVisitor):
 
   @staticmethod
   def is_complex(x):
-    """ This method check if a given string is a complex type """
+    """ This method checks if a given string is a complex type """
     try:
       a = complex(x)
     except (TypeError, ValueError):

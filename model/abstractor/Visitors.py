@@ -1,5 +1,5 @@
 """
-This module contains all the visitors class needed in the peoject.
+This module contains all the visitor classes needed for the project.
 """
 import ast
 from astunparse import unparse
@@ -9,7 +9,8 @@ from types import FunctionType
 
 ASTNode = ast.AST
 class RecursiveVisitor(ast.NodeVisitor):
-    """Base class for all the AST node visitors"""
+    """ Base class for all the AST node visitors. This visitor class implements
+    a recursive method to visit all the nodes in an AST. """
     def __init__(self) -> None:
         """Constructor Method"""
         super().__init__()
@@ -29,7 +30,7 @@ class RecursiveVisitor(ast.NodeVisitor):
         return wrapper
 
 class GenericVisitor(RecursiveVisitor):
-    """ Support class to recursively visit all nodes in a ASTNode"""
+    """ Support class to recursively visit all nodes in a ASTNode. """
     @RecursiveVisitor.recursive
     def generic_visit(self, node: ASTNode) -> None:
         """ Method to recursively visit all the nodes.
@@ -41,7 +42,8 @@ class GenericVisitor(RecursiveVisitor):
         pass
 
 class TargetVisitor(GenericVisitor):
-    """Class that saves a pointer to specific targeted function in a ast_tree"""
+    """ The class saves a pointer to a specifically
+    targeted function in an AST tree. """
     target_func: str
     target_node: Union[None, ASTNode]
     func_names: Set[str]
@@ -55,10 +57,10 @@ class TargetVisitor(GenericVisitor):
 
     @GenericVisitor.recursive
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
-        """ Method to visit all the FunctionDef nodes in a ASTNode.
+        """ Method to visit all the FunctionDef type nodes in a ASTNode.
 
-        This method will save a pointer to the node that
-        the targeted function belongs to.
+        This method will save a pointer to the node
+        to which the targeted function belongs.
         
         :param node: The visited node
         :type  node: ast.FunctionDef
@@ -70,7 +72,7 @@ class TargetVisitor(GenericVisitor):
 
 class FunctionVisitor(GenericVisitor):
     """Class that saves all the pointers to
-    the ast.FunctionDef nodes in the ast_tree"""
+    the AST.FunctionDef type nodes in the AST tree"""
     def __init__(self, func_names: List[str], ast_tree: ASTNode) -> None:
         """Constructor Method"""
         super().__init__()
@@ -80,10 +82,10 @@ class FunctionVisitor(GenericVisitor):
     
     @GenericVisitor.recursive
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
-        """ Method to visit all the FunctionDef nodes in a ASTNode.
+        """ Method to visit all the FunctionDef type nodes in a ASTNode.
 
         This method will save all the pointers to
-        the FunctionDef nodes in the ast_tree.
+        the FunctionDef type nodes in the AST tree.
         
         :param node: The visited node
         :type  node: ast.FunctionDef
@@ -94,7 +96,7 @@ class FunctionVisitor(GenericVisitor):
 
 class CallVisitor(GenericVisitor):
     """Class that saves all the identifiers that
-    belongs to ast.Call nodes in the ast_tree"""
+    belongs to ast.Call type nodes in the AST tree"""
     def __init__(self, func_names: List[str], ast_tree: ASTNode) -> None:
         """Constructor Method"""
         super().__init__()
@@ -104,10 +106,10 @@ class CallVisitor(GenericVisitor):
 
     @GenericVisitor.recursive
     def visit_Call(self, node: ast.Call) -> None:
-        """ Method to visit all the Call nodes in a ASTNode.
+        """ Method to visit all the Call type nodes in a ASTNode.
 
         This method will save all the identifiers that
-        belongs to Call nodes in the ast_tree.
+        belongs to Call type nodes in the AST tree.
         
         :param node: The visited node
         :type  node: ast.Call
@@ -117,7 +119,7 @@ class CallVisitor(GenericVisitor):
           self.call_names.add(node.func.id)
 
 class StatementVisitor(GenericVisitor):
-    """Class that saves all the unparsed ast.stmt nodes in a ast_tree"""
+    """ Class that saves all the unparsed ast.stmt nodes in a AST tree. """
     def __init__(self, rank: Dict, ast_tree: ASTNode) -> None:
         """Constructor Method"""
         super().__init__()
@@ -130,8 +132,8 @@ class StatementVisitor(GenericVisitor):
         """ Method to visit all the nodes.
 
         The visited node will be unparsed and saved,
-        if the visited node is instance of ast.stmt
-        and the node type is in the rank.
+        if the node is an instance of ast.stmt type node
+        and the node type is in the self.rank.
         
         :param node: The visited node
         :type  node: ASTNode

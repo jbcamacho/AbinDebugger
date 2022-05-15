@@ -1,7 +1,6 @@
 """
-This module contains the NodeMapper class
-that works as a support class to obtain
-all the identifiers in a given AST.
+This module contains the NodeMapper class that works
+as a support class to obtain all the identifiers in a given AST.
 """
 import ast
 import builtins 
@@ -15,8 +14,8 @@ IDTokens = Dict[str, Set[IDToken]]
 ASTNode = ast.AST
 
 class NodeMapper(RecursiveVisitor):
-    """ This class is used to visit all the nodes in a ast.AST
-    and get the avaiable identifiers."""
+    """ This class is used to visit all the nodes in a AST
+    and get the available identifiers. """
 
     ast_identifiers: ASTIdentifiers
     id_tokens: IDTokens
@@ -34,8 +33,8 @@ class NodeMapper(RecursiveVisitor):
     def generic_visit(self, node: ASTNode) -> None:
         """ Method to visit all the nodes.
 
-        If the visited node have an identifier,
-        it will be mapped to the self.id_tokens.
+        If the visited node has an identifier,
+        it will be mapped to the self.id_tokens variable.
         
         :param node: The visited node
         :type  node: ASTNode
@@ -62,7 +61,8 @@ class NodeMapper(RecursiveVisitor):
     
     @staticmethod
     def is_builtins(obj_name: str) -> bool:
-      """ Method to query membership of an object to builtins.
+      """ The method is used to query the membership
+      of an object to builtins type functions.
       
       :param obj_name: The object name
       :type  obj_name: str
@@ -74,11 +74,12 @@ class NodeMapper(RecursiveVisitor):
     def prepare_node(node: ASTNode) -> ASTNode:
       """ Method to prepare an ASTNode.
 
-      This method removes the node body, orelse, finalbody properties.
+      This method removes the node body, orelse, finalbody properties
+      of an ASTNode.
       
       :param node: The visited node
-        :type  node: ASTNode
-        :rtype: ASTNode
+      :type  node: ASTNode
+      :rtype: ASTNode
       """
       if hasattr(node, 'body'):
         if node.body != []:

@@ -1,6 +1,6 @@
 """
 This module contains the support class PythonLLOC.
-This class is used to obtain  a Python Logical Line of Code (PythonLLOC).
+This class is used to obtain a Python Logical Line of Code (PythonLLOC).
 """
 import tokenize
 from io import BytesIO
@@ -28,8 +28,8 @@ class PythonLLOC(NodeMapper):
   def logical_LOC(self) -> LogicalLOC:
     """ This property represents a logical line of Python code.
 
-    :returns: The tuple representing the logical line of Python code, 
-        if not found then an empty string will be returned.
+    :returns: A tuple representing the logical line of Python code, 
+    if not found then an empty string will be returned.
     :rtype: LogicalLOC
     """
     curr_LOC: str = ''
@@ -107,8 +107,8 @@ class PythonLLOC(NodeMapper):
   def get_nested_node(self) -> Union[str, None]:
     """ This method returns the a nested node name.
 
-    If the Logical LOC is part of a elif structure
-    then 'elif' will be returned.
+    If the Logical LOC is part of a elif-structure
+    then the string 'elif' will be returned.
     
     :rtype: Union[str, None]
     """
@@ -127,7 +127,7 @@ class PythonLLOC(NodeMapper):
     return None
 
   def get_available_identifiers(self) -> IDTokens:
-    """ This Method will returns all the identifiers in an ASTNode.
+    """ This method returns all the identifiers in an ASTNode.
         
     :rtype: IDTokens
     """

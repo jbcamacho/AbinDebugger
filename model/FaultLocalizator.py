@@ -46,7 +46,7 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
                 target_function: str, 
                 test_suite: TestSuite,
                 susp_threshold: int = 0) -> None:
-        """ This private method initializes the super class ModelTester.
+        """ This private method initializes the superclass ModelTester.
         :param src_code: The source code of the model.
         :type  src_code: Union[List[str], str]
         :param target_function: The target function in the model.
@@ -67,12 +67,12 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
         return self
 
     def __next__(self) -> bool:
-        """ Class Iterator Next Constructor
+        """ Class Iterator Next Constructor.
 
-        This method will iterate over all of the improvement candidates
-        and build an apropiated model for it, until the iterator 
+        This method will iterate over all the improvement candidates
+        and build an appropriate model until the iterator
         `self.improvement_candidates_set` is exhausted.
-        
+
         :rtype: bool
         """
         hypothesis = self.select_imprv_candidate()
@@ -84,7 +84,7 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
 
     @staticmethod
     def clean_temporal_files(curr_dir: Path) -> None:
-        """ This method cleans up the temporal folder.
+        """ This method cleans up the temporal files folder.
         :param curr_dir: The path object to the temporal foler.
         :type  curr_dir: Path
         """
@@ -113,10 +113,11 @@ class FaultLocalizator(ModelTester, HypothesisRefinement):
 
     @staticmethod
     def parse_model(src: str) -> ASTNode:
-        """This method refactor the model for the debugging process.
+        """This method refactors the model for the debugging process.
         
         This method removes unnecessary elements like docstrings, comment lines,
         and refactors multiple-lines statements into one-line statements per statement.
+        
         :param src: The models' source code to be parsed.
         :type  src: str
         :rtype: ASTNode
