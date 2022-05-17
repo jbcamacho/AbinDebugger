@@ -1,6 +1,6 @@
 """
 This module defines the logging and thread handlers 
-to execute long tasks (debugging and mining tasks).
+to execute long tasks (debugging and mining).
 """
 import logging
 from PyQt5.QtCore import QObject, QThread, pyqtSignal

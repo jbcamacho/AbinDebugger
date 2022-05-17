@@ -1,6 +1,6 @@
 """
-This module contains global variables necesary for the threaded execution of
-the program. Also contains the settings used across the modules.
+This module contains global variables necessary for the threaded execution
+of the program. Also, it contain the settings used across the modules.
 """
 import sys
 from pathlib import Path

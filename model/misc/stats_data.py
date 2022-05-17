@@ -9,7 +9,8 @@ import controller.DebugController as DebugController
 ASTRanking = Tuple[List[str], List[int]]
 
 def get_stats() -> Dict[str, Any]:
-    """ This function obtain the stats from the db collection.
+    """ This function obtains the stats from the DB collection.
+    
     :rtype: Dict[str, Any]
     """
     config = DebugController.APP_SETTINGS
@@ -36,7 +37,8 @@ def get_stats() -> Dict[str, Any]:
     return stats_data
 
 def stats_total_bugfixes(db_collection: Collection) -> int:
-    """ This function count the total bugfixes in the data base.
+    """ This function counts the total bug-fixes in the database.
+
     :param db_collection: the instance of the collection's connection.
     :type  db_collection: Collection
     :rtype: int
@@ -54,7 +56,8 @@ def stats_total_bugfixes(db_collection: Collection) -> int:
     return total_bugfixes
 
 def stats_unique_bugfixes(db_collection: Collection) -> int:
-    """ This function count the unique bugfixes in the data base.
+    """ This function counts the unique bug-fixes in the database.
+
     :param db_collection: the instance of the collection's connection.
     :type  db_collection: Collection
     :rtype: int
@@ -81,7 +84,8 @@ def stats_unique_bugfixes(db_collection: Collection) -> int:
     return unique_bugfixes
 
 def stats_unique_fixes(db_collection: Collection) -> int:
-    """ This function count the unique fixes in the data base.
+    """ This function counts the unique fixes in the database.
+
     :param db_collection: the instance of the collection's connection.
     :type  db_collection: Collection
     :rtype: int
@@ -107,7 +111,8 @@ def stats_unique_fixes(db_collection: Collection) -> int:
     return total_unique_fixes
 
 def stats_unique_bugs(db_collection: Collection) -> int:
-    """ This function count the unique bugs in the data base.
+    """ This function counts the unique bugs in the database.
+
     :param db_collection: the instance of the collection's connection.
     :type  db_collection: Collection
     :rtype: int
@@ -134,8 +139,8 @@ def stats_unique_bugs(db_collection: Collection) -> int:
     return total_unique_bugs
 
 def parse_ast_types(query_result: CursorType) -> ASTRanking:
-    """ This function parse a query result.
-    The query result will be parsed to obtain the ranking.
+    """ This function parses a query result.
+    The query result is parsed to obtain the ranking.
 
     :param query_result: the query result.
     :type  query_result: CursorType
@@ -151,6 +156,7 @@ def parse_ast_types(query_result: CursorType) -> ASTRanking:
 
 def stats_ast_types_fixes(db_collection: Collection) -> ASTRanking:
     """ This function queries the database in order to obtain a ranking.
+
     :param db_collection: the instance of the collection's connection.
     :type  db_collection: Collection
     :rtype: ASTRanking
@@ -172,6 +178,7 @@ def stats_ast_types_fixes(db_collection: Collection) -> ASTRanking:
 
 def stats_ast_types_bugs(db_collection: Collection) -> ASTRanking:
     """ This function queries the database in order to obtain a ranking.
+
     :param db_collection: the instance of the collection's connection.
     :type  db_collection: Collection
     :rtype: ASTRanking

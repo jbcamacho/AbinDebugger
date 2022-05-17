@@ -1,5 +1,6 @@
 """
-This module check the `ConnectionStatus` of a given database's settings.
+This module checks the `ConnectionStatus`
+of a given database's settings.
 """
 from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError
@@ -13,10 +14,8 @@ def test_db_connection( uri:str = 'mongodb',
                         database_name: str = 'Bugfixes',
                         dbcollection: str = 'BugPatterns',
                         retry_times:int = 3) -> ConnectionStatus:
-    """ Method to visit all the nodes.
-
-    If the visited node have an identifier,
-    it will be mapped to the self.id_tokens.
+    """ This function tests the connection status given
+    the connection paramaters.
         
     :param uri: The URI used by the MongoDB's engine.
     :type  uri: str

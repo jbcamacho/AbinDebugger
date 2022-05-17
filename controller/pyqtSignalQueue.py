@@ -1,3 +1,7 @@
+"""
+This module implements a Queue handler for the threading
+using the pyqtSignal class.
+"""
 from PyQt5.QtCore import QObject, pyqtSignal
 
 

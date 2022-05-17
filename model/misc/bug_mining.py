@@ -1,6 +1,6 @@
 """
-This module contains all the necesary functions
-to mine the bugfixing commits from a repository
+This module contains all the necessary functions
+to mine the bug-fixing commits from a repository
 and abstract them.
 """
 from pydriller import Repository
@@ -14,7 +14,8 @@ from model.abstractor.Bugfix import Bugfix
 import controller.AbinLogging as AbinLogging
 
 def getBugCommitsDataDir(owner: str, name: str) -> str:
-  """ Returns a path to the bugcommits's data of a specific repository.
+  """ Returns a path to the bug-fixing commits' data
+  of a specific repository.
   
   :param owner: The owner of the repository.
   :type  owner: str
@@ -31,7 +32,7 @@ def getBugCommitsDataDir(owner: str, name: str) -> str:
   return file_path
 
 def getRepoDir(owner: str, name: str) -> str:
-  """ Returns a repository directory given the owner and name.
+  """ Returns a repository's directory given the owner and name.
   
   :param owner: The owner of the repository.
   :type  owner: str
@@ -100,7 +101,7 @@ def saveBugfix(bugfix_metadata: dict, file_path: str, pretty: bool = 0) -> bool:
     return 1
 
 def getRepo(owner: str, name: str) -> Repository:
-  """ This function create an instance of PyDriller.Repository.
+  """ This function creates an instance of PyDriller.Repository.
 
   :param owner: The owner of the repository.
   :type  owner: str
@@ -127,7 +128,7 @@ def getRepo(owner: str, name: str) -> Repository:
   return repo
 
 def commitFilesInspect(commits_files: list) -> Tuple[list, dict]:
-  """ This functions inspects a list of files and extract a bugfix.
+  """ This function inspects the commit's files and extracts the bug fixes.
   
   :param commits_files: a list containing the names of the files
       that will be inspected.
@@ -162,7 +163,7 @@ def commitFilesInspect(commits_files: list) -> Tuple[list, dict]:
   return (bugfix_files, bugfix_metadata)
 
 def mineBugCommitsFromRepo(owner: str, name: str, process_meta_data: str = "") -> Tuple[dict, List]:
-  """ This function carry out the mining process from the given repository.
+  """ This function carries out the mining process from the given repository.
 
   :param owner: The owner of the repository.
   :type  owner: str
@@ -228,7 +229,7 @@ def mineBugCommitsFromRepo(owner: str, name: str, process_meta_data: str = "") -
   return (repo_data, bugfixes_data)
 
 def getTopRepositories(lang: str = "", page: int = 1, max_per_page : int = 25) -> List[Dict[str, str]]:
-  """ This function queries to the Github API to obtain the top repositores.
+  """ This function queries the Github API to obtain the top repositories.
 
   :param lang: The programming language.
   :type  str
@@ -259,7 +260,7 @@ def getTopRepositories(lang: str = "", page: int = 1, max_per_page : int = 25) -
   
 def removeMinedRepo(file_path) -> None:
   """ This helper function will remove the mined
-  repositorys's data from the given file.
+  repository's data from the given file.
 
   :rtype: None
   """
