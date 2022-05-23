@@ -1,5 +1,5 @@
 """
-Given three real numbers x, y and z, this benchmark returns the "middle" number of three values.
+Given three real numbers x, y, and z, this benchmark returns the "middle" number of three values.
 :param x: A real number.
 :type  x: Tuple[int, float]
 :param y: A real number.

@@ -1,5 +1,5 @@
 """
-Given a HTML string, this benchmark removes HTML markup and converts it into text.
+Given an HTML string, this benchmark removes HTML markup and converts it into text.
 :param s: A HTML string.
 :type  s: str
 :rtype: str

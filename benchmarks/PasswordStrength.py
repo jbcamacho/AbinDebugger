@@ -1,6 +1,6 @@
 """
-Given a string representing a password, this benchmark checks the password strength.
-:param s: A string.
+Given a string that represents a password, this benchmark checks the password strength.
+:param s: a string.
 :type  s: str
 :rtype: Tuple[int, int, int, int, int, int]
 

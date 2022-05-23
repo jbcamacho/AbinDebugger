@@ -1,5 +1,5 @@
 """
-Given two dictionaries, this benchmark calculates the sum of all values in them.
+Given two dictionaries, this benchmark calculates the sum of all values.
 :param sales_today: A dictionary with products and costs.
 :type  sales_today: dict
 :param sales_yesterday: A dictionary with products and costs.
