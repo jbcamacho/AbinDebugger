@@ -1,5 +1,5 @@
 """
-Given an integer, this benchmark check whether it is a prime number or not.
+Given an integer, this benchmark check whether it is a happy number or not.
 A number is said to be happy if it yields 1 when replaced by the sum of squares of its digits repeatedly.
 If this process results in an endless cycle of numbers containing 4, then the number will be an unhappy number.
 :param s: An integer.

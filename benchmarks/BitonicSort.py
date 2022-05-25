@@ -1,4 +1,6 @@
 """
+Given a list of integers and two integers, this benchmark converts the list into a bitonic sequence.
+A bitonic sequence is one that monotonically increases, then decreases.
 
 "benchmark_metadata": {[
     {

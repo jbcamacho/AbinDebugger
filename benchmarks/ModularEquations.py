@@ -1,4 +1,6 @@
 """
+Given two integers, this benchmark finds the number
+of possible values of X to satisfy the modular equation A mod X = B.
 
 "benchmark_metadata": {[
     {

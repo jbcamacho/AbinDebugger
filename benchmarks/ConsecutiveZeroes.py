@@ -1,4 +1,6 @@
 """
+Given two integers, this benchmark first converts to the given base,
+then checks if the converted number has two consecutive 0s or not.
 
 "benchmark_metadata": {[
     {
