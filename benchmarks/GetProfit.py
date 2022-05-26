@@ -17,7 +17,7 @@ Given two dictionaries, this benchmark calculates the sum of all values.
     ]
 }
 """
-def get_profit(sales_today: dict,
+def get_profit1(sales_today: dict,
  sales_yesterday: dict) -> int:
     '''Given two dictionaries, this benchmark calculates the sum of all its values.'''
     accom: \
@@ -28,5 +28,19 @@ def get_profit(sales_today: dict,
 
     for cost in sales_today: # <-- FIX for cost in sales_today.values():
         accom += cost
+
+    return accom
+
+def get_profit2(sales_today: dict,
+ sales_yesterday: dict) -> int:
+    '''Given two dictionaries, this benchmark calculates the sum of all its values.'''
+    accom: \
+    int = 0
+
+    for cost in sales_yesterday.values():
+        accom += cost
+
+    for cost in sales_today: # <-- FIX for cost in sales_today.values():
+        accom = cost # <-- FIX accom += cost
 
     return accom
