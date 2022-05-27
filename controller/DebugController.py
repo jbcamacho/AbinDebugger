@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Dict
 this = sys.modules[__name__]
 this.TIMEOUT_SIGNAL_RECEIVED = 0
-
+sys.setrecursionlimit(2500)
 MAIN_DIR = Path(__file__).parent.resolve()
 WORKING_DIR = MAIN_DIR.joinpath('temp')
 
