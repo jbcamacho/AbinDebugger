@@ -24,7 +24,7 @@ The content of this file can be found in geeksforgeeks.
 # then a[i] and a[j] are interchanged.*/
 def compAndSwap(a, i, j, dire):
 	if (dire==1 and a[i] > a[j]) or (dire==0 and a[i] > a[j]):
-		a[i],a[j] = a[j],a[i]
+		a[i],a[j] = a[j],a[i] #<-- FIX a[i],a[j] = a[j],a[i]
 
 # It recursively sorts a bitonic sequence in ascending order,
 # if dir = 1, and in descending order otherwise (means dir=0).
@@ -33,7 +33,7 @@ def compAndSwap(a, i, j, dire):
 def bitonicMerge(a, low, cnt, dire):
 	if cnt > 1:
 		k = cnt//2
-		for i in range(low , low+k):
+		for i in range(low , low): #<-- FIX for i in range(low , low+k):
 			compAndSwap(a, i, i+k, dire)
 		bitonicMerge(a, low, k, dire)
 		bitonicMerge(a, low+k, k, dire)
@@ -51,5 +51,5 @@ def bitonicSort(a, low, cnt,dire):
 # Caller of bitonicSort for sorting the entire array of length N
 # in ASCENDING order
 def aSort(a, N, up):
-  bitonicSort(a, 10, N, up)
+  bitonicSort(a, 0, N, up)
   return a
