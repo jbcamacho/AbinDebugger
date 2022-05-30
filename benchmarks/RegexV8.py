@@ -281,55 +281,55 @@ strings = [
 
 def block0():
     bench_results = []
-    for i in range(511):
+    for i in range(51):
          result = regexs[0].search(r'pyvpx') 
     bench_results.append(result)    
 
-    for i in range(2844):
-        result = regexs[1].search(r'uggc://jjj.snprobbx.pbz/ybtva.cuc') # <-- FIX result = regexs[1].search(r'uggc://jjj.snprobbx.pbz/ybtva.cuc')
+    for i in range(844):
+        result = regexs[1].split(r'uggc://jjj.snprobbx.pbz/ybtva.cuc') # <-- FIX result = regexs[1].search(r'uggc://jjj.snprobbx.pbz/ybtva.cuc')
     bench_results.append(result)
 
-    for i in range(739):
+    for i in range(73):
         result = regexs[2].sub(r'', 'QBZPbageby_cynprubyqre', subcount[2])
     bench_results.append(result)
 
-    for i in range(598):
+    for i in range(58):
         result = regexs[1].search(r'uggc://jjj.snprobbx.pbz/')
     bench_results.append(result)
 
-    for i in range(454):
+    for i in range(45):
         result = regexs[1].search(r'uggc://jjj.snprobbx.pbz/fepu.cuc')
     bench_results.append(result)
 
-    for i in range(352):
+    for i in range(32):
         re.search(
             r'qqqq|qqq|qq|q|ZZZZ|ZZZ|ZZ|Z|llll|ll|l|uu|u|UU|U|zz|z|ff|f|gg|g|sss|ss|s|mmm|mm|m', 'qqqq, ZZZ q, llll')
 
-    for i in range(312):
+    for i in range(32):
         result = regexs[3].search(r'vachggrkg QBZPbageby_cynprubyqre')
     bench_results.append(result)
 
-    for i in range(282):
+    for i in range(22):
         result = regexs[4].search(r'/ZlFcnprUbzrcntr/Vaqrk-FvgrUbzr,10000000')
     bench_results.append(result)
 
-    for i in range(177):
+    for i in range(17):
         result = regexs[5].sub(r'', 'vachggrkg', subcount[5])
     bench_results.append(result)
 
-    for i in range(170):
+    for i in range(10):
         result = regexs[6].sub(r'', '528.9', subcount[6])
         result = regexs[7].search(r'528')
     bench_results.append(result)
     
-    for i in range(156):
+    for i in range(15):
         regexs[8].search(r'VCPhygher=ra-HF')
         regexs[8].search(r'CersreerqPhygher=ra-HF')
 
-    for i in range(144):
+    for i in range(14):
         regexs[0].search(r'xrlcerff')
 
-    for i in range(139):
+    for i in range(19):
         regexs[6].sub(r'', '521', subcount[6])
 
         # This has a different output to the V8 version.
@@ -338,13 +338,13 @@ def block0():
         regexs[9].search(r'')
         re.search(r'JroXvg\/(\S+)', strings[0])
 
-    for i in range(137):
+    for i in range(17):
         regexs[10].sub(r'', 'qvi .so_zrah', subcount[10])
         re.sub(r'\[', '', 'qvi .so_zrah', 0)
         result = regexs[11].sub(r'', 'qvi.so_zrah', subcount[11])
     bench_results.append(result)
 
-    for i in range(117):
+    for i in range(11):
         regexs[2].sub(r'', 'uvqqra_ryrz', subcount[2])
 
     for i in range(95):

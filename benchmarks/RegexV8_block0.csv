@@ -1,0 +1,14 @@
+test_cases,expected_output,seed: int
+test1,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', None, 'qvi.so_zrah', None]",1415
+test2,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', None, 'qvi.so_zrah', None]",3401
+test3,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', None, 'qvi.so_zrah', None]",1999
+test4,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', None, 'qvi.so_zrah', <re.Match object; span=(0, 0), match=''>]",3197
+test5,"[None, None, 'QBZPbageby_cynprubyqre', None, None, <re.Match object; span=(9, 10), match=' '>, None, 'vachggrkg', None, 'qvi.so_zrah', <re.Match object; span=(0, 7), match='qvfcynl'>]",70
+test6,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', <re.Match object; span=(0, 3), match='528'>, 'qvi.so_zrah', None]",322
+test7,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', None, 'qvi.so_zrah', None]",3971
+test8,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', None, 'qvi.so_zrah', None]",1696
+test9,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', None, 'qvi.so_zrah', <re.Match object; span=(0, 7), match='qvfcynl'>]",4933
+test10,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', None, 'qvi.so_zrah', None]",3993
+test11,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', None, 'qvi.so_zrah', <re.Match object; span=(0, 7), match='qvfcynl'>]",5055
+test12,"[None, None, 'QBZPbageby_cynprubyqre', None, None, <re.Match object; span=(9, 10), match=' '>, None, 'vachggrkg', <re.Match object; span=(0, 3), match='528'>, 'qvi.so_zrah', None]",2779
+test13,"[None, None, 'QBZPbageby_cynprubyqre', None, None, None, None, 'vachggrkg', None, 'qvi.so_zrah', <re.Match object; span=(0, 7), match='qvfcynl'>]",7027
