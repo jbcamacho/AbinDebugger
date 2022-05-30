@@ -1,4 +1,5 @@
 """
+Given an integer, this benchmark test the performance of json parsing and serialization.
 Script for testing the performance of json parsing and serialization.
 This will dump/load several real world-representative objects a few thousand times.
 The methodology below was chosen for was chosen to be similar
@@ -92,14 +93,39 @@ def bench_json_loads(objs):
         #print(json.loads(obj))
         pass
     return obj
+
+def bench_json_loads2(objs):
+    for obj in objs.items(): # <-- FIX for obj in objs:
+        # 20 loads
+        #print(json.loads(obj))
+        pass
+    return obj
         
-def aTest_json_loads(seed):
-    json_dict = json.dumps(DICT)
+def aTest_json_loads1(seed):
+    json_dict = json.loads(DICT) # <-- FIX json_dict = json.dumps(DICT)
     json_tuple = json.dumps(TUPLE)
     random_source = random.Random(seed)  # Fixed seed.
     DICT_GROUP = [mutate_dict(DICT, random_source) for _ in range(2)]
     json_dict_group = json.dumps(DICT_GROUP)
     objs = (json_dict, json_tuple, json_dict_group)
+    return bench_json_loads(objs)
+
+def aTest_json_loads2(seed):
+    json_dict = json.dumps(DICT)
+    json_tuple = json.dumps(TUPLE) # <-- FIX json_tuple = json.dumps(TUPLE)
+    random_source = random.Random(seed)  # Fixed seed.
+    DICT_GROUP = [mutate_dict(DICT, random_source) for _ in range(2)]
+    json_dict_group = json.dumps(DICT_GROUP)
+    objs = (json_dict, json_tuple, json_dict_group)
+    return bench_json_loads2(objs)
+
+def aTest_json_loads3(seed):
+    json_dict = json.dumps(DICT)
+    json_tuple = json.dumps(TUPLE) # <-- FIX json_tuple = json.dumps(TUPLE)
+    random_source = random.Random(seed)  # Fixed seed.
+    DICT_GROUP = [mutate_dict(DICT, random_source) for _ in range(2)]
+    json_dict_group = json.dumps(DICT_GROUP)
+    objs = (json_dict, json_tuple, json_tuple) # <-- FIX objs = (json_dict, json_tuple, json_dict_group)
     return bench_json_loads(objs)
 
 if __name__ == "__main__":
