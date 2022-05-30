@@ -1,0 +1,9 @@
+test_cases,expected_output,n: int
+test1,"([<Variable: dst0 - 1050>], <Variable: v0 - 99>, <Variable: v1 - 99>)",1
+test2,"([<Variable: dst0 - 2000>, <Variable: dst1 - 1050>], <Variable: v0 - 99>, <Variable: v2 - 99>)",2
+test3,"([<Variable: dst0 - 2000>, <Variable: dst1 - 2005>, <Variable: dst2 - 1050>], <Variable: v0 - 99>, <Variable: v3 - 99>)",3
+test4,"([<Variable: dst0 - 2000>, <Variable: dst1 - 2005>, <Variable: dst2 - 2010>, <Variable: dst3 - 1050>], <Variable: v0 - 99>, <Variable: v4 - 99>)",4
+test5,"([<Variable: dst0 - 2000>, <Variable: dst1 - 2005>, <Variable: dst2 - 2010>, <Variable: dst3 - 2015>, <Variable: dst4 - 1050>], <Variable: v0 - 99>, <Variable: v5 - 99>)",5
+test6,"([<Variable: dst0 - 2000>, <Variable: dst1 - 2005>, <Variable: dst2 - 2010>, <Variable: dst3 - 2015>, <Variable: dst4 - 2020>, <Variable: dst5 - 1050>], <Variable: v0 - 99>, <Variable: v6 - 99>)",6
+test7,"([<Variable: dst0 - 2000>, <Variable: dst1 - 2005>, <Variable: dst2 - 2010>, <Variable: dst3 - 2015>, <Variable: dst4 - 2020>, <Variable: dst5 - 2025>, <Variable: dst6 - 1050>], <Variable: v0 - 99>, <Variable: v7 - 99>)",7
+test8,"([<Variable: dst0 - 2000>, <Variable: dst1 - 2005>, <Variable: dst2 - 2010>, <Variable: dst3 - 2015>, <Variable: dst4 - 2020>, <Variable: dst5 - 2025>, <Variable: dst6 - 2030>, <Variable: dst7 - 1050>], <Variable: v0 - 99>, <Variable: v8 - 99>)",8
