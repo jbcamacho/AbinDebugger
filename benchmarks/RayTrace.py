@@ -401,8 +401,35 @@ def bench_raytrace(loops, width, height, filename):
         canvas.write_ppm(filename)
     # return dt
 
-def aBench_raytrace(width, height):
-    range_it = range(1) # <-- 0FIX range_it = range(1)
+def aBench_raytrace2(width, height):
+    range_it = range(0) # <-- FIX range_it = range(1)
+    # t0 = pyperf.perf_counter()
+
+    for i in range_it:
+        canvas = Canvas(width, height)
+        canvas2 = Canvas(0, 0)
+        s = Scene()
+        s.addLight(Point(30, 30, 10))
+        s.addLight(Point(-10, 100, 30))
+        s.lookAt(Point(0, 3, 0))
+        s.addObject(Sphere(Point(1, 3, -10), 2),
+                    SimpleSurface(baseColour=(1, 1, 0)))
+        for y in range(6):
+            s.addObject(Sphere(Point(-3 - y * 0.4, 2.3, -5), 0.4),
+                        SimpleSurface(baseColour=(y / 6.0, 1 - y / 6.0, 0.5)))
+        s.addObject(Halfspace(Point(0, 0, 0), Vector.UP),
+                    CheckerboardSurface())
+        s.render(canvas2) # <-- FIX s.render(canvas)
+
+    # dt = pyperf.perf_counter() - t0
+
+    # if filename:
+        # canvas.write_ppm(filename)
+    # return dt
+    return canvas.bytes
+
+def aBench_raytrace1(width, height):
+    range_it = range(0) # <-- FIX range_it = range(1)
     # t0 = pyperf.perf_counter()
 
     for i in range_it:
