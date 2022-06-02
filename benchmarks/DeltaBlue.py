@@ -581,7 +581,57 @@ def chain_test(n: int = 0) -> Tuple:
         plan.execute()
 
         if last.value != i:
-            print("Chain test failed.")
+            # print("Chain test failed.")
+            pass
+    return first, last
+
+def chain_test2(n: int = 0) -> Tuple:
+    """
+    This is the standard DeltaBlue benchmark. A long chain of equality
+    constraints is constructed with a stay constraint on one end. An
+    edit constraint is then added to the opposite end and the time is
+    measured for adding and removing this constraint, and extracting
+    and executing a constraint satisfaction plan. There are two cases.
+    In case 1, the added constraint is stronger than the stay
+    constraint and values must propagate down the entire length of the
+    chain. In case 2, the added constraint is weaker than the stay
+    constraint so it cannot be accomodated. The cost in this case is,
+    of course, very low. Typical situations lie somewhere between these
+    two extremes.
+    """
+    global planner
+    planner = Planner()
+    prev, first, last = None, None, None
+
+    # We need to go up to n inclusively.
+    for i in range(n + 1):
+        name = "v%s" % i
+        v = Variable(name)
+
+        if prev is not None:
+            EqualityConstraint(prev, v, Strength.REQUIRED)
+
+        if i == 0:
+            first = v
+
+        if i == n:
+            last = v
+
+        prev = v
+
+    StayConstraint(last, Strength.STRONG_DEFAULT)
+    edit = EditConstraint(first, Strength.PREFERRED)
+    edits = OrderedCollection()
+    edits.append(edit)
+    plan = planner.extract_plan_from_constraints(edits)
+
+    for i in range(100):
+        first.value = i # <-- FIX first.value = i
+        plan.execute()
+
+        if last.value != i:
+            # print("Chain test failed.")
+            pass
     return first, last
 
 
@@ -634,6 +684,172 @@ def projection_test(n):
             return
     return dests
 
+def projection_test2(n):
+    """
+    This test constructs a two sets of variables related to each
+    other by a simple linear transformation (scale and offset). The
+    time is measured to change a variable on either side of the
+    mapping and to change the scale and offset factors.
+    """
+    global planner
+    planner = Planner()
+    scale = Variable("scale", 10)
+    offset = Variable("offset", 1000)
+    src = None
+
+    dests = OrderedCollection()
+
+    for i in range(n):
+        src = Variable("src%s" % i, i)
+        dst = Variable("dst%s" % i, i)
+        dests.append(dst)
+        StayConstraint(src, Strength.NORMAL)
+        ScaleConstraint(src, scale, offset, dst, Strength.REQUIRED)
+
+    change(src, 17)
+
+    if dst.value == 1170: # <-- FIX if dst.value != 1170:
+        # print("Projection 1 failed")
+        return
+
+    change(dst, 1050)
+
+    if src.value != 5:
+        # print("Projection 2 failed")
+        return
+
+    change(scale, 5)
+
+    for i in range(n - 1):
+        if dests[i].value != (i * 5 + 1000): # <-- FIX if dests[i].value != (i * 5 + 1000):
+            # print("Projection 3 failed")
+            return
+
+    change(offset, 2000)
+
+    for i in range(n - 1): # <-- FIX for i in range(n - 1)
+        if dests[i].value != (i * 5 + 2000):
+            # print("Projection 4 failed")
+            return
+    return dests
+
+def projection_test3(n):
+    """
+    This test constructs a two sets of variables related to each
+    other by a simple linear transformation (scale and offset). The
+    time is measured to change a variable on either side of the
+    mapping and to change the scale and offset factors.
+    """
+    global planner
+    planner = Planner()
+    scale = Variable("scale", 10)
+    offset = Variable("offset", 1000)
+    src = None
+
+    dests = OrderedCollection()
+
+    for i in range(n):
+        src = Variable("src%s" % i, i)
+        dst = Variable("dst%s" % i, i)
+        dests.append(dst)
+        StayConstraint(src, Strength.NORMAL)
+        ScaleConstraint(src, scale, offset, dst, Strength.REQUIRED)
+
+    change(src, 17)
+
+    if dst.value != 1170: # <-- FIX if dst.value != 1170:
+        # print("Projection 1 failed")
+        return
+
+    change(dst, 1050)
+
+    if src.value != 5:
+        # print("Projection 2 failed")
+        return
+
+    change(scale, 5)
+
+    for i in range(n - 1):
+        if dests[i].value != (i * 5 + 1000): # <-- FIX if dests[i].value != (i * 5 + 1000):
+            # print("Projection 3 failed")
+            return
+
+    change(offset, 2000)
+
+    for i in range(n): # <-- FIX for i in range(n - 1)
+        if dests[i].value != (i * 5 + 2000):
+            # print("Projection 4 failed")
+            return
+    return dests
+  
+def projection_test4(n):
+    """
+    This test constructs a two sets of variables related to each
+    other by a simple linear transformation (scale and offset). The
+    time is measured to change a variable on either side of the
+    mapping and to change the scale and offset factors.
+    """
+    global planner
+    planner = Planner()
+    scale = Variable("scale", 10)
+    offset = Variable("offset", 1000)
+    src = None
+
+    dests = OrderedCollection()
+
+    for i in range(n):
+        src = Variable("src%s" % i, i)
+        dst = Variable("dst%s" % i, i)
+        dests.append(dst)
+        StayConstraint(src, Strength.NORMAL)
+        ScaleConstraint(src, scale, offset, dst, Strength.REQUIRED)
+
+    change(src, 17)
+
+    if dst.value != 1170: # <-- FIX if dst.value != 1170:
+        # print("Projection 1 failed")
+        return
+
+    change(dst, 1050)
+
+    if src.value != 5:
+        # print("Projection 2 failed")
+        return
+
+    change(scale, 5)
+
+    for i in range(n - 1):
+        if not dests[i].value != (i * 5 + 1000): # <-- FIX if dests[i].value != (i * 5 + 1000):
+            # print("Projection 3 failed")
+            return
+
+    change(offset, 2000)
+
+    for i in range(n - 1): # <-- FIX for i in range(n - 1)
+        if dests[i].value != (i * 5 + 2000):
+            # print("Projection 4 failed")
+            return
+    return dests
+  
+
+def change(v, new_value):
+    global planner
+    edit = EditConstraint(v, Strength.PREFERRED)
+    edits = OrderedCollection()
+    edits.append(edit)
+
+    plan = planner.extract_plan_from_constraints(edits)
+
+    for i in range(10):
+        v.value = new_value
+        plan.execute()
+
+    edit.destroy_constraint()
+
+
+# HOORAY FOR GLOBALS... Oh wait.
+# In spirit of the original, we'll keep it, but ugh.
+planner = None
 
 def change(v, new_value):
     global planner
@@ -661,9 +877,19 @@ def aDelta_blue1(n):
     return dests, first, last
 
 def aDelta_blue2(n):
-    first, last = chain_test(n)
-    # dests = projection_test(n)
-    return {}, first.value, last.value
+    first, last = chain_test2(n)
+    dests = projection_test2(n)
+    return dests, first, last
+
+def aDelta_blue3(n):
+    first, last = chain_test2(n)
+    dests = projection_test3(n)
+    return dests, first, last
+
+def aDelta_blue4(n):
+    first, last = chain_test2(n)
+    dests = projection_test4(n)
+    return dests, first, last
 
 if __name__ == "__main__":
     """runner = pyperf.Runner()
