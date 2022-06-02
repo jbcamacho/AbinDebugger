@@ -268,10 +268,10 @@ class Battle(object):
         return (dmax[initial_statep] + dmin[initial_statep]) / 2
 
 
-def bench_mdp(tolerance):
+def aBench_mdp(tolerance):
     expected = 0.89873589887
     max_diff = 1
-    range_it = range(1)
+    range_it = range(0) # <-- FIX range_it = range(1)
 
     # t0 = pyperf.perf_counter()
     for _ in range_it:
