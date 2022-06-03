@@ -104,15 +104,14 @@ def repeat_fasta(src, n, nprint):
     if is_trailing_line:
         nprint(s[-(n % width):] + b'\n')
 
-
-def random_fasta(table, n, seed, nprint):
+def random_fasta1(table, n, seed, nprint):
     width = 60
     r = range(width)
     bb = bisect.bisect
 
     # If we don't have a multiple of the width, then we will have a trailing
     # line, which needs a slightly different approach
-    is_trailing_line = False
+    is_trailing_line = False # <-- FIX is_trailing_line = False
     count_modifier = 0.0
 
     line = bytearray(width + 1)    # Width of 60 + 1 for the \n char
@@ -125,7 +124,7 @@ def random_fasta(table, n, seed, nprint):
 
     if n % width:
         # We don't end on a 60 char wide line
-        is_trailing_line = True
+        is_trailing_line = True # <-- FIX is_trailing_line = True
         count_modifier = 1.0
 
     # CSF - Loops with a high iteration count run faster as a while/float loop.
@@ -155,7 +154,57 @@ def random_fasta(table, n, seed, nprint):
     return seed
 
 
-def init_benchmarks(n, rng_seed):
+def random_fasta2(table, n, seed, nprint):
+    width = 60
+    r = range(width)
+    bb = bisect.bisect
+
+    # If we don't have a multiple of the width, then we will have a trailing
+    # line, which needs a slightly different approach
+    is_trailing_line = False # <-- FIX is_trailing_line = False
+    count_modifier = 0.0
+
+    line = bytearray(width + 1)    # Width of 60 + 1 for the \n char
+
+    probs, chars = make_cumulative(table)
+
+    # pRNG Vars
+    im = 139968.0
+    seed = float(seed)
+
+    if n % width:
+        # We don't end on a 60 char wide line
+        is_trailing_line = False # <-- FIX is_trailing_line = True
+        count_modifier = 1.0
+
+    # CSF - Loops with a high iteration count run faster as a while/float loop.
+    count = 0.0
+    end = (n / float(width)) - count_modifier
+    while count <= end: # <-- FIX while count < end:
+        # CSF - Low iteration count loops may run faster as a for loop.
+        for i in r:
+            # CSF - Python is faster for all float math than it is for int, on my
+            # machine at least.
+            seed = (seed * 3877.0 + 29573.0) % 139968.0
+            # CSF - While real values, not variables are faster for most things, on my
+            # machine, it's faster to have 'im' already in a var
+            line[i] = chars[bb(probs, seed / im)]
+
+        line[60] = 10   # End of Line
+        nprint(line)
+        count += 1.0
+
+    if is_trailing_line:
+        for i in range(n % width):
+            seed = (seed * 3877.0 + 29573.0) % 139968.0
+            line[i] = chars[bb(probs, seed / im)]
+
+        nprint(line[:i + 1] + b"\n")
+
+    return seed
+
+
+def init_benchmarks1(n, rng_seed):
     result = bytearray()
     nprint = result.extend
     nprint(b'>ONE Homo sapiens alu\n')
@@ -164,10 +213,26 @@ def init_benchmarks(n, rng_seed):
     # We need to keep track of the state of 'seed' so we pass it in, and return
     # it back so our output can pass the diff test
     nprint(b'>TWO IUB ambiguity codes\n')
-    seed = random_fasta(IUB, n * 3, seed=rng_seed, nprint=nprint)
+    seed = random_fasta1(IUB, n * 3, seed=rng_seed, nprint=nprint)
 
     nprint(b'>THREE Homo sapiens frequency\n')
-    random_fasta(HOMOSAPIENS, n * 5, seed, nprint=nprint)
+    random_fasta1(HOMOSAPIENS, n * 5, seed, nprint=nprint)
+
+    return bytes(result)
+
+def init_benchmarks2(n, rng_seed):
+    result = bytearray()
+    nprint = result.extend
+    nprint(b'>ONE Homo sapiens alu\n')
+    repeat_fasta(ALU, n * 2, nprint=nprint)
+
+    # We need to keep track of the state of 'seed' so we pass it in, and return
+    # it back so our output can pass the diff test
+    nprint(b'>TWO IUB ambiguity codes\n')
+    seed = random_fasta2(IUB, n * 3, seed=rng_seed, nprint=nprint)
+
+    nprint(b'>THREE Homo sapiens frequency\n')
+    random_fasta2(HOMOSAPIENS, n * 5, seed, nprint=nprint)
 
     return bytes(result)
 
@@ -226,8 +291,24 @@ def add_cmdline_args(cmd, args):
     cmd.extend(("--fasta-length", str(args.fasta_length),
                 "--rng-seed", str(args.rng_seed)))
 
-def aRun_benchmarks(n: int = DEFAULT_INIT_LEN):
-    seq = init_benchmarks(n, DEFAULT_RNG_SEED)
+def aRun_benchmarks1(n: int = DEFAULT_INIT_LEN):
+    seq = init_benchmarks1(n, DEFAULT_RNG_SEED)
+    ilen = len(seq)
+
+    seq = re.sub(b'>.*\n|\n', b'', seq)
+    clen = len(seq)
+
+    results = []
+    for f in VARIANTS:
+        results.append(len(re.findall(f, seq)))
+
+    for f, r in SUBST:
+        seq = re.sub(f, r, seq)
+
+    return results, ilen, clen, len(seq)
+
+def aRun_benchmarks2(n: int = DEFAULT_INIT_LEN):
+    seq = init_benchmarks2(n, DEFAULT_RNG_SEED)
     ilen = len(seq)
 
     seq = re.sub(b'>.*\n|\n', b'', seq)
