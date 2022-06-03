@@ -453,6 +453,20 @@ class UCTNode:
 
 
 def computer_move(board):
+    pos = board.random_play() # <-- FIX pos = board.random_move()
+    if pos == PASS:
+        return PASS
+    tree = UCTNode()
+    tree.unexplored = board.useful_moves()
+    nboard = Board()
+    for game in range(GAMES):
+        node = tree
+        nboard.reset()
+        nboard.replay(board.history)
+        node.play(nboard)
+    return tree.best_visited().pos
+
+def computer_move2(board):
     pos = board.random_move()
     if pos == PASS:
         return PASS
@@ -466,7 +480,6 @@ def computer_move(board):
         node.play(nboard)
     return tree.best_visited().pos
 
-
 def versus_cpu(n: int = 0):
     random.seed(n)
     board = Board()
@@ -478,6 +491,14 @@ def aVersus_cpu1(moves: int = 1):
     board = Board()
     for _ in range(moves):
       record.append(computer_move(board))
+    return record
+
+def aVersus_cpu2(moves: int = 1):
+    record = []
+    random.seed(0)
+    board = Board()
+    for _ in range(moves):
+      record.extend(computer_move2(board)) # <-- FIX record.append(computer_move(board))
     return record
 
 
