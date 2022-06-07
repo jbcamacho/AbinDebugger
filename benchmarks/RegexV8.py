@@ -372,10 +372,11 @@ def block0():
 
 
 def block1():
+    bench_results = []
     for i in range(81):
-        regexs[8].search(r'VC=74.125.75.1')
-
-    for i in range(78):
+        result = regexs[8].search(r'VC=74.125.75.1')
+    bench_results.append(result)
+    for i in range(94):
         re.sub(r'(\s)+e', '', '9.0  e115', 1)
         re.sub(r'.', '', 'k', 1)
 
@@ -385,7 +386,7 @@ def block1():
 
         # This prints a unicode escape where the V8 version prints the
         # unicode character.
-        regexs[17].sub(r'', strings[3], subcount[17])
+        result = regexs[17].subn(r'', strings[3], subcount[17]) # <-- FIX regexs[17].sub(r'', strings[3], subcount[17])
 
         regexs[8].search(r'144631658')
         regexs[8].search(r'Pbhagel=IIZ%3Q')
@@ -400,12 +401,13 @@ def block1():
         regexs[3].search(r'vachggrkg  QBZPbageby_cynprubyqre')
         regexs[0].search(r'xrlqbja')
         regexs[0].search(r'xrlhc')
+    bench_results.append(result)
 
     for i in range(77):
         regexs[12].sub(
             r'', 'uggc://zrffntvat.zlfcnpr.pbz/vaqrk.psz', subcount[12])
-        regexs[13].search(r'uggc://zrffntvat.zlfcnpr.pbz/vaqrk.psz')
-
+        result = regexs[13].search(r'uggc://zrffntvat.zlfcnpr.pbz/vaqrk.psz')
+    bench_results.append(result)
     for i in range(73):
         regexs[18].sub(
             r'', 'FrffvbaFgbentr=%7O%22GnoThvq%22%3N%7O%22thvq%22%3N1231367125017%7Q%7Q', subcount[18])
@@ -428,27 +430,30 @@ def block1():
         regexs[21].search(r'ybnqvat')
 
     for i in range(68):
-        regexs[1].search(r'#')
+        result = regexs[1].search(r'#')
         re.search(
             r'(?:ZFVR.(\d+\.\d+))|(?:(?:Sversbk|TenaCnenqvfb|Vprjrnfry).(\d+\.\d+))|(?:Bcren.(\d+\.\d+))|(?:NccyrJroXvg.(\d+(?:\.\d+)?))', strings[0])
         re.search(r'(Znp BF K)|(Jvaqbjf;)', strings[0])
         re.search(r'Trpxb\/([0-9]+)', strings[0])
         regexs[21].search(r'ybnqrq')
-
+    bench_results.append(result)
     for i in range(49):
-        regexs[16].search(r'pbybe')
-
+        result = regexs[16].search(r'pbybe')
+    bench_results.append(result)
     for i in range(44):
         regexs[12].sub(
             r'', 'uggc://sevraqf.zlfcnpr.pbz/vaqrk.psz', subcount[12])
-        regexs[13].search(r'uggc://sevraqf.zlfcnpr.pbz/vaqrk.psz')
+        result = regexs[13].search(r'uggc://sevraqf.zlfcnpr.pbz/vaqrk.psz')
+    bench_results.append(result)
+    return bench_results
 
 
 def block2():
-    for i in range(40):
+    bench_results = []
+    for i in range(94):
         regexs[14].sub(r'', 'fryrpgrq', subcount[14])
-        regexs[15].sub(r'', 'fryrpgrq', subcount[15])
-
+        result = regexs[15].subn(r'', 'fryrpgrq', subcount[15]) #<-- FIX result = regexs[15].sub(r'', 'fryrpgrq', subcount[15])
+    bench_results.append(result)
     for i in range(39):
         re.sub(r'\buvqqra_ryrz\b', '', 'vachggrkg uvqqra_ryrz', 0)
         regexs[3].search(r'vachggrkg ')
@@ -462,9 +467,9 @@ def block2():
     for i in range(37):
         regexs[8].search(r'111soqs57qo8o8480qo18sor2011r3n591q7s6s37r120904')
         regexs[8].search(r'SbeprqRkcvengvba=633669315660164980')
-        regexs[8].search(
+        result = regexs[8].search(
             r'FrffvbaQQS2=111soqs57qo8o8480qo18sor2011r3n591q7s6s37r120904')
-
+    bench_results.append(result)
     for i in range(35):
         regexs[14].sub(r'', 'puvyq p1 svefg', subcount[14])
         regexs[15].sub(r'', 'puvyq p1 svefg', subcount[15])
@@ -499,18 +504,21 @@ def block2():
         regexs[7].search(r'419')
 
     for i in range(29):
-        regexs[23].sub(r'', 'uggc://jjj.snprobbx.pbz/ybtva.cuc', subcount[23])
-
+        result = regexs[23].sub(r'', 'uggc://jjj.snprobbx.pbz/ybtva.cuc', subcount[23])
+    bench_results.append(result)
     for i in range(28):
         regexs[25].sub(r'', 'Funer guvf tnqtrg', subcount[25])
         regexs[12].sub(r'', 'Funer guvf tnqtrg', subcount[12])
-        regexs[26].search(r'uggc://jjj.tbbtyr.pbz/vt/qverpgbel')
+        result = regexs[26].search(r'uggc://jjj.tbbtyr.pbz/vt/qverpgbel')
+    bench_results.append(result)
+    return bench_results
 
 
 def block3():
-    for i in range(27):
-        re.sub(r'[A-Za-z]', '', 'e115', 0)
-
+    bench_results = []
+    for i in range(97):
+        result = re.subn(r'[A-Za-z]', '', 'e115', 0) # <-- FIX result = re.sub(r'[A-Za-z]', '', 'e115', 0)
+    bench_results.append(result)
     for i in range(23):
         regexs[27].sub(r'', 'qvfcynl', subcount[27])
         regexs[27].sub(r'', 'cbfvgvba', subcount[27])
@@ -524,22 +532,22 @@ def block3():
         regexs[15].sub(r'', 'cnerag puebzr6 fvatyr1 gno', subcount[15])
         regexs[14].sub(r'', 'fyvqre', subcount[14])
         regexs[15].sub(r'', 'fyvqre', subcount[15])
-        regexs[28].search(r'')
-
+        result = regexs[28].search(r'')
+    bench_results.append(result)
     for i in range(21):
         regexs[12].sub(r'', 'uggc://jjj.zlfcnpr.pbz/', subcount[12])
         regexs[13].search(r'uggc://jjj.zlfcnpr.pbz/')
 
     for i in range(20):
         regexs[29].sub(r'', 'cntrivrj', subcount[29])
-        regexs[30].sub(r'', 'cntrivrj', subcount[30])
+        result = regexs[30].sub(r'', 'cntrivrj', subcount[30])
         regexs[19].search(r'ynfg')
         regexs[19].search(r'ba svefg')
         regexs[8].search(r'VC=74.125.75.3')
-
+    bench_results.append(result)
     for i in range(19):
-        regexs[31].search(r'ra')
-
+        result = regexs[31].search(r'ra')
+    bench_results.append(result)
     for i in range(18):
         regexs[32].split(strings[10])
         regexs[32].split(strings[11])
@@ -586,7 +594,7 @@ def block3():
         regexs[14].sub(r'', 'zvahf', subcount[14])
         regexs[15].sub(r'', 'zvahf', subcount[15])
         regexs[14].sub(r'', 'bcra', subcount[14])
-        regexs[15].sub(r'', 'bcra', subcount[15])
+        result = regexs[15].sub(r'', 'bcra', subcount[15])
         regexs[14].sub(r'', 'cnerag puebzr5 fvatyr1 ps NU', subcount[14])
         regexs[15].sub(r'', 'cnerag puebzr5 fvatyr1 ps NU', subcount[15])
         regexs[14].sub(r'', 'cynlre', subcount[14])
@@ -618,6 +626,8 @@ def block3():
             r'__hgzm=144631658.1231363638.1.1.hgzpfe=(qverpg)|hgzppa=(qverpg)|hgzpzq=(abar)')
         regexs[34].search(strings[15])
         regexs[34].search(strings[16])
+    bench_results.append(result)
+    return bench_results
 
 
 def block4():
@@ -1805,6 +1815,18 @@ def bench_regex_v8(loops):
 def aBench_block0(seed:int = 8):
   shuffle_arr(seed)
   return block0()
+
+def aBench_block1(seed:int = 8):
+  shuffle_arr(seed)
+  return block1()
+
+def aBench_block2(seed:int = 8):
+  shuffle_arr(seed)
+  return block2()
+
+def aBench_block3(seed:int = 8):
+  shuffle_arr(seed)
+  return block3()
 
 if __name__ == '__main__':
     """runner = pyperf.Runner()

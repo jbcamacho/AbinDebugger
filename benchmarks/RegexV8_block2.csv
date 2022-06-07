@@ -1,0 +1,14 @@
+test_cases,expected_output,seed: int
+test1,"['fryrpgrq', None, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', <re.Match object; span=(4, 5), match=':'>]",1415
+test2,"['fryrpgrq', <re.Match object; span=(0, 11), match='FrffvbaQQS2'>, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', <re.Match object; span=(0, 34), match='uggc://jjj.tbbtyr.pbz/vt/qverpgbel'>]",3401
+test3,"['fryrpgrq', None, '', None]",1999
+test4,"['fryrpgrq', None, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', None]",3197
+test5,"['fryrpgrq', <re.Match object; span=(0, 60), match='FrffvbaQQS2=111soqs57qo8o8480qo18sor2011r3n591q7s>, '://jjj.snprobbx.pbz/ybtva.cuc', None]",70
+test6,"['fryrpgrq', None, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', None]",322
+test7,"['fryrpgrq', <re.Match object; span=(0, 60), match='FrffvbaQQS2=111soqs57qo8o8480qo18sor2011r3n591q7s>, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', None]",3971
+test8,"['fryrpgrq', None, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', None]",1696
+test9,"['fryrpgrq', None, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', None]",4933
+test10,"['fryrpgrq', <re.Match object; span=(0, 60), match='FrffvbaQQS2=111soqs57qo8o8480qo18sor2011r3n591q7s>, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', None]",3993
+test11,"['fryrpgrq', None, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', None]",5055
+test12,"['fryrpgrq', None, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', None]",2779
+test13,"['fryrpgrq', None, 'uggc://jjj.snprobbx.pbz/ybtva.cuc', None]",7027

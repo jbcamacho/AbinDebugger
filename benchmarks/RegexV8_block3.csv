@@ -1,0 +1,14 @@
+test_cases,expected_output,seed: int
+test1,"['115', <re.Match object; span=(0, 0), match=''>, 'cntrivrj', None, 'bcra']",1415
+test2,"['115', None, 'cntrivrj', None, 'bcra']",3401
+test3,"['115', None, 'cntrivrj', None, 'bcra']",1999
+test4,"['115', None, '', None, 'bcra']",3197
+test5,"['115', None, 'cntrivrj', None, 'bcra']",70
+test6,"['115', None, 'cntrivrj', <re.Match object; span=(0, 2), match='ra'>, 'bcra']",322
+test7,"['115', None, 'cntrivrj', None, 'bcra']",3971
+test8,"['115', None, 'cntrivrj', None, 'bcra']",1696
+test9,"['115', None, 'cntrivrj', None, 'bcra']",4933
+test10,"['115', None, 'cntrivrj', <re.Match object; span=(0, 2), match='ra'>, 'bcra']",3993
+test11,"['115', None, 'cntrivrj', <re.Match object; span=(0, 1), match='r'>, 'bcra']",5055
+test12,"['115', None, 'cntrivrj', None, 'bcra']",2779
+test13,"['115', None, 'cntrivrj', None, 'bcra']",7027
