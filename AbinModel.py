@@ -73,7 +73,7 @@ class AbinModel():
         AbinLogging.debugging_logger.info(f"""
                 Observations:
                 {prev_observation}
-                Influence Path by Suspiciousness Ranking:
+                Bug Candidates Set by Suspiciousness Ranking:
                 {influence_path}
                 """
         )

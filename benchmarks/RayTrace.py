@@ -1,5 +1,5 @@
 """
-Given two integers width and height, this benchmark runs the raytracing algorimth.
+Given two integers width and height, this benchmark runs the ray tracing algorithm.
 This file contains definitions for a simple raytracer.
 Copyright Callum and Tony Garnock-Jones, 2008.
 

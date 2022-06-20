@@ -168,7 +168,7 @@ class ModelTester(ModelLoader):
         new_observation: Observation = [('UndefinedTest', FailedTest) for i in range(len(self.test_suite))]
         test_result: ExpectedOutput
         debugger: Debugger = self.debugger(susp_threshold=self.susp_threshold)
-        AbinLogging.debugging_logger.info(f"Starting Model Test...")
+        AbinLogging.debugging_logger.info(f"Starting Model Testing...")
         for i, test_case, expected_output, *input_args in self.test_suite.itertuples():
             AbinLogging.debugging_logger.info(f"Testing {test_case}...")
             with debugger:
